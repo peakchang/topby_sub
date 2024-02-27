@@ -12,12 +12,18 @@
     let ld_id = "";
     let allData = {};
 
+    let nowIdx = 0;
+
+    let menuArr = [
+        { pgName: "사업소개", pgLink: "introduction" },
+        { pgName: "입지환경", pgLink: "environ" },
+        { pgName: "프리미엄", pgLink: "premium" },
+        { pgName: "상품안내", pgLink: "product" },
+        {},
+    ];
     let tempSaveImgs = []; // 임시저장 이미지 리스트, 새로고침 / 뒤로가기시 싹 삭제됨
     let mainImgs = [];
-    let overviewImgs = [];
-    let environImgs = [];
-    let premiumImgs = [];
-    let productImgs = [];
+    let bannerImgs = [];
 
     let modifyVal = {};
     let getId = "";
@@ -30,23 +36,22 @@
         if (data.modifyVal) {
             ld_id = modifyVal.ld_id;
             allData = data.modifyVal;
-            console.log(allData);
+
+            menuArr = JSON.parse(allData["ld_menu"]);
+            console.log(menuArr);
 
             mainImgs = modifyVal.ld_main_img
                 ? modifyVal.ld_main_img.split(",")
                 : [];
-            overviewImgs = modifyVal.ld_overview_img
-                ? modifyVal.ld_overview_img.split(",")
+
+            bannerImgs = modifyVal.ld_banner_img
+                ? modifyVal.ld_banner_img.split(",")
                 : [];
-            environImgs = modifyVal.ld_environ_img
-                ? modifyVal.ld_environ_img.split(",")
-                : [];
-            premiumImgs = modifyVal.ld_premium_img
-                ? modifyVal.ld_premium_img.split(",")
-                : [];
-            productImgs = modifyVal.ld_product_img
-                ? modifyVal.ld_product_img.split(",")
-                : [];
+            for (let i = 0; i < 5; i++) {
+                if (allData[`ld_pg${i}`]) {
+                    allData[`ld_pg${i}_img`] = allData[`ld_pg${i}`].split(",");
+                }
+            }
         }
     }
 
@@ -73,13 +78,41 @@
         }
     }
 
+    async function deletePhimgAct() {
+        const phimgUrlArr = allData["ld_ph_img"].split("/");
+        const phimgUrlPath = `subuploads/img/${phimgUrlArr[4]}/${phimgUrlArr[5]}`;
+
+        console.log(phimgUrlPath);
+
+        try {
+            const res = await axios.post(`${back_api}/delete_phimg`, {
+                phimgUrlPath,
+                ld_id,
+            });
+            if (res.data.status) {
+                alert("번호 이미지가 삭제 되었습니다.");
+                invalidateAll();
+                allData["ld_ph_img"] = "";
+            }
+        } catch (error) {
+            alert("에러가 발생 했습니다.");
+        }
+    }
+
     async function uploadData(e) {
-        (allData["ld_main_img"] = mainImgs.join(",")),
-            (allData["ld_overview_img"] = overviewImgs.join(","));
-        allData["ld_environ_img"] = environImgs.join(",");
-        allData["ld_premium_img"] = premiumImgs.join(",");
-        allData["ld_product_img"] = productImgs.join(",");
-        console.log(allData);
+        allData["ld_main_img"] = mainImgs.join(",");
+        allData["ld_banner_img"] = bannerImgs.join(",");
+        
+
+        for (let i = 0; i < 5; i++) {
+            if (allData[`ld_pg${i}_img`]) {
+                allData[`ld_pg${i}`] = allData[`ld_pg${i}_img`].join(",");
+            }
+            delete allData[`ld_pg${i}_img`];
+        }
+
+        allData["ld_menu"] = JSON.stringify(menuArr);
+
         const type = e.target.value;
         console.log(type);
         const res = await axios.post(`${back_api}/upload_data`, {
@@ -106,24 +139,16 @@
         mainImgs = setImgArr(imgList);
     }
 
-    function updateOverviewImgList(e) {
+    function updateBannerImgList(e) {
         const imgList = e.detail.imgArr;
-        overviewImgs = setImgArr(imgList);
+        bannerImgs = setImgArr(imgList);
     }
 
-    function updateEnvironImgList(e) {
-        const imgList = e.detail.imgArr;
-        environImgs = setImgArr(imgList);
-    }
+    
 
-    function updatePremiumImgList(e) {
+    function updateImgList(e) {
         const imgList = e.detail.imgArr;
-        premiumImgs = setImgArr(imgList);
-    }
-
-    function updateProductImgList(e) {
-        const imgList = e.detail.imgArr;
-        productImgs = setImgArr(imgList);
+        allData[`ld_pg${nowIdx}_img`] = setImgArr(imgList);
     }
 
     function setImgArr(imgList) {
@@ -215,9 +240,83 @@
             };
         };
     };
+
+    // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
+    const uploadPhimgAct = (e) => {
+        const input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.setAttribute("accept", ".png,.jpg,.jpeg");
+        input.click();
+
+        // input change
+        input.onchange = async (e) => {
+            const maxWidth = 1200;
+            const img_file = e.target.files[0];
+            const options = {
+                maxSizeMB: 0.7,
+                // maxWidthOrHeight: 1920,
+                useWebWorker: true,
+            };
+
+            const reader = new FileReader();
+            reader.readAsDataURL(img_file);
+            reader.onload = function (r) {
+                let setWidth = 0;
+                let setHeight = 0;
+                const img = new Image();
+                img.src = r.target.result;
+                img.onload = async function (e) {
+                    if (img.width >= maxWidth) {
+                        var share = img.width / maxWidth;
+                        var setHeight = Math.floor(img.height / share);
+                        var setWidth = maxWidth;
+                    } else {
+                        setWidth = img.width;
+                        setHeight = img.height;
+                    }
+
+                    var canvas = document.createElement("canvas");
+                    canvas.width = setWidth;
+                    canvas.height = setHeight;
+                    canvas.display = "inline-block";
+                    canvas
+                        .getContext("2d")
+                        .drawImage(img, 0, 0, setWidth, setHeight);
+
+                    var getReImgUrl = canvas.toDataURL("image/webp");
+
+                    const resultImage = dataURItoBlob(getReImgUrl);
+
+                    let imgForm = new FormData();
+
+                    const timestamp = new Date().getTime();
+                    const fileName = `${timestamp}${Math.random()
+                        .toString(36)
+                        .substring(2, 11)}.webp`;
+                    imgForm.append("onimg", resultImage, fileName);
+
+                    console.log(back_api);
+                    axios
+                        .post(`${back_api}/img_upload`, imgForm, {
+                            headers: {
+                                "Content-Type": "multipart/form-data",
+                            },
+                        })
+                        .then((res) => {
+                            console.log(res.data);
+                            allData["ld_ph_img"] = res.data.baseUrl;
+                        })
+                        .catch((err) => {
+                            console.error();
+                            alert(`${err.message} 에러가 발생 했습니다.`);
+                        });
+                };
+            };
+        };
+    };
 </script>
 
-<div class="container max-w-[900px] py-10 mx-auto pretendard">
+<div class="container max-w-[900px] py-10 px-3 mx-auto pretendard">
     <div class="w-full flex items-center gap-4">
         <table class=" w-[350px]">
             <tr>
@@ -252,6 +351,10 @@
     </div>
 
     <div class="w-full mt-5">
+        <div class="mb-3">
+            <span class="text-sm font-semibold">※ 기본 정보</span>
+        </div>
+
         <table class="w-full">
             <tr>
                 <th class="border p-1 w-1/6 text-xs md:text-sm">사이트명</th>
@@ -338,8 +441,80 @@
                         {/if}
                     </div>
                 </td>
+
+                <th class="border p-1 text-xs md:text-sm">전화번호 이미지</th>
+                <td class="border p-1">
+                    <div>
+                        {#if allData["ld_ph_img"]}
+                            <div class="mb-3 border p-1 rounded-md">
+                                <img src={allData["ld_ph_img"]} alt="" />
+                            </div>
+                        {:else}
+                            <div class="mb-3">이미지를 추가해주세요</div>
+                        {/if}
+
+                        {#if allData["ld_ph_img"]}
+                            <button
+                                class="py-1 px-3 text-xs text-white rounded-md bg-red-500 active:bg-red-600"
+                                on:click={deletePhimgAct}
+                            >
+                                로고 삭제
+                            </button>
+                        {:else}
+                            <button
+                                class="py-1 px-3 text-xs text-white rounded-md bg-blue-500 active:bg-blue-600"
+                                on:click={uploadPhimgAct}
+                            >
+                                로고 업로드
+                            </button>
+                        {/if}
+                    </div>
+                </td>
             </tr>
         </table>
+    </div>
+
+    <div class="mt-5">
+        <div class="text-sm font-semibold mb-3">
+            ※ 메뉴
+            <span class=" font-light text-xs">
+                (기본 5개 / 이름과 링크를 넣으면 아래 이미지란 자동 생성)
+            </span>
+        </div>
+        <table class="w-full text-xs md:text-sm">
+            <tr>
+                <th class="border p-2">메뉴이름</th>
+                <th class="border p-2">링크</th>
+            </tr>
+
+            {#each menuArr as menu, idx}
+                <tr>
+                    <td class="border p-1">
+                        <input
+                            type="text"
+                            class="border w-full p-2 focus:outline-none focus:border-blue-500"
+                            bind:value={menuArr[idx]["pgName"]}
+                        />
+                    </td>
+                    <td class="border p-1">
+                        <input
+                            type="text"
+                            class="border w-full p-2 focus:outline-none focus:border-blue-500"
+                            bind:value={menuArr[idx]["pgLink"]}
+                        />
+                    </td>
+                </tr>
+            {/each}
+        </table>
+    </div>
+
+
+    <div class="py-5 px-3 border rounded-md mt-5">
+        <span class="text-sm">▣ 배너 이미지</span>
+        <SortableImg
+            on:updateImgeList={updateBannerImgList}
+            modifyImageList={bannerImgs}
+        />
     </div>
 
     <div class="py-5 px-3 border rounded-md mt-5">
@@ -350,37 +525,22 @@
         />
     </div>
 
-    <div class="py-5 px-3 border rounded-md mt-5">
-        <span class="text-sm">▣ 사업소개 이미지</span>
-        <SortableImg
-            on:updateImgeList={updateOverviewImgList}
-            modifyImageList={overviewImgs}
-        />
-    </div>
+    
 
-    <div class="py-5 px-3 border rounded-md mt-5">
-        <span class="text-sm">▣ 입지환경 이미지</span>
-        <SortableImg
-            on:updateImgeList={updateEnvironImgList}
-            modifyImageList={environImgs}
-        />
-    </div>
-
-    <div class="py-5 px-3 border rounded-md mt-5">
-        <span class="text-sm">▣ 프리미엄 이미지</span>
-        <SortableImg
-            on:updateImgeList={updatePremiumImgList}
-            modifyImageList={premiumImgs}
-        />
-    </div>
-
-    <div class="py-5 px-3 border rounded-md mt-5">
-        <span class="text-sm">▣ 상품안내 이미지</span>
-        <SortableImg
-            on:updateImgeList={updateProductImgList}
-            modifyImageList={productImgs}
-        />
-    </div>
+    {#each menuArr as menu, idx}
+        {#if menuArr[idx]["pgName"] && menuArr[idx]["pgLink"]}
+            <div class="py-5 px-3 border rounded-md mt-5">
+                <span class="text-sm">▣ {menuArr[idx]["pgName"]} 이미지</span>
+                <SortableImg
+                    on:updateImgeList={(e) => {
+                        nowIdx = idx;
+                        updateImgList(e);
+                    }}
+                    modifyImageList={allData[`ld_pg${idx}_img`]}
+                />
+            </div>
+        {/if}
+    {/each}
 
     <div class="mt-5 pb-20 text-center">
         <button

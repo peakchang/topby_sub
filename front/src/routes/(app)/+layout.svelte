@@ -31,9 +31,7 @@
 </svelte:head>
 
 <div class="fixed bottom-6 right-6">
-	<div class="w-30 h-30 border p-3">
-		상담 신청
-	</div>
+	<div class="w-30 h-30 border p-3">상담 신청</div>
 </div>
 
 <div
@@ -68,7 +66,7 @@
 	</div>
 </div>
 
-<div class="mt-16 md:mt-20 max-w-[896px] mx-auto p-3">
+<div class="mt-20 max-w-[1200px] mx-auto">
 	<slot />
 </div>
 
