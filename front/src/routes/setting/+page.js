@@ -5,6 +5,8 @@ import { back_api } from "$lib/const";
 
 export const load = (async ({ url }) => {
 
+    console.log('에러 부분111111111111');
+
     const getId = url.host.split('.')[0]
     console.log(getId);
     let modifyVal = {}

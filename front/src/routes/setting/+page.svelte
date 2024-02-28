@@ -31,12 +31,17 @@
 
     $: data, setData();
     function setData() {
+        console.log("셋 데이터~!!!!!!!!!!!!");
         modifyVal = data.modifyVal;
+        console.log(modifyVal);
         getId = data.getId;
         if (data.modifyVal) {
             ld_id = modifyVal.ld_id;
             allData = data.modifyVal;
-            menuArr = JSON.parse(allData["ld_menu"]);
+            if (allData["ld_menu"]) {
+                menuArr = JSON.parse(allData["ld_menu"]);
+            }
+
             mainImgs = modifyVal.ld_main_img
                 ? modifyVal.ld_main_img.split(",")
                 : [];
@@ -97,7 +102,6 @@
     async function uploadData(e) {
         allData["ld_main_img"] = mainImgs.join(",");
         allData["ld_banner_img"] = bannerImgs.join(",");
-        
 
         for (let i = 0; i < 5; i++) {
             if (allData[`ld_pg${i}_img`]) {
@@ -138,8 +142,6 @@
         const imgList = e.detail.imgArr;
         bannerImgs = setImgArr(imgList);
     }
-
-    
 
     function updateImgList(e) {
         const imgList = e.detail.imgArr;
@@ -503,7 +505,6 @@
         </table>
     </div>
 
-
     <div class="py-5 px-3 border rounded-md mt-5">
         <span class="text-sm">▣ 배너 이미지</span>
         <SortableImg
@@ -519,8 +520,6 @@
             modifyImageList={mainImgs}
         />
     </div>
-
-    
 
     {#each menuArr as menu, idx}
         {#if menuArr[idx]["pgName"] && menuArr[idx]["pgLink"]}
