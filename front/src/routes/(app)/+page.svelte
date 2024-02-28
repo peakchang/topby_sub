@@ -14,6 +14,7 @@
     let siteData = {};
     let mainImgList = [];
     let dataAosList = [];
+    let bannerImgList = [];
     let bannerSwiper;
     export let data;
     console.log(data);
@@ -53,68 +54,52 @@
             : [];
 
         console.log(mainImgList);
-
-        let aosTemp = [];
-        if (mainImgList) {
-            for (let i = 0; i < mainImgList.length; i++) {
-                const randomIndex = Math.floor(
-                    Math.random() * aosStyleList.length,
-                );
-                aosTemp.push(aosStyleList[randomIndex]);
-            }
+        console.log(siteData.ld_banner_img);
+        if (siteData.ld_banner_img) {
+            bannerImgList = siteData.ld_banner_img.split(",");
         }
-
-        dataAosList = aosTemp;
     }
 </script>
 
 <svelte:head></svelte:head>
 
-<section>
-    <div class="swiper mb-10 relative" bind:this={bannerSwiper}>
-        <!-- Additional required wrapper -->
-        <div class="swiper-wrapper relative">
-            <div class="swiper-slide">
-                <img src="/temp/main1.JPG" alt="" />
+{#if siteData.ld_banner_img}
+    <section>
+        <div class="swiper mb-10 relative" bind:this={bannerSwiper}>
+            <!-- Additional required wrapper -->
+            <div class="swiper-wrapper relative">
+                {#each bannerImgList as bannerImg}
+                    <div class="swiper-slide">
+                        <img src="{bannerImg}" alt="" />
+                    </div>
+                {/each}
             </div>
-            <div class="swiper-slide">
-                <img src="/temp/main2.JPG" alt="" />
+            <!-- If we need pagination -->
+            <div class="swiper-pagination"></div>
+
+            <div class="left-btn top-1/2 z-20 left-7">
+                <button
+                    class="w-7 h-7 md:w-10 md:h-10 text-sm md:text-base bg-white flex justify-center items-center rounded-full text-gray-500"
+                >
+                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                </button>
             </div>
+            <div class="right-btn top-1/2 z-20 right-7">
+                <button
+                    class="w-7 h-7 md:w-10 md:h-10 text-sm md:text-base bg-white flex justify-center items-center rounded-full text-gray-500"
+                >
+                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="swiper-scrollbar"></div>
         </div>
-        <!-- If we need pagination -->
-        <div class="swiper-pagination"></div>
-
-        <div class="left-btn top-1/2 z-20 left-7">
-            <button
-                class="w-7 h-7 md:w-10 md:h-10 text-sm md:text-base bg-white flex justify-center items-center rounded-full text-gray-500"
-            >
-                <i class="fa fa-chevron-left" aria-hidden="true"></i>
-            </button>
-        </div>
-        <div class="right-btn top-1/2 z-20 right-7">
-            <button
-                class="w-7 h-7 md:w-10 md:h-10 text-sm md:text-base bg-white flex justify-center items-center rounded-full text-gray-500"
-            >
-                <i class="fa fa-chevron-right" aria-hidden="true"></i>
-            </button>
-        </div>
-        <div class="swiper-scrollbar"></div>
-    </div>
-</section>
-
-<!-- end of hero slider -->
-<img src="/temp/main1.JPG" alt="" />
+    </section>
+{/if}
 
 {#each mainImgList as mainImg, idx}
-    {#if idx == 0}
-        <div class="mb-5">
-            <img src={mainImg} alt="" class="w-full" />
-        </div>
-    {:else}
-        <div class="mb-5" data-aos={dataAosList[idx]}>
-            <img src={mainImg} alt="" class="w-full" />
-        </div>
-    {/if}
+    <div class="mb-5">
+        <img src={mainImg} alt="" class="w-full" />
+    </div>
 {/each}
 
 <style>

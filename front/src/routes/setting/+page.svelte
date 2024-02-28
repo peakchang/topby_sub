@@ -36,10 +36,7 @@
         if (data.modifyVal) {
             ld_id = modifyVal.ld_id;
             allData = data.modifyVal;
-
             menuArr = JSON.parse(allData["ld_menu"]);
-            console.log(menuArr);
-
             mainImgs = modifyVal.ld_main_img
                 ? modifyVal.ld_main_img.split(",")
                 : [];
@@ -81,8 +78,6 @@
     async function deletePhimgAct() {
         const phimgUrlArr = allData["ld_ph_img"].split("/");
         const phimgUrlPath = `subuploads/img/${phimgUrlArr[4]}/${phimgUrlArr[5]}`;
-
-        console.log(phimgUrlPath);
 
         try {
             const res = await axios.post(`${back_api}/delete_phimg`, {
