@@ -18,7 +18,9 @@
 		siteData = data.subView;
 		console.log(siteData);
 		menuList = JSON.parse(siteData.ld_menu);
-		bannerList = siteData.ld_banner_img.split(",");
+		if (siteData.ld_banner_img) {
+			bannerList = siteData.ld_banner_img.split(",");
+		}
 
 		console.log(menuList);
 		console.log(bannerList);
