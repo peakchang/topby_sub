@@ -137,7 +137,7 @@
 	style=""
 >
 	<div class="max-w-[896px] mx-auto p-3">
-		<div class="text-center flex justify-center items-center">
+		<div class="text-center flex justify-between items-center mb-3">
 			{#if siteData.ld_logo}
 				<a href="/">
 					<img
