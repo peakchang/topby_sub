@@ -143,7 +143,8 @@
 					<img
 						src={siteData.ld_logo}
 						alt=""
-						class="w-full max-w-28 md:max-w-40"
+						class="w-full max-w-72"
+
 					/>
 				</a>
 			{:else}
@@ -155,7 +156,7 @@
 					<img
 						src={siteData.ld_ph_img}
 						alt=""
-						class="w-full max-w-28 md:max-w-40"
+						class="w-full max-w-72"
 					/>
 				</a>
 			{/if}
