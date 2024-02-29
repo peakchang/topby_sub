@@ -176,7 +176,7 @@
 	</div>
 </div>
 
-<div class="mt-28 md:mt-32 max-w-[1200px] mx-auto">
+<div class="mt-40 md:mt-48 max-w-[1200px] mx-auto">
 	<slot />
 </div>
 
