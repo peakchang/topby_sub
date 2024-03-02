@@ -120,7 +120,7 @@
 				</a>
 			</li>
 		{/if}
-		<li class="rounded-full border md:border-2 p-3 md:p-4 bg-white">
+		<!-- <li class="rounded-full border md:border-2 p-3 md:p-4 bg-white">
 			<button
 				on:click={() => {
 					formModalopen = true;
@@ -128,7 +128,7 @@
 			>
 				<img src="/form_icon.png" alt="" class="w-10 md:w-14" />
 			</button>
-		</li>
+		</li> -->
 	</ul>
 </div>
 
