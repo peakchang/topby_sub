@@ -32,6 +32,7 @@
 </script>
 
 <svelte:head>
+	{@html siteData.ld_add_scripts}
 	<SeoMeta bind:seoValue />
 	<!-- SUIT 폰트 CSS -->
 	<link
