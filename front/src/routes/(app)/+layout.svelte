@@ -32,7 +32,9 @@
 </script>
 
 <svelte:head>
-	{@html siteData.ld_add_scripts}
+	{#if siteData.ld_add_scripts}
+		{@html siteData.ld_add_scripts}
+	{/if}
 	<SeoMeta bind:seoValue />
 	<!-- SUIT 폰트 CSS -->
 	<link
@@ -99,7 +101,7 @@
 	</div>
 </ModalCustom>
 
-<div class="fixed bottom-8 right-1 md:right-6 z-[999]">
+<div class="fixed bottom-52 right-1 md:right-6 z-[999]">
 	<ul>
 		{#if siteData.ld_phone_num}
 			<li
@@ -145,7 +147,6 @@
 						src={siteData.ld_logo}
 						alt=""
 						class="w-full max-w-72"
-
 					/>
 				</a>
 			{:else}
@@ -181,6 +182,29 @@
 	<slot />
 </div>
 
+<div class="p-3">
+	<div
+		class="shadow-sm border p-4 md:pr-10 rounded-md suit-font block md:flex md:justify-around"
+	>
+		<div class="mb-3 md:mb-0">
+			<p class="text-sm text-red-500">무엇이 궁금하세요?</p>
+			<p class="text-2xl font-bold">빠른 상담 요청</p>
+		</div>
+		<div class="flex gap-2">
+			<input
+				type="text"
+				class="p-2 border focus:outline-none focus:border-blue-400 rounded-sm w-2/5"
+			/>
+			<input
+				type="text"
+				class="p-2 border focus:outline-none focus:border-blue-400 rounded-sm w-2/5"
+			/>
+			<button class=" bg-yellow-600 py-2 rounded-lg text-white text-sm md:text-base active:bg-yellow-700 w-1/5">
+				접수하기
+			</button>
+		</div>
+	</div>
+</div>
 <hr class="mt-6" />
 <div class="container mx-auto max-w-4xl mb-10 p-4 suit-font">
 	copyright@ {$page.url.origin}

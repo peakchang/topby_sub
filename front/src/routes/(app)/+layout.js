@@ -36,6 +36,8 @@ export const load = async ({ fetch, url }) => {
             subDomainName
         })
 
+        console.log(res);
+
         if (!res.data.subView) {
             return error('404', 'asjfaisjfilasjdf')
         } else if (res.data.status && res.data.subView['ld_domain']) {
