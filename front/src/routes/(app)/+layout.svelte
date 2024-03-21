@@ -193,11 +193,13 @@
 		<div class="flex gap-2">
 			<input
 				type="text"
-				class="p-2 border focus:outline-none focus:border-blue-400 rounded-sm w-2/5"
+				class="p-2 border focus:outline-none focus:border-yellow-600 rounded-sm w-2/5"
+				placeholder="이름"
 			/>
 			<input
 				type="text"
-				class="p-2 border focus:outline-none focus:border-blue-400 rounded-sm w-2/5"
+				class="p-2 border focus:outline-none focus:border-yellow-600 rounded-sm w-2/5"
+				placeholder="연락처"
 			/>
 			<button class=" bg-yellow-600 py-2 rounded-lg text-white text-sm md:text-base active:bg-yellow-700 w-1/5">
 				접수하기
