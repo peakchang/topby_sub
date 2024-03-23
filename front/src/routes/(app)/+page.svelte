@@ -21,7 +21,6 @@
 	let customerPhone = "";
 
     export let data;
-    console.log(data);
 
     onMount(() => {
         loading = false;
@@ -56,9 +55,7 @@
         mainImgList = siteData.ld_main_img
             ? siteData.ld_main_img.split(",")
             : [];
-
-        console.log(mainImgList);
-        console.log(siteData.ld_banner_img);
+            
         if (siteData.ld_banner_img) {
             bannerImgList = siteData.ld_banner_img.split(",");
         }

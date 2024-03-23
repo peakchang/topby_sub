@@ -6,6 +6,8 @@
 	import ModalCustom from "$lib/components/ModalCustom.svelte";
 	import { customerSubmit } from "$lib/lib";
 	import Cookies from "js-cookie";
+	import axios from "axios";
+	import { back_api } from "$src/lib/const";
 
 	let seoValue = {};
 	let siteData = {};
@@ -22,22 +24,15 @@
 		const popupShow = Cookies.get("popup_close");
 		if (popupShow == "ok") {
 			showPopup = false;
-		}else{
+		} else {
 			showPopup = true;
 		}
 		seoValue = data.seoValue;
 		siteData = data.subView;
-		console.log(
-			"*********************************************----------------------",
-		);
-		console.log(siteData);
 		menuList = JSON.parse(siteData.ld_menu);
 		if (siteData.ld_banner_img) {
 			bannerList = siteData.ld_banner_img.split(",");
 		}
-
-		console.log(menuList);
-		console.log(bannerList);
 	}
 
 	function closePopup() {
@@ -45,7 +40,17 @@
 		showPopup = false;
 	}
 
-	onMount(() => {
+	onMount(async () => {
+		const getVisitedCookie = Cookies.get("topby_visited");
+		console.log(getVisitedCookie);
+		if (!getVisitedCookie) {
+			console.log("쿠키 없어???");
+			const res = await axios.post(`${back_api}/update_visit_count`, {
+				ld_id: siteData["ld_id"],
+				ld_visit_count: siteData["ld_visit_count"],
+			});
+			Cookies.set("topby_visited", "ok", { expires: 1 });
+		}
 		AOS.init();
 	});
 </script>
