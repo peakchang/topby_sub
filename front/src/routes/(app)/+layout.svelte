@@ -66,7 +66,7 @@
 
 {#if siteData.ld_popup_img && showPopup}
 	<div
-		class="fixed border left-56 top-44 z-[99] max-w-[450px] w-1/2 bg-white suit-font"
+		class="fixed border left-5 md:left-56 top-44 z-[99] max-w-[450px] w-2/3 bg-white suit-font"
 	>
 		<div class="p-1 text-xs flex justify-end items-center gap-2">
 			<span>24시간 동안 보지 않기</span>

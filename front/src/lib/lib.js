@@ -164,9 +164,6 @@ export const getRandomNumbers = (maxCount, count) => {
 }
 
 export const customerSubmit = async (name, phone, siteName) => {
-    console.log('gogogogo');
-    console.log(name);
-    console.log(phone);
     if (!name || !phone) {
         alert('항목이 비어있습니다.')
         return
@@ -176,14 +173,15 @@ export const customerSubmit = async (name, phone, siteName) => {
         const res = await axios.post(`${back_api}/update_customer`, {
             name, phone, siteName
         })
-        
+        if (res.data.status) {
+            alert('접수가 완료 되었습니다. 빠른 시간 내 담당자가 ')
+        } else {
+            alert('에러가 발생했습니다. 관리자에게 문의해주세요')
+        }
+
     } catch (error) {
-
+        alert('에러가 발생했습니다. 관리자에게 문의해주세요')
     }
-
-
-
-
 }
 
 

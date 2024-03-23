@@ -9,6 +9,7 @@
     import "swiper/css/navigation";
     import "swiper/css/pagination";
     import { onMount } from "svelte";
+    import { customerSubmit } from "$lib/lib";
 
     let loading = true;
     let siteData = {};
@@ -16,6 +17,9 @@
     let dataAosList = [];
     let bannerImgList = [];
     let bannerSwiper;
+    let customerName = "";
+	let customerPhone = "";
+
     export let data;
     console.log(data);
 
@@ -110,14 +114,23 @@
 					type="text"
 					class="p-2 border focus:outline-none focus:border-yellow-600 rounded-sm w-2/5"
 					placeholder="이름"
+                    bind:value={customerName}
 				/>
 				<input
 					type="text"
 					class="p-2 border focus:outline-none focus:border-yellow-600 rounded-sm w-2/5"
 					placeholder="연락처"
+                    bind:value={customerPhone}
 				/>
 				<button
 					class=" bg-yellow-600 py-2 rounded-lg text-white text-sm md:text-base active:bg-yellow-700 w-1/5"
+                    on:click={() => {
+						customerSubmit(
+							customerName,
+							customerPhone,
+							siteData.ld_site,
+						);
+					}}
 				>
 					접수하기
 				</button>
