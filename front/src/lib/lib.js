@@ -169,6 +169,11 @@ export const customerSubmit = async (name, phone, siteName) => {
         return
     }
 
+    if(!validatePhoneNumber(phone)){
+        alert('정상적인 휴대폰 번호만 가능합니다.')
+        return
+    }
+
     try {
         const res = await axios.post(`${back_api}/update_customer`, {
             name, phone, siteName
@@ -182,6 +187,13 @@ export const customerSubmit = async (name, phone, siteName) => {
     } catch (error) {
         alert('에러가 발생했습니다. 관리자에게 문의해주세요')
     }
+}
+
+function validatePhoneNumber(phoneNumber) {
+    // 전화번호가 010-1111-2222 또는 01011112222와 같은 형식인지 확인하는 정규표현식
+    var pattern = /^01(?:0|1|[6-9])-(?:\d{3}|\d{4})-\d{4}$|^01(?:0|1|[6-9])\d{7}$/;
+    
+    return pattern.test(phoneNumber);
 }
 
 
