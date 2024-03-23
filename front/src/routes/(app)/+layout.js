@@ -3,8 +3,20 @@ import axios from "axios";
 import { back_api } from "$src/lib/const";
 import { error } from '@sveltejs/kit';
 import moment from "moment-timezone";
+import Cookies from 'js-cookie';
 
 export const load = async ({ fetch, url }) => {
+
+
+
+    const getVisitedCookie = Cookies.get('topby_visited')
+    if (!getVisitedCookie) {
+        Cookies.set('topby_visited', 'ok', { expires: 1 })
+        // const res = await axios.post(`${back_api}/subview`, {
+        //     subDomainName
+        // })
+    }
+    console.log(getVisitedCookie);
 
     console.log('시자꾸~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!!!!!');
     let addTitle = ""
@@ -54,7 +66,7 @@ export const load = async ({ fetch, url }) => {
     seoValue['published_time'] = subView['ld_created_at']
     subView["date_str"] = moment(subView.ld_created_at).format('YYYY-MM-DD HH:mm');
     seoValue['date_str'] = subView["date_str"]
-    
+
     return { subView, seoValue }
 }
 

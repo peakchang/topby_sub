@@ -38,6 +38,10 @@
         if (data.modifyVal) {
             ld_id = modifyVal.ld_id;
             allData = data.modifyVal;
+            console.log(allData);
+            if (!allData["ld_db_location"]) {
+                allData["ld_db_location"] = "";
+            }
             if (allData["ld_menu"]) {
                 menuArr = JSON.parse(allData["ld_menu"]);
             }
@@ -93,6 +97,25 @@
                 alert("번호 이미지가 삭제 되었습니다.");
                 invalidateAll();
                 allData["ld_ph_img"] = "";
+            }
+        } catch (error) {
+            alert("에러가 발생 했습니다.");
+        }
+    }
+
+    async function deletePopupimgAct() {
+        const phimgUrlArr = allData["ld_popup_img"].split("/");
+        const phimgUrlPath = `subuploads/img/${phimgUrlArr[4]}/${phimgUrlArr[5]}`;
+
+        try {
+            const res = await axios.post(`${back_api}/delete_popupimg`, {
+                phimgUrlPath,
+                ld_id,
+            });
+            if (res.data.status) {
+                alert("팝업 이미지가 삭제 되었습니다.");
+                invalidateAll();
+                allData["ld_popup_img"] = "";
             }
         } catch (error) {
             alert("에러가 발생 했습니다.");
@@ -311,6 +334,77 @@
             };
         };
     };
+
+    const popupImgUpload = (e) => {
+        const input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.setAttribute("accept", ".png,.jpg,.jpeg");
+        input.click();
+
+        // input change
+        input.onchange = async (e) => {
+            const maxWidth = 1200;
+            const img_file = e.target.files[0];
+            const options = {
+                maxSizeMB: 0.7,
+                // maxWidthOrHeight: 1920,
+                useWebWorker: true,
+            };
+
+            const reader = new FileReader();
+            reader.readAsDataURL(img_file);
+            reader.onload = function (r) {
+                let setWidth = 0;
+                let setHeight = 0;
+                const img = new Image();
+                img.src = r.target.result;
+                img.onload = async function (e) {
+                    if (img.width >= maxWidth) {
+                        var share = img.width / maxWidth;
+                        var setHeight = Math.floor(img.height / share);
+                        var setWidth = maxWidth;
+                    } else {
+                        setWidth = img.width;
+                        setHeight = img.height;
+                    }
+
+                    var canvas = document.createElement("canvas");
+                    canvas.width = setWidth;
+                    canvas.height = setHeight;
+                    canvas.display = "inline-block";
+                    canvas
+                        .getContext("2d")
+                        .drawImage(img, 0, 0, setWidth, setHeight);
+
+                    var getReImgUrl = canvas.toDataURL("image/webp");
+
+                    const resultImage = dataURItoBlob(getReImgUrl);
+
+                    let imgForm = new FormData();
+
+                    const timestamp = new Date().getTime();
+                    const fileName = `${timestamp}${Math.random()
+                        .toString(36)
+                        .substring(2, 11)}.webp`;
+                    imgForm.append("onimg", resultImage, fileName);
+                    axios
+                        .post(`${back_api}/img_upload`, imgForm, {
+                            headers: {
+                                "Content-Type": "multipart/form-data",
+                            },
+                        })
+                        .then((res) => {
+                            console.log(res.data);
+                            allData["ld_popup_img"] = res.data.baseUrl;
+                        })
+                        .catch((err) => {
+                            console.error();
+                            alert(`${err.message} 에러가 발생 했습니다.`);
+                        });
+                };
+            };
+        };
+    };
 </script>
 
 <div class="container max-w-[900px] py-10 px-3 mx-auto pretendard">
@@ -388,6 +482,21 @@
                         class="border text-sm border-gray-300 w-full py-2 px-2 rounded-md focus:ring-0 focus:border-blue-500"
                         bind:value={allData["ld_sms_num"]}
                     />
+                </td>
+            </tr>
+
+            <tr>
+                <th class="border p-1 text-xs md:text-sm">DB 접수 위치</th>
+                <td class="border p-1">
+                    <select
+                        bind:value={allData["ld_db_location"]}
+                        class="text-sm border py-2 w-full rounded-md border-gray-300"
+                    >
+                        <option value="">선택하세요</option>
+                        <option value="up">상단</option>
+                        <option value="down">하단</option>
+                        <option value="both">둘다</option>
+                    </select>
                 </td>
             </tr>
 
@@ -469,6 +578,33 @@
                 </td>
             </tr>
         </table>
+    </div>
+
+    <div class="mt-5">
+        <div class="text-sm font-semibold mb-3">※ 팝업 이미지</div>
+        {#if allData["ld_popup_img"]}
+            <div>
+                <img src={allData["ld_popup_img"]} alt="" />
+            </div>
+        {/if}
+
+        <div>
+            {#if allData["ld_popup_img"]}
+                <button
+                    class="py-1 px-3 text-xs text-white rounded-md bg-red-500 active:bg-red-600"
+                    on:click={deletePopupimgAct}
+                >
+                    팝업 이미지 삭제
+                </button>
+            {:else}
+                <button
+                    class="py-1 px-3 text-xs text-white rounded-md bg-blue-500 active:bg-blue-600"
+                    on:click={popupImgUpload}
+                >
+                    팝업 이미지 업로드
+                </button>
+            {/if}
+        </div>
     </div>
 
     <div class="mt-5">

@@ -163,7 +163,28 @@ export const getRandomNumbers = (maxCount, count) => {
     return randomNumbers;
 }
 
+export const customerSubmit = async (name, phone, siteName) => {
+    console.log('gogogogo');
+    console.log(name);
+    console.log(phone);
+    if (!name || !phone) {
+        alert('항목이 비어있습니다.')
+        return
+    }
 
+    try {
+        const res = await axios.post(`${back_api}/update_customer`, {
+            name, phone, siteName
+        })
+        
+    } catch (error) {
+
+    }
+
+
+
+
+}
 
 
 // export const goToBoardViewAddCount = async (data: any) => {
