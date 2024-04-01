@@ -580,6 +580,44 @@
         </table>
     </div>
 
+    <div class="w-full mt-5">
+        <div class="mb-3">
+            <span class="text-sm font-semibold">※ 푸터 정보</span>
+        </div>
+
+        <table class="w-full">
+            <tr>
+                <th class="border p-1 w-1/6 text-xs md:text-sm">이름</th>
+                <td class="border p-1 w-2/6">
+                    <input
+                        type="text"
+                        class="border text-sm border-gray-300 w-full py-2 px-2 rounded-md focus:ring-0 focus:border-blue-500"
+                        bind:value={allData["ld_ft_name"]}
+                    />
+                </td>
+
+                <th class="border p-1 w-1/6 text-xs md:text-sm">연락처</th>
+                <td class="border p-1 w-2/6">
+                    <input
+                        type="text"
+                        class="border text-sm border-gray-300 w-full py-2 px-2 rounded-md focus:ring-0 focus:border-blue-500"
+                        bind:value={allData["ld_ft_phone"]}
+                    />
+                </td>
+            </tr>
+            <tr>
+                <th class="border p-1 text-xs md:text-sm">주소</th>
+                <td class="border p-1">
+                    <input
+                        type="text"
+                        class="border text-sm border-gray-300 w-full py-2 px-2 rounded-md focus:ring-0 focus:border-blue-500"
+                        bind:value={allData["ld_ft_address"]}
+                    />
+                </td>
+            </tr>
+        </table>
+    </div>
+
     <div class="mt-5">
         <div class="text-sm font-semibold mb-3">※ 팝업 이미지</div>
         {#if allData["ld_popup_img"]}
