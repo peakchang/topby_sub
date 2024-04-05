@@ -43,12 +43,18 @@
 	onMount(async () => {
 		const getVisitedCookie = Cookies.get("topby_visited");
 		console.log(getVisitedCookie);
+		const referrer = document.referrer;
+		console.log(referrer);
 		if (!getVisitedCookie) {
 			console.log("쿠키 없어???");
+
 			const res = await axios.post(`${back_api}/update_visit_count`, {
 				ld_id: siteData["ld_id"],
+				ld_domain : siteData["ld_domain"],
 				ld_visit_count: siteData["ld_visit_count"],
+				referrer
 			});
+
 			Cookies.set("topby_visited", "ok", { expires: 1 });
 		}
 		AOS.init();
