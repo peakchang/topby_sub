@@ -303,21 +303,17 @@
 <hr class="mt-6" />
 <div class="container mx-auto max-w-4xl mb-10 p-4 suit-font">
 	<div class="text-sm">
-
-		{#if siteData.ld_ft_name}
-		<span class="inline-block mr-3">이름 : {siteData.ld_ft_name}</span>
-		{/if}
-
-		{#if siteData.ld_ft_phone}
-		<span class="inline-block mr-3">연락처 : {siteData.ld_ft_phone}</span>
-		{/if}
-
-		{#if siteData.ld_ft_address}
-		<span class="inline-block mr-3">주소 : {siteData.ld_ft_address}</span>
-		{/if}
-
+		<span class="inline-block mr-3">{siteData.ld_name}</span>
 	</div>
-	<div class="text-sm mt-3">
+
+	{#if siteData.ld_footer}
+		<div class="text-sm py-3">
+			<span class="inline-block mr-3">
+				{siteData.ld_footer}
+			</span>
+		</div>
+	{/if}
+	<div class="text-sm mt-1">
 		copyright@ {$page.url.origin}
 	</div>
 </div>
