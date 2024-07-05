@@ -21,6 +21,18 @@
         { pgName: "상품안내", pgLink: "product" },
         {},
     ];
+
+    let locationArr = [
+        "전체",
+        "서울시",
+        "경기북부",
+        "경기남부",
+        "인천광역시",
+        "충청도",
+        "경상도",
+        "전라도",
+        "강원도",
+    ];
     let tempSaveImgs = []; // 임시저장 이미지 리스트, 새로고침 / 뒤로가기시 싹 삭제됨
     let mainImgs = [];
     let bannerImgs = [];
@@ -498,6 +510,22 @@
                         <option value="both">둘다</option>
                     </select>
                 </td>
+                <th class="border p-1 text-xs md:text-sm">지역</th>
+                <td class="border p-1">
+                    <select
+                        bind:value={allData["ld_location"]}
+                        class="text-sm border py-2 w-full rounded-md border-gray-300 p-1"
+                    >
+                        {#each locationArr as location}
+                            <option
+                                value={location}
+                                selected={location === allData["ld_location"]}
+                            >
+                                {location}
+                            </option>
+                        {/each}
+                    </select>
+                </td>
             </tr>
 
             <!-- <tr>
@@ -579,7 +607,6 @@
             </tr>
         </table>
     </div>
-
 
     <div class="mt-5">
         <div class="text-sm font-semibold mb-3">※ 팝업 이미지</div>
