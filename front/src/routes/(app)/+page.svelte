@@ -63,7 +63,6 @@
 </script>
 
 <svelte:head></svelte:head>
-
 {#if siteData.ld_banner_img}
     <section>
         <div class="swiper mb-10 relative" bind:this={bannerSwiper}>

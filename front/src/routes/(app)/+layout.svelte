@@ -50,16 +50,15 @@
 
 			const res = await axios.post(`${back_api}/update_visit_count`, {
 				ld_id: siteData["ld_id"],
-				ld_domain : siteData["ld_domain"],
+				ld_domain: siteData["ld_domain"],
 				ld_visit_count: siteData["ld_visit_count"],
-				referrer
+				referrer,
 			});
 
 			Cookies.set("topby_visited", "ok", { expires: 1 });
 		}
 		AOS.init();
 	});
-
 
 	function addCallCount() {
 		console.log(siteData["ld_call_clickcount"]);
@@ -90,6 +89,8 @@
 			});
 		} catch (error) {}
 	}
+
+	let fixedMenuHiddenBool = false;
 </script>
 
 <svelte:head>
@@ -214,9 +215,10 @@
 	</ul>
 </div>
 
-<div
-	class="fixed left-0 top-0 w-full suit-font border-b border-gray-400 bg-white z-50"
-	style=""
+<!-- <div
+	class="fixed left-0 top-0 w-full suit-font border-b border-gray-400 bg-white z-50 transition_menu"
+	class:visible={fixedMenuHiddenBool}
+	class:hidden={!fixedMenuHiddenBool}
 >
 	<div class="max-w-[896px] mx-auto p-3">
 		<div class="text-center flex justify-between items-center mb-3">
@@ -255,9 +257,15 @@
 			{/each}
 		</ul>
 	</div>
-</div>
+</div> -->
 
 <div class="mt-40 md:mt-48 max-w-[1200px] mx-auto">
+	<button
+		on:click={() => {
+			fixedMenuHiddenBool = !fixedMenuHiddenBool;
+			console.log(fixedMenuHiddenBool);
+		}}>testBtn</button
+	>
 	<slot />
 </div>
 
@@ -359,5 +367,19 @@
 		font-size: 40px;
 		font-weight: bolder;
 		position: relative;
+	}
+
+	.hidden {
+		transition: transform 1s ease-in-out;
+		transform: translateY(-100%);
+	}
+
+	.visible {
+		transition: transform 1s ease-in-out;
+		transform: translateY(0);
+	}
+
+	.transition_menu{
+		transition: transform 1s ease-in-out;
 	}
 </style>
