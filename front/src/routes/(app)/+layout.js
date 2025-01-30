@@ -22,6 +22,10 @@ export const load = async ({ fetch, url }) => {
     }
 
     const subDomainName = url.hostname.split('.')[0]
+    console.log(subDomainName);
+    console.log(back_api);
+    
+    
     let returnSubDomainName = ""
     let subView = {}
     let seoValue = {

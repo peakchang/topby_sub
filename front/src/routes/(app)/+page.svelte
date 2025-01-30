@@ -96,7 +96,7 @@
     </section>
 {/if}
 
-{#if siteData.ld_site && siteData.ld_db_location == "up" || siteData.ld_db_location == "both"}
+<!-- {#if siteData.ld_site && siteData.ld_db_location == "up" || siteData.ld_db_location == "both"}
 	<div class="p-3">
 		<div
 			class="shadow-sm border p-4 md:pr-10 rounded-md suit-font block md:flex md:justify-around"
@@ -133,7 +133,7 @@
 			</div>
 		</div>
 	</div>
-{/if}
+{/if} -->
 
 {#each mainImgList as mainImg, idx}
     <div class="mb-5">

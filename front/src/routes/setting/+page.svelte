@@ -39,18 +39,17 @@
 
     let modifyVal = {};
     let getId = "";
+
+    let imgActType = "";
     export let data;
 
     $: data, setData();
     function setData() {
-        console.log("셋 데이터~!!!!!!!!!!!!");
         modifyVal = data.modifyVal;
-        console.log(modifyVal);
         getId = data.getId;
         if (data.modifyVal) {
             ld_id = modifyVal.ld_id;
             allData = data.modifyVal;
-            console.log(allData);
             if (!allData["ld_db_location"]) {
                 allData["ld_db_location"] = "";
             }
@@ -70,64 +69,60 @@
                     allData[`ld_pg${i}_img`] = allData[`ld_pg${i}`].split(",");
                 }
             }
-        }
-    }
 
-    async function updateData() {
-        console.log("asl;djflaijsdfijasfdj");
-    }
-
-    async function deleteLogoAct() {
-        const logoUrlArr = allData["ld_logo"].split("/");
-        const logoUrlPath = `subuploads/img/${logoUrlArr[4]}/${logoUrlArr[5]}`;
-
-        try {
-            const res = await axios.post(`${back_api}/delete_logo`, {
-                logoUrlPath,
-                ld_id,
-            });
-            if (res.data.status) {
-                alert("로고가 삭제 되었습니다.");
-                invalidateAll();
-                allData["ld_logo"] = "";
+            if (!modifyVal.ld_sms_content) {
+                allData["ld_sms_content"] =
+                    "문의드립니다. 분양가 / 모델하우스위치가 어떻게 되나요?";
             }
-        } catch (error) {
-            alert("에러가 발생 했습니다.");
         }
     }
 
-    async function deletePhimgAct() {
-        const phimgUrlArr = allData["ld_ph_img"].split("/");
-        const phimgUrlPath = `subuploads/img/${phimgUrlArr[4]}/${phimgUrlArr[5]}`;
-
-        try {
-            const res = await axios.post(`${back_api}/delete_phimg`, {
-                phimgUrlPath,
-                ld_id,
-            });
-            if (res.data.status) {
-                alert("번호 이미지가 삭제 되었습니다.");
-                invalidateAll();
-                allData["ld_ph_img"] = "";
-            }
-        } catch (error) {
-            alert("에러가 발생 했습니다.");
+    async function deleteImageAct() {
+        let imgUrlArr = [];
+        if (imgActType == "ld_logo") {
+            imgUrlArr = allData["ld_logo"].split("/");
+        } else if (imgActType == "ld_ph_img") {
+            imgUrlArr = allData["ld_ph_img"].split("/");
+        } else if (imgActType == "ld_popup_img") {
+            imgUrlArr = allData["ld_popup_img"].split("/");
+        } else if (imgActType == "ld_mobile_bt_phone_img") {
+            imgUrlArr = allData["ld_mobile_bt_phone_img"].split("/");
+        } else if (imgActType == "ld_mobile_bt_event_img") {
+            imgUrlArr = allData["ld_mobile_bt_event_img"].split("/");
+        } else if (imgActType == "ld_event_img") {
+            imgUrlArr = allData["ld_event_img"].split("/");
         }
-    }
 
-    async function deletePopupimgAct() {
-        const phimgUrlArr = allData["ld_popup_img"].split("/");
-        const phimgUrlPath = `subuploads/img/${phimgUrlArr[4]}/${phimgUrlArr[5]}`;
+        const deleteImagePath = `subuploads/img/${imgUrlArr[4]}/${imgUrlArr[5]}`;
 
         try {
-            const res = await axios.post(`${back_api}/delete_popupimg`, {
-                phimgUrlPath,
+            const res = await axios.post(`${back_api}/delete_single_image`, {
+                deleteImagePath,
+                imgActType,
                 ld_id,
             });
-            if (res.data.status) {
-                alert("팝업 이미지가 삭제 되었습니다.");
+            if (res.status == 200) {
+                if (imgActType == "ld_logo") {
+                    alert("로고가 삭제 되었습니다.");
+                    allData["ld_logo"] = "";
+                } else if (imgActType == "ld_ph_img") {
+                    alert("번호 이미지가 삭제 되었습니다.");
+                    allData["ld_ph_img"] = "";
+                } else if (imgActType == "ld_popup_img") {
+                    alert("팝업 이미지가 삭제 되었습니다.");
+                    allData["ld_popup_img"] = "";
+                } else if (imgActType == "ld_mobile_bt_phone_img") {
+                    alert("하단 폰 이미지가 삭제 되었습니다.");
+                    allData["ld_mobile_bt_phone_img"] = "";
+                } else if (imgActType == "ld_mobile_bt_event_img") {
+                    alert("하단 이벤트 이미지가 삭제 되었습니다.");
+                    allData["ld_mobile_bt_event_img"] = "";
+                } else if (imgActType == "ld_event_img") {
+                    alert("이벤트 이미지가 삭제 되었습니다.");
+                    allData["ld_event_img"] = "";
+                }
+
                 invalidateAll();
-                allData["ld_popup_img"] = "";
             }
         } catch (error) {
             alert("에러가 발생 했습니다.");
@@ -200,10 +195,10 @@
     }
 
     // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
-    const uploadLogoAct = (e) => {
+    const uploadImageoAct = (e) => {
         const input = document.createElement("input");
         input.setAttribute("type", "file");
-        input.setAttribute("accept", ".png,.jpg,.jpeg");
+        input.setAttribute("accept", ".png,.jpg,.jpeg,.webp");
         input.click();
 
         // input change
@@ -252,167 +247,32 @@
                         .toString(36)
                         .substring(2, 11)}.webp`;
                     imgForm.append("onimg", resultImage, fileName);
-
-                    console.log(back_api);
-                    axios
-                        .post(`${back_api}/img_upload`, imgForm, {
+                    const res = await axios.post(
+                        `${back_api}/img_upload`,
+                        imgForm,
+                        {
                             headers: {
                                 "Content-Type": "multipart/form-data",
                             },
-                        })
-                        .then((res) => {
-                            console.log(res.data);
+                        },
+                    );
+                    if (res.status == 200) {
+                        if (imgActType == "ld_logo") {
                             allData["ld_logo"] = res.data.baseUrl;
-                        })
-                        .catch((err) => {
-                            console.error();
-                            alert(`${err.message} 에러가 발생 했습니다.`);
-                        });
-                };
-            };
-        };
-    };
-
-    // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
-    const uploadPhimgAct = (e) => {
-        const input = document.createElement("input");
-        input.setAttribute("type", "file");
-        input.setAttribute("accept", ".png,.jpg,.jpeg");
-        input.click();
-
-        // input change
-        input.onchange = async (e) => {
-            const maxWidth = 1200;
-            const img_file = e.target.files[0];
-            const options = {
-                maxSizeMB: 0.7,
-                // maxWidthOrHeight: 1920,
-                useWebWorker: true,
-            };
-
-            const reader = new FileReader();
-            reader.readAsDataURL(img_file);
-            reader.onload = function (r) {
-                let setWidth = 0;
-                let setHeight = 0;
-                const img = new Image();
-                img.src = r.target.result;
-                img.onload = async function (e) {
-                    if (img.width >= maxWidth) {
-                        var share = img.width / maxWidth;
-                        var setHeight = Math.floor(img.height / share);
-                        var setWidth = maxWidth;
-                    } else {
-                        setWidth = img.width;
-                        setHeight = img.height;
-                    }
-
-                    var canvas = document.createElement("canvas");
-                    canvas.width = setWidth;
-                    canvas.height = setHeight;
-                    canvas.display = "inline-block";
-                    canvas
-                        .getContext("2d")
-                        .drawImage(img, 0, 0, setWidth, setHeight);
-
-                    var getReImgUrl = canvas.toDataURL("image/webp");
-
-                    const resultImage = dataURItoBlob(getReImgUrl);
-
-                    let imgForm = new FormData();
-
-                    const timestamp = new Date().getTime();
-                    const fileName = `${timestamp}${Math.random()
-                        .toString(36)
-                        .substring(2, 11)}.webp`;
-                    imgForm.append("onimg", resultImage, fileName);
-
-                    console.log(back_api);
-                    axios
-                        .post(`${back_api}/img_upload`, imgForm, {
-                            headers: {
-                                "Content-Type": "multipart/form-data",
-                            },
-                        })
-                        .then((res) => {
-                            console.log(res.data);
+                        } else if (imgActType == "ld_ph_img") {
                             allData["ld_ph_img"] = res.data.baseUrl;
-                        })
-                        .catch((err) => {
-                            console.error();
-                            alert(`${err.message} 에러가 발생 했습니다.`);
-                        });
-                };
-            };
-        };
-    };
-
-    const popupImgUpload = (e) => {
-        const input = document.createElement("input");
-        input.setAttribute("type", "file");
-        input.setAttribute("accept", ".png,.jpg,.jpeg");
-        input.click();
-
-        // input change
-        input.onchange = async (e) => {
-            const maxWidth = 1200;
-            const img_file = e.target.files[0];
-            const options = {
-                maxSizeMB: 0.7,
-                // maxWidthOrHeight: 1920,
-                useWebWorker: true,
-            };
-
-            const reader = new FileReader();
-            reader.readAsDataURL(img_file);
-            reader.onload = function (r) {
-                let setWidth = 0;
-                let setHeight = 0;
-                const img = new Image();
-                img.src = r.target.result;
-                img.onload = async function (e) {
-                    if (img.width >= maxWidth) {
-                        var share = img.width / maxWidth;
-                        var setHeight = Math.floor(img.height / share);
-                        var setWidth = maxWidth;
-                    } else {
-                        setWidth = img.width;
-                        setHeight = img.height;
-                    }
-
-                    var canvas = document.createElement("canvas");
-                    canvas.width = setWidth;
-                    canvas.height = setHeight;
-                    canvas.display = "inline-block";
-                    canvas
-                        .getContext("2d")
-                        .drawImage(img, 0, 0, setWidth, setHeight);
-
-                    var getReImgUrl = canvas.toDataURL("image/webp");
-
-                    const resultImage = dataURItoBlob(getReImgUrl);
-
-                    let imgForm = new FormData();
-
-                    const timestamp = new Date().getTime();
-                    const fileName = `${timestamp}${Math.random()
-                        .toString(36)
-                        .substring(2, 11)}.webp`;
-                    imgForm.append("onimg", resultImage, fileName);
-                    axios
-                        .post(`${back_api}/img_upload`, imgForm, {
-                            headers: {
-                                "Content-Type": "multipart/form-data",
-                            },
-                        })
-                        .then((res) => {
-                            console.log(res.data);
+                        } else if (imgActType == "ld_popup_img") {
                             allData["ld_popup_img"] = res.data.baseUrl;
-                        })
-                        .catch((err) => {
-                            console.error();
-                            alert(`${err.message} 에러가 발생 했습니다.`);
-                        });
+                        } else if (imgActType == "ld_mobile_bt_phone_img") {
+                            allData["ld_mobile_bt_phone_img"] =
+                                res.data.baseUrl;
+                        } else if (imgActType == "ld_mobile_bt_event_img") {
+                            allData["ld_mobile_bt_event_img"] =
+                                res.data.baseUrl;
+                        } else if (imgActType == "ld_event_img") {
+                            allData["ld_event_img"] = res.data.baseUrl;
+                        }
+                    }
                 };
             };
         };
@@ -479,7 +339,10 @@
                 </td>
             </tr>
             <tr>
-                <th class="border p-1 text-xs md:text-sm">상담 전화번호</th>
+                <th class="border p-1 text-xs md:text-sm">
+                    상담 전화번호<br />
+                    <span class="text-red-500">하이픈(-)필수!!!</span>
+                </th>
                 <td class="border p-1">
                     <input
                         type="text"
@@ -487,7 +350,10 @@
                         bind:value={allData["ld_phone_num"]}
                     />
                 </td>
-                <th class="border p-1 text-xs md:text-sm">상담 문자번호</th>
+                <th class="border p-1 text-xs md:text-sm">
+                    상담 문자번호<br />
+                    <span class="text-red-500"> 하이픈(-)필수!!! </span>
+                </th>
                 <td class="border p-1">
                     <input
                         type="text"
@@ -498,9 +364,19 @@
             </tr>
 
             <tr>
-                <th class="border p-1 text-xs md:text-sm">DB 접수 위치</th>
+                <th class="border p-1 text-xs md:text-sm"
+                    >문자 내용<br />
+                    <span class="text-xs font-light">
+                        미입력시 기본 내용으로
+                    </span>
+                </th>
                 <td class="border p-1">
-                    <select
+                    <textarea
+                        rows="3"
+                        class="w-full border border-gray-300 rounded-md focus:ring-0 focus:border-blue-500 p-1.5 text-xs"
+                        bind:value={allData["ld_sms_content"]}
+                    ></textarea>
+                    <!-- <select
                         bind:value={allData["ld_db_location"]}
                         class="text-sm border py-2 w-full rounded-md border-gray-300"
                     >
@@ -508,7 +384,7 @@
                         <option value="up">상단</option>
                         <option value="down">하단</option>
                         <option value="both">둘다</option>
-                    </select>
+                    </select> -->
                 </td>
                 <th class="border p-1 text-xs md:text-sm">지역</th>
                 <td class="border p-1">
@@ -561,14 +437,20 @@
                         {#if allData["ld_logo"]}
                             <button
                                 class="py-1 px-3 text-xs text-white rounded-md bg-red-500 active:bg-red-600"
-                                on:click={deleteLogoAct}
+                                on:click={(e) => {
+                                    imgActType = "ld_logo";
+                                    deleteImageAct(e);
+                                }}
                             >
                                 로고 삭제
                             </button>
                         {:else}
                             <button
                                 class="py-1 px-3 text-xs text-white rounded-md bg-blue-500 active:bg-blue-600"
-                                on:click={uploadLogoAct}
+                                on:click={(e) => {
+                                    imgActType = "ld_logo";
+                                    uploadImageoAct(e);
+                                }}
                             >
                                 로고 업로드
                             </button>
@@ -590,22 +472,157 @@
                         {#if allData["ld_ph_img"]}
                             <button
                                 class="py-1 px-3 text-xs text-white rounded-md bg-red-500 active:bg-red-600"
-                                on:click={deletePhimgAct}
+                                on:click={(e) => {
+                                    imgActType = "ld_ph_img";
+                                    deleteImageAct(e);
+                                }}
                             >
-                                로고 삭제
+                                상단 폰 이미지 삭제
                             </button>
                         {:else}
                             <button
                                 class="py-1 px-3 text-xs text-white rounded-md bg-blue-500 active:bg-blue-600"
-                                on:click={uploadPhimgAct}
+                                on:click={(e) => {
+                                    imgActType = "ld_ph_img";
+                                    uploadImageoAct(e);
+                                }}
                             >
-                                로고 업로드
+                                상단 폰 이미지 업로드
+                            </button>
+                        {/if}
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <th class="border p-1 text-xs md:text-sm">
+                    모바일 하단<br />전화번호 이미지<br />
+                    <span class="text-xs text-red-600">
+                        (384px X 80px 추천)
+                    </span>
+                </th>
+                <td class="border p-1">
+                    <div>
+                        {#if allData["ld_mobile_bt_phone_img"]}
+                            <div class="mb-3 border p-1 rounded-md">
+                                <img
+                                    src={allData["ld_mobile_bt_phone_img"]}
+                                    alt=""
+                                />
+                            </div>
+                        {:else}
+                            <div class="mb-3">이미지를 추가해주세요</div>
+                        {/if}
+
+                        {#if allData["ld_mobile_bt_phone_img"]}
+                            <button
+                                class="py-1 px-3 text-xs text-white rounded-md bg-red-500 active:bg-red-600"
+                                on:click={(e) => {
+                                    imgActType = "ld_mobile_bt_phone_img";
+                                    deleteImageAct(e);
+                                }}
+                            >
+                                모바일 하단 전화번호 이미지 삭제
+                            </button>
+                        {:else}
+                            <button
+                                class="py-1 px-3 text-xs text-white rounded-md bg-blue-500 active:bg-blue-600"
+                                on:click={(e) => {
+                                    imgActType = "ld_mobile_bt_phone_img";
+                                    uploadImageoAct(e);
+                                }}
+                            >
+                                모바일 하단 전화번호 이미지 업로드
+                            </button>
+                        {/if}
+                    </div>
+                </td>
+
+                <th class="border p-1 text-xs md:text-sm">
+                    모바일 하단<br />이벤트 이미지 <br />
+                    <span class="text-xs text-red-600">
+                        (384px X 80px 추천)
+                    </span>
+                </th>
+                <td class="border p-1">
+                    <div>
+                        {#if allData["ld_mobile_bt_event_img"]}
+                            <div class="mb-3 border p-1 rounded-md">
+                                <img
+                                    src={allData["ld_mobile_bt_event_img"]}
+                                    alt=""
+                                />
+                            </div>
+                        {:else}
+                            <div class="mb-3">이미지를 추가해주세요</div>
+                        {/if}
+
+                        {#if allData["ld_mobile_bt_event_img"]}
+                            <button
+                                class="py-1 px-3 text-xs text-white rounded-md bg-red-500 active:bg-red-600"
+                                on:click={(e) => {
+                                    imgActType = "ld_mobile_bt_event_img";
+                                    deleteImageAct(e);
+                                }}
+                            >
+                                모바일 하단 이벤트 이미지 삭제
+                            </button>
+                        {:else}
+                            <button
+                                class="py-1 px-3 text-xs text-white rounded-md bg-blue-500 active:bg-blue-600"
+                                on:click={(e) => {
+                                    imgActType = "ld_mobile_bt_event_img";
+                                    uploadImageoAct(e);
+                                }}
+                            >
+                                모바일 하단 이벤트 이미지 업로드
                             </button>
                         {/if}
                     </div>
                 </td>
             </tr>
         </table>
+    </div>
+
+    <div class="mt-5">
+        <div class="text-sm font-semibold mb-3">
+            ※ 이벤트 이미지
+            <span class="text-red-500">
+                (이벤트 이미지 사이즈는 900 X 900!!!!)
+            </span>
+        </div>
+
+        <div>
+            {#if allData["ld_event_img"]}
+                <div class="mb-3 border p-1 rounded-md">
+                    <img src={allData["ld_event_img"]} alt="" />
+                </div>
+            {:else}
+                <div class="mb-3">이미지를 추가해주세요</div>
+            {/if}
+
+            {#if allData["ld_event_img"]}
+                <button
+                    class="py-1 px-3 text-xs text-white rounded-md bg-red-500 active:bg-red-600"
+                    on:click={(e) => {
+                        imgActType = "ld_event_img";
+                        deleteImageAct(e);
+                    }}
+                >
+                    이벤트 이미지 삭제
+                </button>
+            {:else}
+                <button
+                    class="py-1 px-3 text-xs text-white rounded-md bg-blue-500 active:bg-blue-600"
+                    on:click={(e) => {
+                        imgActType = "ld_event_img";
+                        uploadImageoAct(e);
+                    }}
+                >
+                    이벤트 이미지 업로드
+                </button>
+            {/if}
+        </div>
     </div>
 
     <div class="mt-5">
@@ -620,14 +637,20 @@
             {#if allData["ld_popup_img"]}
                 <button
                     class="py-1 px-3 text-xs text-white rounded-md bg-red-500 active:bg-red-600"
-                    on:click={deletePopupimgAct}
+                    on:click={(e) => {
+                        imgActType = "ld_popup_img";
+                        deleteImageAct(e);
+                    }}
                 >
                     팝업 이미지 삭제
                 </button>
             {:else}
                 <button
                     class="py-1 px-3 text-xs text-white rounded-md bg-blue-500 active:bg-blue-600"
-                    on:click={popupImgUpload}
+                    on:click={(e) => {
+                        imgActType = "ld_popup_img";
+                        uploadImageoAct(e);
+                    }}
                 >
                     팝업 이미지 업로드
                 </button>
