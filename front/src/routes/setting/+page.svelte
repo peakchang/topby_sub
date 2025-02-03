@@ -50,6 +50,8 @@
         if (data.modifyVal) {
             ld_id = modifyVal.ld_id;
             allData = data.modifyVal;
+            console.log(allData);
+
             if (!allData["ld_db_location"]) {
                 allData["ld_db_location"] = "";
             }
@@ -71,8 +73,7 @@
             }
 
             if (!modifyVal.ld_sms_content) {
-                allData["ld_sms_content"] =
-                    "문의드립니다. 분양가 / 모델하우스위치가 어떻게 되나요?";
+                allData["ld_sms_content"] = `${allData["ld_name"]} 이벤트 참여`;
             }
         }
     }
@@ -94,6 +95,7 @@
         }
 
         const deleteImagePath = `subuploads/img/${imgUrlArr[4]}/${imgUrlArr[5]}`;
+        console.log(deleteImagePath);
 
         try {
             const res = await axios.post(`${back_api}/delete_single_image`, {

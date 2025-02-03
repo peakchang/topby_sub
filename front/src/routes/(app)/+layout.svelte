@@ -336,17 +336,31 @@
 
 <div class="fixed bottom-0 left-0 w-full z-[999] block md:hidden">
 	<div class="flex">
-		<a href="TEL:{siteData.ld_phone_num}" on:click={addCallCount}>
-			{#if siteData.ld_mobile_bt_phone_img}
-				<div>
-					<img src={siteData.ld_mobile_bt_phone_img} alt="" />
-				</div>
-			{:else}
-				<div>
-					<img src="/bottom-fix/left-phone.jpg" alt="" />
-				</div>
-			{/if}
-		</a>
+		{#if siteData.ld_phone_num}
+			<a href="TEL:{siteData.ld_phone_num}" on:click={addCallCount}>
+				{#if siteData.ld_mobile_bt_phone_img}
+					<div>
+						<img src={siteData.ld_mobile_bt_phone_img} alt="" />
+					</div>
+				{:else}
+					<div>
+						<img src="/bottom-fix/left-phone.jpg" alt="" />
+					</div>
+				{/if}
+			</a>
+		{:else}
+			<a href="TEL:1644-9714" on:click={addCallCount}>
+				{#if siteData.ld_mobile_bt_phone_img}
+					<div>
+						<img src={siteData.ld_mobile_bt_phone_img} alt="" />
+					</div>
+				{:else}
+					<div>
+						<img src="/bottom-fix/left-phone.jpg" alt="" />
+					</div>
+				{/if}
+			</a>
+		{/if}
 
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -422,7 +436,7 @@
 				</a>
 			{:else}
 				<a
-					href="SMS:{siteData.ld_sms_num}?body={siteData.ld_name} 문의드립니다. 분양가 / 모델하우스위치가 어떻게 되나요?"
+					href="SMS:{siteData.ld_sms_num}?body={siteData.ld_name} 이벤트 참여!"
 					on:click={addSmsCount}
 				>
 					<img src={siteData.ld_event_img} alt="" />
