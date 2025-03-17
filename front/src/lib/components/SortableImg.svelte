@@ -91,6 +91,8 @@
 
     // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
     const onFileSelected = (e) => {
+        console.log('이렇게 들어오는게 맞긴 하는거지?!?!?! ');
+        
         if (imgArr.length >= maxImgCount) {
             alert(`최대 ${maxImgCount}개 이미지만 업로드 가능합니다.`);
             return false;
