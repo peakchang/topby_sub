@@ -98,7 +98,7 @@
 
         const input = document.createElement("input");
         input.setAttribute("type", "file");
-        input.setAttribute("accept", ".png,.jpg,.jpeg");
+        input.setAttribute("accept", ".png,.jpg,.jpeg,.webp");
         input.click();
 
         // input change

@@ -7,6 +7,8 @@ export const load = (async ({ url }) => {
 
 
     const getId = url.host.split('.')[0]
+    console.log(getId);
+    
     let modifyVal = {}
     try {
         const res = await axios.post(`${back_api}/load_land_modify`, { getId })
