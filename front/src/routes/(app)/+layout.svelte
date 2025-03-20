@@ -125,6 +125,19 @@
 
 <svelte:window bind:scrollY={y} />
 
+<dialog id="chk_modal" class="modal suit-font">
+	<div class="modal-box">
+		<h3 class="text-lg font-bold">초대장 발급이 확인 되었습니다.</h3>
+		<h3 class="text-lg font-bold">배정된 담당자가 연락 드릴 예정입니다.</h3>
+		<div class="modal-action">
+			<form method="dialog">
+				<!-- if there is a button in form, it will close the modal -->
+				<button class="btn">닫기</button>
+			</form>
+		</div>
+	</div>
+</dialog>
+
 <div class="menu {isMenuVisible ? 'visible' : 'hidden'} z-[999]">
 	<div
 		class="max-w-[896px] w-[896px] mx-auto p-3 suit-font"
