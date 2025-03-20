@@ -446,15 +446,17 @@
 	{/if}
 
 	<div class="md:w-1/2 md:px-5 suit-font flex items-stretch">
-		<div class="p-5 bg-[#f7f4ec] flex flex-col justify-center gap-8">
+		<div class="w-full p-5 bg-[#f7f4ec] flex flex-col justify-center gap-8">
 			<div>
-				<div class="text-3xl font-bold mb-2">관심고객등록</div>
-				<div class="text-xs">
+				<div class="text-3xl font-bold mb-2 text-center">
+					초대장 발급 확인
+				</div>
+				<!-- <div class="text-xs">
 					관심고객 등록을 통하여 이름, 전화번호만을 수집하며, 정보 및
 					이벤트 등의 안내를 위해서만 사용됩니다. 회사는 상담후
 					해당정보를 지체없이 파기합니다. 양식 제출 시
 					개인정보수집이용에 동의한 것으로 간주됩니다.
-				</div>
+				</div> -->
 			</div>
 			<div>
 				<div class="mb-3">
@@ -473,6 +475,37 @@
 						bind:value={customerPhone}
 					/>
 				</div>
+
+				<div class="my-6">
+					<div class="flex items-center gap-3 mb-2">
+						<div>
+							<img
+								src="/megaphone.png"
+								alt=""
+								width="20"
+								height="20"
+							/>
+						</div>
+						<div>
+							모델하우스는 초대장이 있으신분만 방문 가능합니다.
+						</div>
+					</div>
+
+					<div class="flex items-center gap-3">
+						<div>
+							<img
+								src="/megaphone.png"
+								alt=""
+								width="20"
+								height="20"
+							/>
+						</div>
+						<div class="text-red-500">
+							미 예약시 관람을 제한하는 점 양해 부탁드립니다.
+						</div>
+					</div>
+				</div>
+
 				<div>
 					<button
 						class="w-full bg-[#ff5f11] text-white p-3 text-lg rounded-lg"
