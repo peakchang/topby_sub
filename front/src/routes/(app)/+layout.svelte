@@ -140,7 +140,7 @@
 
 <div class="menu {isMenuVisible ? 'visible' : 'hidden'} z-[999]">
 	<div
-		class="max-w-[896px] w-[896px] mx-auto p-3 suit-font"
+		class="max-w-[896px] w-full mx-auto p-3 suit-font"
 		data-sveltekit-preload-data="tap"
 	>
 		<div class="text-center flex justify-between items-center mb-3 gap-8">
