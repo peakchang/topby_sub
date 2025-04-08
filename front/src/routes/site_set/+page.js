@@ -12,13 +12,20 @@ export const load = (async ({ url }) => {
     let ld_json_main = []
     let ld_json_menus = {}
 
+
+
+
     try {
         const res = await axios.post(`${back_api}/load_site_set`, { getId })
         if (res.status == 200) {
             const allData = res.data.siteSetData
+
+
             ld_json_header = JSON.parse(allData.ld_json_header)
             ld_json_main = JSON.parse(allData.ld_json_main)
             ld_json_menus = JSON.parse(allData.ld_json_menus)
+
+
         }
     } catch (error) {
 

@@ -47,9 +47,7 @@
         });
     });
 
-    onDestroy(() => {
-
-    });
+    onDestroy(() => {});
 
     function reorder(oldIndex, newIndex) {
         const clone = _cloneDeep(imgArr[oldIndex]);
@@ -89,10 +87,19 @@
         }
     }
 
+    function deleteMovie() {
+        const dataId = this.getAttribute("data-id");
+        _remove(imgArr, { id: dataId });
+        imgArr = [...new Set(imgArr)];
+        dispatch("updateImgeList", {
+            imgArr,
+        });
+    }
+
     // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
     const onFileSelected = (e) => {
-        console.log('이렇게 들어오는게 맞긴 하는거지?!?!?! ');
-        
+        console.log("이렇게 들어오는게 맞긴 하는거지?!?!?! ");
+
         if (imgArr.length >= maxImgCount) {
             alert(`최대 ${maxImgCount}개 이미지만 업로드 가능합니다.`);
             return false;
@@ -187,31 +194,89 @@
             };
         };
     };
+
+    let youtubeLink = "";
+
+    function youtubeSelected() {
+        if (!youtubeLink) {
+            alert("유튜브 링크를 삽입 해주세요");
+        }
+        const videoId = extractVideoId(youtubeLink);
+        console.log(videoId);
+        const youtubeThumbnail = `https://img.youtube.com/vi/${videoId}/default.jpg`;
+
+        imgArr.push({
+            thumbnail: youtubeThumbnail,
+            id: crypto(),
+        });
+        imgArr = [...new Set(imgArr)];
+        dispatch("updateImgeList", {
+            imgArr,
+        });
+        youtubeLink = "";
+    }
+
+    function extractVideoId(url) {
+        const regex =
+            /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([0-9A-Za-z_-]{11})/;
+        const match = url.match(regex);
+        return match ? match[1] : null;
+    }
 </script>
 
 <div class="p-2">
     <div class="flex flex-wrap" bind:this={listsEl}>
         {#each imgArr as img (img.id)}
-            <div
-                class="list border border-slate-400 w-24 h-24 rounded-lg flex items-center justify-center overflow-hidden mb-1 ml-1 relative"
-            >
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <!-- svelte-ignore a11y-no-static-element-interactions -->
-                <span
-                    class="absolute top-1 right-1 text-red-600 cursor-pointer"
-                    data-id={img.id}
-                    on:click={deleteImg}
+            {#if img.src}
+                <div
+                    class="list border border-slate-400 w-24 h-24 rounded-lg flex items-center justify-center overflow-hidden mb-1 ml-1 relative"
                 >
-                    <i
-                        class="fa fa-times-circle-o"
-                        aria-hidden="true"
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
+                    <span
+                        class="absolute top-1 right-1 text-red-600 cursor-pointer"
                         data-id={img.id}
-                    ></i>
-                </span>
-                <div>
-                    <img src={img.src} alt="" />
+                        on:click={deleteImg}
+                    >
+                        <i
+                            class="fa fa-times-circle-o"
+                            aria-hidden="true"
+                            data-id={img.id}
+                        ></i>
+                    </span>
+                    <div>
+                        <img src={img.src} alt="" />
+                    </div>
                 </div>
-            </div>
+            {:else if img.thumbnail}
+                <div
+                    class="list border border-slate-400 w-24 h-24 rounded-lg flex items-center justify-center overflow-hidden mb-1 ml-1 relative"
+                >
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
+                    <span
+                        class="absolute top-1 right-1 text-red-600 cursor-pointer"
+                        data-id={img.id}
+                        on:click={deleteMovie}
+                    >
+                        <i
+                            class="fa fa-times-circle-o"
+                            aria-hidden="true"
+                            data-id={img.id}
+                        ></i>
+                    </span>
+
+                    <span
+                        class="absolute top-5 right-1 text-red-400 cursor-pointer"
+                    >
+                        <i class="fa fa-file-video-o" aria-hidden="true"></i>
+                    </span>
+
+                    <div>
+                        <img src={img.thumbnail} alt="" />
+                    </div>
+                </div>
+            {/if}
         {/each}
     </div>
 </div>
@@ -220,11 +285,25 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="flex items-center">
         <button
-            class="flex justify-center items-center gap-1 bg-green-600 py-1 px-3 rounded-md text-white text-sm"
+            class="flex justify-center items-center gap-1 text-white btn btn-info btn-xs mr-5"
             on:click={onFileSelected}
         >
             <i class="fa fa-file-image-o" aria-hidden="true"></i>
             이미지 업로드
         </button>
+
+        <button
+            class="flex justify-center items-center gap-1 text-white btn btn-success btn-xs mr-2"
+            on:click={youtubeSelected}
+        >
+            <i class="fa fa-file-video-o" aria-hidden="true"></i>
+            유튜브 업로드
+        </button>
+        <input
+            type="text"
+            class="text-xs border border-gray-400 rounded-md py-1 px-2 w-36 focus:outline-none focus:border-blue-500"
+            placeholder="유튜브 주소 입력"
+            bind:value={youtubeLink}
+        />
     </div>
 </div>

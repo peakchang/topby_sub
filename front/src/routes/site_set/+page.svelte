@@ -5,6 +5,7 @@
     import SortableImgMovie from "$lib/components/SortableImgMovie.svelte";
     import { goto, invalidateAll } from "$app/navigation";
     import { onMount } from "svelte";
+    import { fade } from "svelte/transition";
 
     export let data;
 
@@ -20,6 +21,13 @@
         }
         if (data.ld_json_menus) {
             menuObj = data.ld_json_menus;
+            // e-모델하우스가 있으면 e-모델하우스 추가 버튼 없애기
+            for (let i = 0; i < menuObj["menus"].length; i++) {
+                const data = menuObj["menus"][i];
+                if (data["link"] == "emodel") {
+                    eModelBool = true;
+                }
+            }
         }
 
         if (data.ld_json_main) {
@@ -40,6 +48,7 @@
 
     let toastArea; // toast 영역 변수 (클래스 부여할라고!)
     let toastText = ""; // toast 영역 텍스트
+    let visible = false;
 
     // 헤더 부분!!!
     let logoObj = {
@@ -58,7 +67,10 @@
         menus: [],
     };
     let menuName = "";
-    let menuModify = undefined;
+    let menuLink = "";
+    let eModelBool = false;
+    let eModelType = "";
+    let eModelLink = "";
 
     // 메인 컨텐츠 주요 변수!
     let mainContents = []; // 전체 메인페이지 컨텐츠 총괄! sectionObj 객체가 내부 배열 요소로 들어가야함!!
@@ -66,6 +78,7 @@
     let contentObj = {}; // 각각의 컨텐츠 요소! 바로바로 삭제하고 보여주고!
 
     // 컨텐츠 영역 임시 변수!
+    let insertIdx = undefined;
     // 여백
     let contentMarginHeight = "";
     // 텍스트
@@ -87,17 +100,16 @@
 
     function showToast(message) {
         toastText = message;
-        toastArea.classList.remove("hidden"); // 토스트를 보이게 함
+        visible = true;
 
         setTimeout(() => {
-            toastArea.classList.add("hidden"); // 2초 뒤에 hidden 클래스를 추가하여 사라지게 함
+            visible = false;
         }, 2000);
     }
 
     function logoUpdate(e) {
         const imgPath = e.detail.imgPath;
         logoObj["logo_img"] = imgPath;
-        console.log(logoObj["logo_img"]);
     }
 
     async function deleteImage() {
@@ -122,7 +134,6 @@
                     deleteImagePath,
                 },
             );
-            console.log(res);
 
             if (res.status == 200) {
                 if (this.value == "logo") {
@@ -150,7 +161,6 @@
 
     function addContentFunc() {
         contentObj = {};
-        console.log(addContentType);
         if (addContentType == "blank") {
             contentObj["marginHeight"] = contentMarginHeight;
         } else if (addContentType == "text") {
@@ -168,15 +178,26 @@
             contentObj["delay"] = contentImageEffectDealy;
         }
 
-        if (!contentModifyStatus) {
+        if (contentModifyStatus && insertIdx != undefined) {
+            contentModifyStatus = false;
+            insertIdx = undefined;
+            showToast("수정과 삽입을 동시에 수행할수 없습니다.");
+        }
+
+        if (!contentModifyStatus && insertIdx == undefined) {
             let tempArr = [...sectionObj.contentList];
             tempArr.push(contentObj);
             sectionObj.contentList = tempArr;
-        } else {
+        } else if (contentModifyStatus && insertIdx == undefined) {
             let tempArr = [...sectionObj.contentList];
             tempArr[contentIdx] = contentObj;
             sectionObj.contentList = tempArr;
             contentModifyStatus = false;
+        } else if (insertIdx != undefined) {
+            let tempArr = [...sectionObj.contentList];
+            tempArr.splice(insertIdx, 0, contentObj);
+            sectionObj.contentList = tempArr;
+            insertIdx = undefined;
         }
 
         addContentStatus = undefined;
@@ -210,7 +231,6 @@
         }
         sectionObj = { contentList: [] }; // 섹션 초기화
         sectionStatus = false; // 섹션 창 닫기
-        console.log(mainContents);
     }
 
     function openSectionDetail() {
@@ -218,10 +238,6 @@
 
         const idx = this.value;
         sectionIdx = idx;
-        console.log(idx);
-        console.log(mainContents[idx]);
-
-        console.log(sectionStatus);
         if (sectionStatus) {
             showToast("작업중인 섹션을 완료 해주세요");
             return;
@@ -230,12 +246,59 @@
         sectionObj = mainContents[idx];
     }
 
+    async function deleteSection() {
+        if (
+            !confirm(
+                "삭제하시겠습니까? 이미지는 바로 삭제되므로 삭제 후 반드시 작업 업로드를 해주세요",
+            )
+        ) {
+            return;
+        }
+        sectionIdx = this.value;
+
+        // deleteImgArr 에 backgroundImg / contentList 돌면서 imgPath 있으면 넣기
+        const deleteImgArrTemp = [];
+        if (mainContents[sectionIdx]["backgroundImg"]) {
+            deleteImgArrTemp.push(mainContents[sectionIdx]["backgroundImg"]);
+        }
+
+        for (
+            let i = 0;
+            i < mainContents[sectionIdx]["contentList"].length;
+            i++
+        ) {
+            const data = mainContents[sectionIdx]["contentList"][i];
+            if (data["imgPath"]) {
+                deleteImgArrTemp.push(data["imgPath"]);
+            }
+        }
+
+        if (deleteImgArrTemp.length > 0) {
+            const deleteImgArr = deleteImgArrTemp.map((e) => {
+                const imgUrlArr = e.split("/");
+                return `subuploads/img/${imgUrlArr[4]}/${imgUrlArr[5]}`;
+            });
+
+            try {
+                const res = await axios.post(`${back_api}/delete_many_image`, {
+                    deleteImgArr,
+                });
+            } catch (error) {}
+        }
+
+        const tempArr = [...mainContents];
+
+        tempArr.splice(sectionIdx, 1);
+        mainContents = tempArr;
+
+        showToast("섹션이 삭제 되었습니다. 작업 업로드를 해주세요");
+    }
+
     function modifyContentFunc(e) {
         contentIdx = this.value;
         contentModifyStatus = true;
-        console.log(this.value);
-        console.log(e.target.getAttribute("data-type"));
-        console.log(sectionObj.contentList[this.value]);
+
+        addContentType = e.target.getAttribute("data-type");
         let getSectionObj = sectionObj.contentList[this.value];
         const contentType = e.target.getAttribute("data-type");
         addContentStatus = contentType;
@@ -257,12 +320,32 @@
         }
     }
 
+    async function deleteContentFunc(e) {
+        const dataType = e.target.getAttribute("data-type");
+        if (dataType == "image") {
+            const imgPath = sectionObj.contentList[this.value]["imgPath"];
+            const imgUrlArr = imgPath.split("/");
+            const deleteImagePath = `subuploads/img/${imgUrlArr[4]}/${imgUrlArr[5]}`;
+
+            try {
+                const res = await axios.post(
+                    `${back_api}/delete_single_image_only`,
+                    {
+                        deleteImagePath,
+                    },
+                );
+            } catch (err) {
+                console.error(err.message);
+            }
+        }
+        const tempArr = [...sectionObj.contentList];
+        tempArr.splice(this.value, 1);
+        sectionObj.contentList = tempArr;
+    }
+
     function updateImgArr(imgArr, idx) {
-        console.log(imgArr);
-        console.log(idx);
         const imgList = imgArr.map((e) => e.src);
         menuObj.menus[idx]["imgArr"] = imgList;
-        console.log(menuObj);
     }
 
     async function updateSiteSet() {
@@ -277,7 +360,6 @@
                 ld_json_main,
                 ld_json_menus,
             });
-            console.log(res);
             if (res.status == 200) {
                 showToast("업데이트가 완료 되었습니다.");
             } else {
@@ -285,13 +367,37 @@
             }
         } catch {}
     }
+
+    function add_eModel() {
+        // eModelBool
+        console.log(menuObj.menus);
+        const tempArr = [...menuObj.menus];
+        tempArr.push({ name: "e-모델하우스", link: "emodel", emenu: [] });
+        menuObj.menus = tempArr;
+        eModelBool = true;
+    }
+
+    function add_emodel_ele() {
+        console.log(this.value);
+
+        console.log(menuObj.menus);
+        // menuObj.menus[this.value]['emenu']
+        const emodelObj = { type: eModelType, iframe_link: eModelLink };
+        const tempArr = [...menuObj.menus[this.value]["emenu"]];
+        tempArr.push(emodelObj);
+        menuObj.menus[this.value]["emenu"] = tempArr;
+        eModelType = "";
+        eModelLink = "";
+    }
 </script>
 
-<div class="toasts hidden pretendard" bind:this={toastArea}>
-    <div class="alert alert-error">
-        <span class="text-white">{toastText}</span>
+{#if visible}
+    <div class="toasts pretendard" bind:this={toastArea} transition:fade>
+        <div class="alert alert-error">
+            <span class="text-white">{toastText}</span>
+        </div>
     </div>
-</div>
+{/if}
 
 <div class="fixed top-11 right-6 lg:right-1/4 pretendard">
     <button class="btn btn-primary btn-sm" on:click={updateSiteSet}
@@ -356,7 +462,9 @@
                 <th class="border px-1 py-2 w-1/4">로고 이미지</th>
                 <td class="border px-1 py-2 w-3/4">
                     {#if logoObj["logo_img"]}
-                        <img src={logoObj["logo_img"]} alt="" class="mb-3" />
+                        <div class="m-2 p-2 bg-gray-400">
+                            <img src={logoObj["logo_img"]} alt="" />
+                        </div>
                     {/if}
 
                     {#if !logoObj["logo_img"]}
@@ -434,12 +542,11 @@
     </div>
 
     <div class="mt-8 mb-4 border p-3">
-        <div>
+        <div class="mb-3">
             ※ 메인 페이지 섹션!! <button
                 class="btn btn-info btn-sm text-white ml-5"
                 on:click={() => {
                     sectionStatus = true;
-                    console.log(sectionObj);
                 }}
             >
                 섹션 추가
@@ -454,15 +561,23 @@
 
                     {#if sectionModifyStatus == false}
                         <button
-                            class="btn btn-soft btn-accent"
+                            class="btn btn-soft btn-accent btn-sm"
                             value={idx}
                             on:click={openSectionDetail}
                         >
                             자세히 보기
                         </button>
-                    {:else}
+
                         <button
-                            class="btn btn-soft btn-accent"
+                            class="btn btn-soft btn-error btn-sm"
+                            value={idx}
+                            on:click={deleteSection}
+                        >
+                            섹션 삭제
+                        </button>
+                    {:else if sectionIdx == idx}
+                        <button
+                            class="btn btn-soft btn-accent btn-sm"
                             on:click={() => {
                                 sectionObj = { contentList: [] }; // 섹션 요소 초기화
                                 sectionStatus = false; // 섹션 창 닫기
@@ -508,30 +623,48 @@
 
                 <tr>
                     <td class="border px-1 py-2" colspan="2">
-                        {sectionObj.contentList.length}
+                        <!-- 여기가 컨텐츠 리스트 부분! -->
                         {#if sectionObj.contentList.length != 0}
                             {#each sectionObj.contentList as content, idx}
                                 {#if content.marginHeight}
                                     <div class="border p-2">
                                         <button
-                                            class="btn btn-outline btn-info btn-sm mr-3"
+                                            class="btn btn-outline btn-info btn-sm mr-1"
                                             value={idx}
                                             data-type="blank"
                                             on:click={modifyContentFunc}
                                         >
                                             수정
                                         </button>
+
+                                        <button
+                                            class="btn btn-outline btn-error btn-sm mr-3"
+                                            value={idx}
+                                            data-type="blank"
+                                            on:click={deleteContentFunc}
+                                        >
+                                            삭제
+                                        </button>
                                         여백 : {content.marginHeight} px
                                     </div>
                                 {:else if content.text}
                                     <div class="border p-2">
                                         <button
-                                            class="btn btn-outline btn-info btn-sm mr-3"
+                                            class="btn btn-outline btn-info btn-sm mr-1"
                                             value={idx}
                                             data-type="text"
                                             on:click={modifyContentFunc}
                                         >
                                             수정
+                                        </button>
+
+                                        <button
+                                            class="btn btn-outline btn-error btn-sm mr-3"
+                                            value={idx}
+                                            data-type="text"
+                                            on:click={deleteContentFunc}
+                                        >
+                                            삭제
                                         </button>
                                         <span>텍스트 : {content.text}</span> /
                                         <span>사이즈 : {content.fontSize}</span>
@@ -542,20 +675,33 @@
                                 {:else if content.imgPath}
                                     <div class="border p-2">
                                         <button
-                                            class="btn btn-outline btn-info btn-sm mr-3"
+                                            class="btn btn-outline btn-info btn-sm mr-1"
                                             value={idx}
                                             data-type="image"
                                             on:click={modifyContentFunc}
                                         >
                                             수정
                                         </button>
+
+                                        <button
+                                            class="btn btn-outline btn-error btn-sm mr-3"
+                                            value={idx}
+                                            data-type="image"
+                                            on:click={deleteContentFunc}
+                                        >
+                                            삭제
+                                        </button>
                                         이미지 :
-                                        <img
-                                            src={content.imgPath}
-                                            alt=""
-                                            width="150"
-                                            height="150"
-                                        />
+
+                                        <div class="m-2 p-2 bg-gray-400">
+                                            <img
+                                                src={content.imgPath}
+                                                alt=""
+                                                width="150"
+                                                height="150"
+                                            />
+                                        </div>
+
                                         <span>가로값 : {content.width}</span> /
                                         <span>정렬 : {content.align}</span> /
                                         <span>효과 : {content.effect}</span>
@@ -563,11 +709,10 @@
                                 {/if}
                             {/each}
                         {/if}
-                        <div>
+                        <div class="p-2">
                             <button
                                 class="btn btn-sm btn-success text-white mr-5"
                                 on:click={() => {
-                                    console.log(addContentType);
                                     // showToast
                                     if (!addContentType) {
                                         showToast("컨텐츠 타입을 선택하세요");
@@ -575,7 +720,7 @@
                                     addContentStatus = addContentType;
                                 }}
                             >
-                                컨텐츠 추가
+                                컨텐츠 선택
                                 <i class="fa fa-plus-circle" aria-hidden="true"
                                 ></i>
                             </button>
@@ -600,7 +745,7 @@
                                 <span class="ml-0.5">텍스트</span>
                             </label>
 
-                            <label>
+                            <label class="mr-5">
                                 <input
                                     type="radio"
                                     value="image"
@@ -609,6 +754,16 @@
                                 />
                                 <span class="ml-0.5">이미지</span>
                             </label>
+
+                            <input
+                                type="text"
+                                class="border p-1 w-16"
+                                bind:value={insertIdx}
+                            />
+                            <span class="text-xs"
+                                >(중간에 삽입하려면 입력하세요 맨처음 : 0 /
+                                마지막 전 : {sectionObj.contentList.length - 1})
+                            </span>
                         </div>
 
                         {#if addContentStatus == "blank"}
@@ -743,7 +898,12 @@
 
                                 <div>
                                     {#if contentImagePath}
-                                        <img src={contentImagePath} alt="" />
+                                        <div class="m-1 p-1 bg-gray-400">
+                                            <img
+                                                src={contentImagePath}
+                                                alt=""
+                                            />
+                                        </div>
                                     {/if}
 
                                     {#if !contentImagePath}
@@ -880,114 +1040,304 @@
                 bind:value={menuObj["padding_y"]}
             />
 
-            <span class="text-sm">px / 메뉴 추가</span>
+            <span class="text-sm">px / 메뉴</span>
             <input
                 type="text"
-                class="border p-1 w-24 text-sm"
+                class="border py-1.5 px-2 w-24 text-xs focus:outline-none focus:border-blue-500 rounded-sm"
+                placeholder="메뉴이름(한글)"
                 bind:value={menuName}
+            />
+            <input
+                type="text"
+                class="border py-1.5 px-2 w-24 text-xs focus:outline-none focus:border-blue-500 rounded-sm"
+                placeholder="링크주소(영어)"
+                bind:value={menuLink}
             />
             <button
                 class="btn btn-outline btn-success btn-sm"
                 on:click={() => {
                     const menuSubObj = {
                         name: menuName,
+                        link: menuLink,
                     };
 
                     const tempArr = [...menuObj["menus"]];
                     tempArr.push(menuSubObj);
                     menuObj["menus"] = tempArr;
-                    console.log(menuObj);
                     menuName = "";
+                    menuLink = "";
                 }}
             >
                 메뉴 추가
             </button>
+
+            {#if !eModelBool}
+                <button
+                    class="btn btn-outline btn-secondary btn-sm"
+                    on:click={add_eModel}
+                >
+                    e-모델하우스
+                </button>
+            {/if}
         </div>
 
         <div class="mt-4">
             <table class="w-full">
                 {#each menuObj["menus"] as menu, idx}
                     <tr>
-                        <th class="border w-[100px] p-2">
-                            {#if menuModify == undefined}
+                        <!-- e모델하우스 관련 -->
+                        {#if menu.link == "emodel"}
+                            <td
+                                class="border w-[120px] p-2 text-center text-sm"
+                            >
                                 <div>{menu.name}</div>
-                            {:else}
-                                <div>
-                                    <input
-                                        type="text"
-                                        class="border p-1 w-24 text-sm"
-                                        bind:value={menuName}
-                                    />
-                                </div>
-                            {/if}
-
-                            {#if menuModify == undefined}
-                                <div></div>
-
                                 <button
                                     class="btn btn-soft btn-secondary btn-xs"
-                                    >삭제</button
-                                >
-                                <button
-                                    class="btn btn-soft btn-success btn-xs"
-                                    on:click={() => {
-                                        menuModify = idx;
-                                    }}
-                                >
-                                    수정
-                                </button>
-                            {:else}
-                                <button
-                                    class="btn btn-soft btn-success btn-xs"
                                     on:click={() => {
                                         const tempArr = [...menuObj["menus"]];
-                                        tempArr[menuModify]["name"] = menuName;
+                                        tempArr.splice(idx, 1);
                                         menuObj["menus"] = tempArr;
-                                        menuModify = undefined;
-                                        menuName = "";
+                                        eModelBool = false;
                                     }}
                                 >
-                                    반영
+                                    삭제
                                 </button>
-                            {/if}
-                        </th>
-                        <td class="border p-2">
-                            <SortableImgMovie
-                                on:updateImgeList={(e) => {
-                                    const imgArr = e.detail.imgArr;
-                                    updateImgArr(imgArr, idx);
-                                }}
-                                modifyImageList={menuObj["menus"][idx][
-                                    "imgArr"
-                                ]}
-                            ></SortableImgMovie>
-                        </td>
+                            </td>
+                            <td class="border p-2">
+                                <div class="text-xs flex items-center gap-3">
+                                    <label>
+                                        타입 :
+                                        <input
+                                            type="text"
+                                            class="py-1 px-2 border focus:outline-none focus:border-blue-500 w-28"
+                                            bind:value={eModelType}
+                                        />
+                                    </label>
+                                    /
+                                    <label>
+                                        링크 :
+                                        <input
+                                            type="text"
+                                            class="py-1 px-2 border focus:outline-none focus:border-blue-500"
+                                            bind:value={eModelLink}
+                                        />
+                                    </label>
+
+                                    <button
+                                        class="btn btn-info btn-xs text-white"
+                                        value={idx}
+                                        on:click={add_emodel_ele}
+                                    >
+                                        추가하기
+                                    </button>
+                                </div>
+
+                                <div>
+                                    {#each menu["emenu"] as emenu, idx}
+                                        <div class="p-1 text-xs">
+                                            <span>{idx + 1}</span> -
+                                            <span>타입 : {emenu.type}</span>
+                                            /
+                                            <span
+                                                >링크 : {emenu.iframe_link}</span
+                                            >
+                                        </div>
+                                    {/each}
+                                </div>
+                            </td>
+                        {:else}
+                            <!-- 기타 일반 -->
+                            <td class="border w-[100px] text-center text-sm">
+                                <div class="relative">
+                                    <div
+                                        class=" absolute top-0 left-0 w-full h-full bg-white hidden z-50"
+                                    >
+                                        <input
+                                            type="text"
+                                            class="border py-1 px-2 w-24 text-xs focus:outline-none focus:border-blue-500 rounded-sm"
+                                            placeholder="메뉴이름(한글)"
+                                            bind:value={
+                                                menuObj["menus"][idx]["name"]
+                                            }
+                                        />
+                                        <input
+                                            type="text"
+                                            class="border py-1 px-2 w-24 text-xs focus:outline-none focus:border-blue-500 rounded-sm"
+                                            placeholder="링크주소(영어)"
+                                            bind:value={
+                                                menuObj["menus"][idx]["link"]
+                                            }
+                                        />
+                                        <button
+                                            class="btn btn-success btn-xs"
+                                            on:click={(e) => {
+                                                e.target.parentNode.classList.add(
+                                                    "hidden",
+                                                );
+                                            }}
+                                        >
+                                            적용
+                                        </button>
+                                    </div>
+
+                                    <div class="p-2">
+                                        <div>{menu.name}</div>
+                                        <button
+                                            class="btn btn-soft btn-secondary btn-xs"
+                                            on:click={() => {
+                                                const tempArr = [
+                                                    ...menuObj["menus"],
+                                                ];
+                                                tempArr.splice(idx, 1);
+                                                menuObj["menus"] = tempArr;
+                                            }}
+                                        >
+                                            삭제
+                                        </button>
+                                        <button
+                                            class="btn btn-soft btn-success btn-xs"
+                                            on:click={(e) => {
+                                                e.target.parentNode.parentNode.firstChild.classList.remove(
+                                                    "hidden",
+                                                );
+                                            }}
+                                        >
+                                            수정
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="border">
+                                <div
+                                    class="p-2 text-xs flex items-center gap-2"
+                                >
+                                    <span>해당 메뉴 효과 :</span>
+                                    <label class="mr-2">
+                                        <input
+                                            type="radio"
+                                            value="on"
+                                            class="radio radio-error radio-xs mr-1"
+                                            bind:group={
+                                                menuObj["menus"][idx]["effect"]
+                                            }
+                                        />
+                                        <span>켜기</span>
+                                    </label>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="off"
+                                            class="radio radio-error radio-xs mr-1"
+                                            bind:group={
+                                                menuObj["menus"][idx]["effect"]
+                                            }
+                                        />
+                                        <span>끄기</span>
+                                    </label>
+
+                                    <span>(미선택시 자동 켜짐)</span>
+                                </div>
+                                <div class="p-2">
+                                    <SortableImgMovie
+                                        on:updateImgeList={(e) => {
+                                            const imgArr = e.detail.imgArr;
+                                            updateImgArr(imgArr, idx);
+                                        }}
+                                        modifyImageList={menuObj["menus"][idx][
+                                            "imgArr"
+                                        ]}
+                                    ></SortableImgMovie>
+                                </div>
+                            </td>
+                        {/if}
                     </tr>
                 {/each}
             </table>
         </div>
     </div>
+
+    <div class="border p-3 mt-5">
+        <div>※팝업 이미지</div>
+    </div>
+
+    <div class="border p-3 mt-5">
+        <div>※기타 정보</div>
+        <div>
+            <table class="w-full">
+                <tr>
+                    <th class="border p-2 text-sm" style="width:15%"
+                        >전화번호</th
+                    >
+                    <td class="border p-1 text-sm" style="width:35%">
+                        <input
+                            type="text"
+                            class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
+                        />
+                    </td>
+                    <th class="border p-2 text-sm" style="width:15%">
+                        문자 전화번호
+                    </th>
+                    <td class="border p-2 text-sm" style="width:35%">
+                        <input
+                            type="text"
+                            class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <th class="border p-2 text-sm" style="width:15%"
+                        >문자내용</th
+                    >
+                    <td class="border p-2 text-sm" style="width:35%">
+                        <textarea
+                            class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
+                        ></textarea>
+                    </td>
+                    <th class="border p-2 text-sm" style="width:15%">
+                        개인정보 유무
+                    </th>
+                    <td class="border p-2 text-sm" style="width:35%">
+                        <div class="text-center">
+                            <label class="mr-3">
+                                <input
+                                    type="radio"
+                                    class="radio radio-info"
+                                    checked="checked"
+                                />
+                                있음
+                            </label>
+
+                            <label>
+                                <input
+                                    type="radio"
+                                    class="radio radio-info"
+                                    checked="checked"
+                                />
+                                없음
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="p-3 border">
+                <div>푸터 내용</div>
+                <div>
+                    <textarea
+                        class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
+                        rows="4"
+                    ></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
-    .toasts-show {
-        opacity: 1;
-    }
     .toasts {
-        /* 기본적인 토스트 스타일 */
         position: fixed;
         bottom: 20px;
-        right: 20px;
-        transform: translateX(-50%);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 5px;
-        /* 처음에는 보이도록 설정 (hidden 클래스가 없을 때) */
+        right: 30px;
         z-index: 1000;
-        transition: opacity 2s ease-in-out; /* 투명도 변화에 2초의 트랜지션 적용 */
-    }
-
-    .toasts.hidden {
-        opacity: 0;
     }
 </style>
