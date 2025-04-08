@@ -15,11 +15,16 @@
     function setData() {
         getId = data.getId;
         console.log(data);
-        logoObj = data.ld_json_header;
-        menuObj = data.ld_json_menus;
-        mainContents = data.ld_json_main;
+        if (data.ld_json_header) {
+            logoObj = data.ld_json_header;
+        }
+        if (data.ld_json_menus) {
+            menuObj = data.ld_json_menus;
+        }
 
-        console.log(menuObj);
+        if (data.ld_json_main) {
+            mainContents = data.ld_json_main;
+        }
     }
 
     // 섹션 창이 보여지게 하는 변수
