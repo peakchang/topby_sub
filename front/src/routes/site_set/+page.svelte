@@ -420,6 +420,14 @@
             console.log(menuObj.menus[i].imgArr);
         }
 
+        for (let l = 0; l < mainContents.length; l++) {
+            let tempArr = mainContents[l]['contentList'];
+            if(tempArr){
+                mainContents[l]['contentList'] = removeNulls(tempArr);
+            }
+            
+        }
+
         const ld_json_header = JSON.stringify(logoObj);
         const ld_json_main = JSON.stringify(mainContents);
         const ld_json_menus = JSON.stringify(menuObj);

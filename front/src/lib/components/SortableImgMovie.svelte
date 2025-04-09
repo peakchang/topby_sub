@@ -227,28 +227,7 @@
 <div class="p-2">
     <div class="flex flex-wrap" bind:this={listsEl}>
         {#each imgArr as img (img.id)}
-            {#if img.src}
-                <div
-                    class="list border border-slate-400 w-24 h-24 rounded-lg flex items-center justify-center overflow-hidden mb-1 ml-1 relative"
-                >
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <span
-                        class="absolute top-1 right-1 text-red-600 cursor-pointer"
-                        data-id={img.id}
-                        on:click={deleteImg}
-                    >
-                        <i
-                            class="fa fa-times-circle-o"
-                            aria-hidden="true"
-                            data-id={img.id}
-                        ></i>
-                    </span>
-                    <div>
-                        <img src={img.src} alt="" />
-                    </div>
-                </div>
-            {:else if img.thumbnail}
+            {#if img.src.includes("youtube")}
                 <div
                     class="list border border-slate-400 w-24 h-24 rounded-lg flex items-center justify-center overflow-hidden mb-1 ml-1 relative"
                 >
@@ -274,6 +253,27 @@
 
                     <div>
                         <img src={img.thumbnail} alt="" />
+                    </div>
+                </div>
+            {:else}
+                <div
+                    class="list border border-slate-400 w-24 h-24 rounded-lg flex items-center justify-center overflow-hidden mb-1 ml-1 relative"
+                >
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
+                    <span
+                        class="absolute top-1 right-1 text-red-600 cursor-pointer"
+                        data-id={img.id}
+                        on:click={deleteImg}
+                    >
+                        <i
+                            class="fa fa-times-circle-o"
+                            aria-hidden="true"
+                            data-id={img.id}
+                        ></i>
+                    </span>
+                    <div>
+                        <img src={img.src} alt="" />
                     </div>
                 </div>
             {/if}
