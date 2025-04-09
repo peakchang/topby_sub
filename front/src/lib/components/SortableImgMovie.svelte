@@ -206,7 +206,7 @@
         const youtubeThumbnail = `https://img.youtube.com/vi/${videoId}/default.jpg`;
 
         imgArr.push({
-            thumbnail: youtubeThumbnail,
+            src: youtubeThumbnail,
             id: crypto(),
         });
         imgArr = [...new Set(imgArr)];

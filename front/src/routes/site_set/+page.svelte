@@ -46,6 +46,10 @@
         smsContent = data.allData.ld_sms_content;
         personalInfoView = data.allData.ld_personal_info_view;
         footer = data.allData.ld_footer;
+
+        siteName = data.allData.ld_name;
+        phoneBottomImg = data.allData.ld_mobile_bt_phone_img;
+        eventBottomImg = data.allData.ld_mobile_bt_event_img;
     }
 
     // 섹션 창이 보여지게 하는 변수
@@ -118,6 +122,11 @@
     let personalInfoView = "on";
     let footer = "";
 
+    // 변수 추가!!
+    let siteName = "";
+    let phoneBottomImg = "";
+    let eventBottomImg = "";
+
     // ***********************************************
 
     function showToast(message) {
@@ -133,13 +142,17 @@
         const imgPath = e.detail.imgPath;
         logoObj["logo_img"] = imgPath;
     }
-
     function popupUpdate(e) {
         popupImg = e.detail.imgPath;
     }
-
     function eventUpdate(e) {
         eventImg = e.detail.imgPath;
+    }
+    function phoneBottomImgUpdate(e) {
+        phoneBottomImg = e.detail.imgPath;
+    }
+    function eventBottomImgUpdate(e) {
+        eventBottomImg = e.detail.imgPath;
     }
 
     async function deleteImage() {
@@ -158,6 +171,10 @@
             imgUrlArr = popupImg.split("/");
         } else if (this.value == "event") {
             imgUrlArr = eventImg.split("/");
+        } else if (this.value == "ph_bt_img") {
+            imgUrlArr = phoneBottomImg.split("/");
+        } else if (this.value == "event_bt_img") {
+            imgUrlArr = eventBottomImg.split("/");
         }
         const deleteImagePath = `subuploads/img/${imgUrlArr[4]}/${imgUrlArr[5]}`;
 
@@ -180,6 +197,10 @@
                     popupImg = "";
                 } else if (this.value == "event") {
                     eventImg = "";
+                } else if (this.value == "ph_bt_img") {
+                    phoneBottomImg = "";
+                } else if (this.value == "event_bt_img") {
+                    eventBottomImg = "";
                 }
             }
         } catch (error) {
@@ -387,6 +408,18 @@
     }
 
     async function updateSiteSet() {
+        console.log(menuObj);
+
+        for (let i = 0; i < menuObj.menus.length; i++) {
+            let imgArr = menuObj.menus[i].imgArr;
+            console.log(imgArr);
+            if (imgArr) {
+                menuObj.menus[i].imgArr = removeNulls(imgArr);
+            }
+
+            console.log(menuObj.menus[i].imgArr);
+        }
+
         const ld_json_header = JSON.stringify(logoObj);
         const ld_json_main = JSON.stringify(mainContents);
         const ld_json_menus = JSON.stringify(menuObj);
@@ -404,6 +437,9 @@
                 smsContent,
                 personalInfoView,
                 footer,
+                siteName,
+                phoneBottomImg,
+                eventBottomImg,
             });
             if (res.status == 200) {
                 showToast("업데이트가 완료 되었습니다.");
@@ -433,6 +469,10 @@
         menuObj.menus[this.value]["emenu"] = tempArr;
         eModelType = "";
         eModelLink = "";
+    }
+
+    function removeNulls(arr) {
+        return arr.filter((item) => item !== null);
     }
 </script>
 
@@ -1324,7 +1364,11 @@
     </div>
 
     <div class="border p-3 mt-5">
-        <div>※이벤트 이미지</div>
+        <div>
+            ※이벤트 이미지 <span class=" text-xs text-red-600">
+                (이벤트 이미지 사이즈는 900 X 900!!!!)</span
+            >
+        </div>
         <div class="mt-5">
             <div class="mb-3">
                 {#if eventImg}
@@ -1349,6 +1393,19 @@
         <div>※기타 정보</div>
         <div>
             <table class="w-full">
+                <tr>
+                    <th class="border p-2 text-sm" style="width:15%"
+                        >사이트명</th
+                    >
+                    <td class="border p-1 text-sm" style="width:35%">
+                        <input
+                            type="text"
+                            class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
+                            bind:value={siteName}
+                        />
+                    </td>
+                    <td colspan="2" class="border"></td>
+                </tr>
                 <tr>
                     <th class="border p-2 text-sm" style="width:15%"
                         >전화번호</th
@@ -1406,6 +1463,64 @@
                                 없음
                             </label>
                         </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="border p-1 text-xs md:text-sm">
+                        <span class="font-normal"> 모바일 하단 </span>
+                        <br />
+                        <span class="font-normal"> 전화번호 이미지 </span>
+                        <br />
+                        <span class="text-xs text-red-600">
+                            (384px X 80px 추천)
+                        </span>
+                    </th>
+                    <td class="border">
+                        {#if phoneBottomImg}
+                            <img src={phoneBottomImg} alt="" />
+                        {/if}
+
+                        {#if phoneBottomImg}
+                            <button
+                                class="btn btn-error btn-sm text-white"
+                                value="ph_bt_img"
+                                on:click={deleteImage}
+                            >
+                                이미지 삭제
+                            </button>
+                        {:else}
+                            <OneImageUpload
+                                on:sendImgPath={phoneBottomImgUpdate}
+                            ></OneImageUpload>
+                        {/if}
+                    </td>
+                    <th class="border p-1 text-xs md:text-sm">
+                        <span class="font-normal"> 모바일 하단 </span>
+                        <br />
+                        <span class="font-normal"> 이벤트 이미지 </span>
+                        <br />
+                        <span class="text-xs text-red-600">
+                            (384px X 80px 추천)
+                        </span>
+                    </th>
+                    <td class="border">
+                        {#if eventBottomImg}
+                            <img src={eventBottomImg} alt="" />
+                        {/if}
+
+                        {#if eventBottomImg}
+                            <button
+                                class="btn btn-error btn-sm text-white"
+                                value="event_bt_img"
+                                on:click={deleteImage}
+                            >
+                                이미지 삭제
+                            </button>
+                        {:else}
+                            <OneImageUpload
+                                on:sendImgPath={eventBottomImgUpdate}
+                            ></OneImageUpload>
+                        {/if}
                     </td>
                 </tr>
             </table>

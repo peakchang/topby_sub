@@ -7,25 +7,8 @@ import Cookies from 'js-cookie';
 
 export const load = async ({ fetch, url }) => {
 
-
-
-    console.log('시자꾸~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!!!!!!!');
-    let addTitle = ""
-    if (url.href.includes("premium")) {
-        addTitle = " - 프리미엄"
-    } else if (url.href.includes("overview")) {
-        addTitle = " - 사업소개"
-    } else if (url.href.includes("environ")) {
-        addTitle = " - 입지환경"
-    } else if (url.href.includes("product")) {
-        addTitle = " - 상품안내"
-    }
-
     const subDomainName = url.hostname.split('.')[0]
-    console.log(subDomainName);
-    console.log(back_api);
-    
-    
+
     let returnSubDomainName = ""
     let subView = {}
     let seoValue = {
@@ -43,9 +26,6 @@ export const load = async ({ fetch, url }) => {
             subDomainName
         })
 
-        console.log(res.data);
-        
-
         if (!res.data.subView) {
             return error('404', 'asjfaisjfilasjdf')
         } else if (res.data.status && res.data.subView['ld_domain']) {
@@ -56,6 +36,22 @@ export const load = async ({ fetch, url }) => {
         return error('404', 'asjfaisjfilasjdf')
     }
 
+    let addTitle = "";
+    
+
+    if (!subView.ld_view_type || subView.ld_view_type == 'old') {
+        if (url.href.includes("premium")) {
+            addTitle = " - 프리미엄"
+        } else if (url.href.includes("overview")) {
+            addTitle = " - 사업소개"
+        } else if (url.href.includes("environ")) {
+            addTitle = " - 입지환경"
+        } else if (url.href.includes("product")) {
+            addTitle = " - 상품안내"
+        }
+    }
+
+
     seoValue['title'] = subView.ld_name + addTitle
     seoValue['description'] = subView.ld_description
     seoValue["image"] = subView['ld_main_img'] ? subView['ld_main_img'].split(',')[0] : "";
@@ -64,7 +60,7 @@ export const load = async ({ fetch, url }) => {
     seoValue['date_str'] = subView["date_str"]
 
 
-    
+
 
     return { subView, seoValue }
 }
