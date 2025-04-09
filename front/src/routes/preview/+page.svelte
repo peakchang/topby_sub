@@ -5,34 +5,10 @@
     let observer;
     let elementsToObserve;
     let mainContents = [];
-    let logoData = {};
-    let menuData = {};
-
-    let mainPageMarginTop = 0;
 
     if (browser) {
         const urlParams = new URLSearchParams(window.location.search);
         const receivedMainDataString = urlParams.get("mainData");
-        const receivedLogoDataString = urlParams.get("logoData");
-        const receivedMenuDataString = urlParams.get("menuData");
-
-        if (receivedMenuDataString) {
-            try {
-                menuData = JSON.parse(receivedMenuDataString);
-                console.log(menuData);
-            } catch (error) {
-                console.error("JSON 파싱 오류:", error);
-            }
-        }
-
-        if (receivedLogoDataString) {
-            try {
-                logoData = JSON.parse(receivedLogoDataString);
-                console.log(logoData);
-            } catch (error) {
-                console.error("JSON 파싱 오류:", error);
-            }
-        }
 
         if (receivedMainDataString) {
             try {
@@ -44,40 +20,11 @@
                 console.error("JSON 파싱 오류:", error);
             }
         }
-
-        mainPageMarginTop = (Number(menuData.padding_y) * 2) + Number(logoData.header_height)
-        console.log(mainPageMarginTop);
-        
-
-    
     }
 
     onMount(() => {
         if (browser) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const receivedData = urlParams.get("data");
-            const receivedJsonDataString = urlParams.get("jsonData");
-
-            if (receivedData) {
-                console.log("받은 데이터:", receivedData);
-                // 받은 문자열 데이터 처리
-            }
-
-            if (receivedJsonDataString) {
-                try {
-                    const receivedJsonData = JSON.parse(receivedJsonDataString);
-                    console.log("받은 JSON 데이터:", receivedJsonData);
-                    mainContents = receivedJsonData;
-                    console.log(mainContents);
-
-                    // 받은 JSON 데이터 처리
-                } catch (error) {
-                    console.error("JSON 파싱 오류:", error);
-                }
-            }
-
             elementsToObserve = document.querySelectorAll(".observe-fade-up");
-            console.log(elementsToObserve);
         }
         observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
@@ -105,39 +52,14 @@
     });
 </script>
 
-<div class="fixed top-0 left-0 w-full z-50">
-    <div
-        style="background-color: {logoData.header_color}; height:{logoData.header_height}px; padding: {logoData.header_padding}px"
-    >
-        <div
-            class="flex"
-            class:justify-start={logoData.logo_location == "left"}
-            class:justify-center={logoData.logo_location == "center"}
-        >
-            <img src={logoData.logo_img} alt="" width={logoData.logo_width} />
-        </div>
-    </div>
 
-    <div class="pretendard border-b" style="padding: {menuData.padding_y}px; pretendard; background-color:white;">
-        <ul class="flex justify-around">
-            {#if menuData.menus}
-                {#each menuData.menus as menu}
-                    <a href="">
-                        <li>{menu.name}</li>
-                    </a>
-                {/each}
-            {/if}
-        </ul>
-    </div>
 
-</div>
-
-<div style="margin-top: {mainPageMarginTop}px;">
+<div >
     {#each mainContents as mainContent}
         <div
             style="background-image: url({mainContent[
                 'backgroundImg'
-            ]}); height:{mainContent['height']}px"
+            ]}); height:{mainContent['height']}px; background-repeat: no-repeat; background-size: 100% auto;"
         >
             {#each mainContent.contentList as content}
                 {#if content.text}

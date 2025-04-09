@@ -15,7 +15,7 @@
 
     function setData() {
         getId = data.getId;
-        console.log(data);
+
         if (data.ld_json_header) {
             logoObj = data.ld_json_header;
         }
@@ -33,6 +33,19 @@
         if (data.ld_json_main) {
             mainContents = data.ld_json_main;
         }
+
+        console.log(data.allData);
+        console.log(data.allData.ld_phone_num);
+
+        popupImg = data.allData.ld_popup_img;
+        eventImg = data.allData.ld_event_img;
+        phoneNumber = data.allData.ld_phone_num;
+        console.log(phoneNumber);
+
+        smsNumber = data.allData.ld_sms_num;
+        smsContent = data.allData.ld_sms_content;
+        personalInfoView = data.allData.ld_personal_info_view;
+        footer = data.allData.ld_footer;
     }
 
     // 섹션 창이 보여지게 하는 변수
@@ -96,6 +109,15 @@
     let contentImageEffect = "on";
     let contentImageEffectDealy = "100";
 
+    // 기타 정보 변수!!
+    let popupImg = "";
+    let phoneNumber = "";
+    let smsNumber = "";
+    let smsContent = "";
+    let eventImg = "";
+    let personalInfoView = "on";
+    let footer = "";
+
     // ***********************************************
 
     function showToast(message) {
@@ -112,6 +134,14 @@
         logoObj["logo_img"] = imgPath;
     }
 
+    function popupUpdate(e) {
+        popupImg = e.detail.imgPath;
+    }
+
+    function eventUpdate(e) {
+        eventImg = e.detail.imgPath;
+    }
+
     async function deleteImage() {
         if (!confirm("이미지를 삭제 하시겠습니까?")) {
             return;
@@ -124,6 +154,10 @@
             imgUrlArr = contentImagePath.split("/");
         } else if (this.value == "background") {
             imgUrlArr = sectionObj["backgroundImg"].split("/");
+        } else if (this.value == "popup") {
+            imgUrlArr = popupImg.split("/");
+        } else if (this.value == "event") {
+            imgUrlArr = eventImg.split("/");
         }
         const deleteImagePath = `subuploads/img/${imgUrlArr[4]}/${imgUrlArr[5]}`;
 
@@ -140,8 +174,12 @@
                     logoObj["logo_img"] = "";
                 } else if (this.value == "content") {
                     contentImagePath = "";
-                } else {
+                } else if (this.value == "background") {
                     sectionObj["backgroundImg"] = "";
+                } else if (this.value == "popup") {
+                    popupImg = "";
+                } else if (this.value == "event") {
+                    eventImg = "";
                 }
             }
         } catch (error) {
@@ -359,6 +397,13 @@
                 ld_json_header,
                 ld_json_main,
                 ld_json_menus,
+                popupImg,
+                eventImg,
+                phoneNumber,
+                smsNumber,
+                smsContent,
+                personalInfoView,
+                footer,
             });
             if (res.status == 200) {
                 showToast("업데이트가 완료 되었습니다.");
@@ -1258,6 +1303,46 @@
 
     <div class="border p-3 mt-5">
         <div>※팝업 이미지</div>
+        <div class="mt-5">
+            <div class="mb-3">
+                {#if popupImg}
+                    <img src={popupImg} alt="" class=" max-w-full" />
+                {/if}
+            </div>
+            {#if popupImg}
+                <button
+                    class="btn btn-error btn-sm text-white"
+                    value="popup"
+                    on:click={deleteImage}
+                >
+                    이미지 삭제
+                </button>
+            {:else}
+                <OneImageUpload on:sendImgPath={popupUpdate}></OneImageUpload>
+            {/if}
+        </div>
+    </div>
+
+    <div class="border p-3 mt-5">
+        <div>※이벤트 이미지</div>
+        <div class="mt-5">
+            <div class="mb-3">
+                {#if eventImg}
+                    <img src={eventImg} alt="" class=" max-w-full" />
+                {/if}
+            </div>
+            {#if eventImg}
+                <button
+                    class="btn btn-error btn-sm text-white"
+                    value="event"
+                    on:click={deleteImage}
+                >
+                    이미지 삭제
+                </button>
+            {:else}
+                <OneImageUpload on:sendImgPath={eventUpdate}></OneImageUpload>
+            {/if}
+        </div>
     </div>
 
     <div class="border p-3 mt-5">
@@ -1272,6 +1357,7 @@
                         <input
                             type="text"
                             class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
+                            bind:value={phoneNumber}
                         />
                     </td>
                     <th class="border p-2 text-sm" style="width:15%">
@@ -1281,6 +1367,7 @@
                         <input
                             type="text"
                             class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
+                            bind:value={smsNumber}
                         />
                     </td>
                 </tr>
@@ -1291,6 +1378,7 @@
                     <td class="border p-2 text-sm" style="width:35%">
                         <textarea
                             class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
+                            bind:value={smsContent}
                         ></textarea>
                     </td>
                     <th class="border p-2 text-sm" style="width:15%">
@@ -1301,8 +1389,9 @@
                             <label class="mr-3">
                                 <input
                                     type="radio"
+                                    value="on"
                                     class="radio radio-info"
-                                    checked="checked"
+                                    bind:group={personalInfoView}
                                 />
                                 있음
                             </label>
@@ -1310,8 +1399,9 @@
                             <label>
                                 <input
                                     type="radio"
+                                    value="off"
                                     class="radio radio-info"
-                                    checked="checked"
+                                    bind:group={personalInfoView}
                                 />
                                 없음
                             </label>
@@ -1326,6 +1416,7 @@
                     <textarea
                         class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
                         rows="4"
+                        bind:value={footer}
                     ></textarea>
                 </div>
             </div>
