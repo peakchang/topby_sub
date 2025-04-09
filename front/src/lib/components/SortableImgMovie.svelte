@@ -252,7 +252,7 @@
                     </span>
 
                     <div>
-                        <img src={img.thumbnail} alt="" />
+                        <img src={img.src} alt="" />
                     </div>
                 </div>
             {:else}
