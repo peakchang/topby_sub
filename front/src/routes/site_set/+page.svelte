@@ -6,6 +6,7 @@
     import { goto, invalidateAll } from "$app/navigation";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
+    import { browser } from "$app/environment";
 
     export let data;
 
@@ -421,11 +422,10 @@
         }
 
         for (let l = 0; l < mainContents.length; l++) {
-            let tempArr = mainContents[l]['contentList'];
-            if(tempArr){
-                mainContents[l]['contentList'] = removeNulls(tempArr);
+            let tempArr = mainContents[l]["contentList"];
+            if (tempArr) {
+                mainContents[l]["contentList"] = removeNulls(tempArr);
             }
-            
         }
 
         const ld_json_header = JSON.stringify(logoObj);
@@ -482,6 +482,30 @@
     function removeNulls(arr) {
         return arr.filter((item) => item !== null);
     }
+
+    let instBool = false;
+
+    function siteInstructionFunc() {
+        if (!instBool) {
+            instBool = true;
+            if (browser) {
+                const instList = document.querySelectorAll(".site-instruction");
+                for (let i = 0; i < instList.length; i++) {
+                    const element = array[i];
+                    element.classList.remove("hidden");
+                }
+            }
+        } else {
+            instBool = false;
+            if (browser) {
+                const instList = document.querySelectorAll(".site-instruction");
+                for (let i = 0; i < instList.length; i++) {
+                    const element = array[i];
+                    element.classList.add("hidden");
+                }
+            }
+        }
+    }
 </script>
 
 {#if visible}
@@ -499,23 +523,19 @@
     <button
         class="btn btn-secondary btn-sm"
         on:click={() => {
-            const jsonMainString = JSON.stringify(mainContents);
-            const encodedMainJsonData = encodeURIComponent(jsonMainString);
-
-            const jsonLogoString = JSON.stringify(logoObj);
-            const encodedLogoJsonData = encodeURIComponent(jsonLogoString);
-
-            const jsonMenuString = JSON.stringify(menuObj);
-            const encodedMenuJsonData = encodeURIComponent(jsonMenuString);
-
-            window.open(
-                `/preview?mainData=${encodedMainJsonData}&logoData=${encodedLogoJsonData}&menuData=${encodedMenuJsonData}`,
-                "_blank",
-                "width=600,height=800",
-            ); // 내부 라우트
+            window.open(`https://${getId}.adpeak.kr`, "width=600,height=800");
         }}
     >
         미리보기
+    </button>
+
+    <button
+        class="btn btn-secondary btn-sm"
+        on:click={() => {
+            siteInstructionFunc;
+        }}
+    >
+        설명 보기
     </button>
 </div>
 
@@ -633,8 +653,50 @@
             </tr>
         </table>
     </div>
+    <div class="text-xs text-blue-600 site-instruction hidden">
+        <p>
+            - 로고 이미지는 PNG 권장 (사이즈는 상관 없음, 가로사이즈가 있으니까)
+        </p>
+        <p>
+            - 헤더에 왼쪽 또는 가운데 로고가 들어가고 우측에는 전화번호 이미지
+            들어감
+        </p>
+        <p>
+            - PNG로 저장된 로고 이미지는 가로 사이즈로 조정할수 있음, (가로
+            사이즈가 줄어들면 동시에 세로 사이즈도 줄어듬)
+        </p>
+        <p>
+            - 편집된 로고 이미지에 맞춰 헤더 높이와 위 아래 여백을 반드시 설정
+            해야함 (높이값을 설정해야 메뉴 밑 본문이 제대로 나옴)
+        </p>
+        <p>
+            - 배경색은 네이버 색상표 또는 컬러피터 등으로 지정 가능, 기본적으로
+            black 설정
+        </p>
+    </div>
 
-    <div class="mt-8 mb-4 border p-3">
+    <div class="text-xs mt-8 mb-1 text-red-500 site-instruction hidden">
+        <p>
+            - 섹션 설명! 먼저 섹션 추가를 누른 뒤 모든 기준은 "컨텐츠 선택" 이
+            기준임
+        </p>
+        <p>
+            - 아무것도 없거나 수정(자세히 보기)이 아닌 상태에서 "컨텐츠 선택" 을
+            클릭하면 컨텐츠를 추가한다는 의미임 (컨텐츠 선택시에는 컨텐츠 종류를
+            선택 해야함)
+        </p>
+        <p>
+            - 만들어진 섹션에서 "자세히 보기" 버튼을 클릭하면 그게 수정 이
+            되는거임 / 수정 클릭 후 컨텐츠 종류를 선택해서 지정하면 컨텐츠
+            내용을 변경 할수 있음
+        </p>
+        <p>
+            - 컨텐츠를 수정 한 뒤에는 반드시 "컨텐츠 수정" > "섹션 수정" 을 클릭
+            후 작업 업로드를 해줘야 함
+        </p>
+    </div>
+
+    <div class="mb-4 border p-3">
         <div class="mb-3">
             ※ 메인 페이지 섹션!! <button
                 class="btn btn-info btn-sm text-white ml-5"
@@ -675,6 +737,7 @@
                                 sectionObj = { contentList: [] }; // 섹션 요소 초기화
                                 sectionStatus = false; // 섹션 창 닫기
                                 sectionModifyStatus = false;
+                                addContentStatus = undefined; // 수정 창 닫기
                             }}
                         >
                             닫기
@@ -1115,6 +1178,30 @@
                 </tr>
             </table>
         </div>
+    </div>
+
+    <div class="text-xs text-red-500 site-instruction hidden">
+        <p>
+            -배경 색상은 메뉴 부분의 배경 색상을 나타냄 마찬가지로 네이버 색상표
+            등에서 색상 지정 가능 (기본 white)
+        </p>
+        <p>
+            -위 아래 여백은 메뉴 위 아래 여백을 나타내므로 반드시 작성 (기본
+            15px)
+        </p>
+        <p>
+            -메뉴이름(한글) 은 표시되는 메뉴명 / 링크주소를 사이트 주소에
+            이동되는 링크 값이므로 반드시 둘 다 넣어줘야함
+        </p>
+        <p>
+            -해당 메뉴 효과를 '켜기' 하면 애니메이션 효과가 나오고 '끄기' 하면
+            애니메인션 효과 안나옴 (유튜브 작업 등 할때는 애니메이션 효과가
+            없어도 되겠지)
+        </p>
+        <p>
+            -유튜브 주소 입력은 그냥 유튜브 들어가서 주소창에 있는 링크 넣으면
+            됨!
+        </p>
     </div>
 
     <div class="border p-3">
