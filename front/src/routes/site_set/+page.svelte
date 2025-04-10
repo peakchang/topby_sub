@@ -486,12 +486,16 @@
     let instBool = false;
 
     function siteInstructionFunc() {
+        console.log(instBool);
+        
         if (!instBool) {
             instBool = true;
             if (browser) {
                 const instList = document.querySelectorAll(".site-instruction");
+                console.log(instList);
+                
                 for (let i = 0; i < instList.length; i++) {
-                    const element = array[i];
+                    const element = instList[i];
                     element.classList.remove("hidden");
                 }
             }
@@ -500,7 +504,7 @@
             if (browser) {
                 const instList = document.querySelectorAll(".site-instruction");
                 for (let i = 0; i < instList.length; i++) {
-                    const element = array[i];
+                    const element = instList[i];
                     element.classList.add("hidden");
                 }
             }
@@ -531,9 +535,7 @@
 
     <button
         class="btn btn-secondary btn-sm"
-        on:click={() => {
-            siteInstructionFunc;
-        }}
+        on:click={siteInstructionFunc}
     >
         설명 보기
     </button>
