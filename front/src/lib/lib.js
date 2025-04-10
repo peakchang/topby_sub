@@ -179,13 +179,15 @@ export const customerSubmit = async (name, phone, siteName) => {
             name, phone, siteName
         })
         if (res.data.status) {
-            chk_modal.showModal();
+            return true;
             // alert('초대장 발급이 확인 되었습니다. 배정된 담당자가 연락 드릴 예정입니다.')
         } else {
             alert('에러가 발생했습니다. 관리자에게 문의해주세요')
+            return false;
         }
-
     } catch (error) {
+        console.error(error.message);
+        
         alert('에러가 발생했습니다. 관리자에게 문의해주세요')
     }
 }

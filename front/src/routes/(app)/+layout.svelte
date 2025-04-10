@@ -35,6 +35,7 @@
     // 공통 변수!!
     let showPopup = false;
     let personalInfo;
+    let chk_modal;
 
     export let data;
     $: data, setData();
@@ -188,23 +189,21 @@
     </div>
 {/if}
 
+<dialog id="chk_modal" class="modal suit-font" bind:this={chk_modal}>
+    <div class="modal-box">
+        <h3 class="text-lg font-bold">초대장 발급이 확인 되었습니다.</h3>
+        <h3 class="text-lg font-bold">배정된 담당자가 연락 드릴 예정입니다.</h3>
+        <div class="modal-action">
+            <form method="dialog">
+                <!-- if there is a button in form, it will close the modal -->
+                <button class="btn">닫기</button>
+            </form>
+        </div>
+    </div>
+</dialog>
+
 <!-- 구버전 상단!! -->
 {#if !siteData.ld_view_type || siteData.ld_view_type == "old"}
-    <dialog id="chk_modal" class="modal suit-font">
-        <div class="modal-box">
-            <h3 class="text-lg font-bold">초대장 발급이 확인 되었습니다.</h3>
-            <h3 class="text-lg font-bold">
-                배정된 담당자가 연락 드릴 예정입니다.
-            </h3>
-            <div class="modal-action">
-                <form method="dialog">
-                    <!-- if there is a button in form, it will close the modal -->
-                    <button class="btn">닫기</button>
-                </form>
-            </div>
-        </div>
-    </dialog>
-
     <div class="menu {isMenuVisible ? 'visible' : 'hidden'} z-[999]">
         <div
             class="max-w-[896px] min-w-[600px] w-full mx-auto p-3 pretendard"
@@ -531,11 +530,18 @@
                     <button
                         class="w-full bg-[#ff5f11] text-white p-3 text-lg rounded-lg"
                         on:click={() => {
-                            customerSubmit(
+                            const siteName = siteData.ld_site
+                                ? siteData.ld_site
+                                : siteData.ld_domain;
+                            const resSend = customerSubmit(
                                 customerName,
                                 customerPhone,
-                                siteData.ld_site,
+                                siteName,
                             );
+
+                            if (resSend) {
+                                chk_modal.showModal();
+                            }
                         }}
                     >
                         예약 확인
