@@ -18,6 +18,7 @@
     let imgArr = [];
     let observer;
     let elementsToObserve;
+    let x;
 
     export let data;
     $: data, setData();
@@ -95,14 +96,31 @@
         }
     });
 
+    $: x, set_x();
+    function set_x() {
+        // setEmodelRatio();
+    }
+
     function changTab() {
+        console.log(this.value);
+
         // 일단 tab-active 클래스 다 없애기
         if (browser) {
             const tabList = document.querySelectorAll(".tab");
-            console.log(tabList);
+            const contentList = document.querySelectorAll(".emodel-area");
+
             for (let i = 0; i < tabList.length; i++) {
                 const element = tabList[i];
                 element.classList.remove("tab-active");
+            }
+
+            for (let i = 0; i < contentList.length; i++) {
+                contentList[i].classList.add("hidden");
+            }
+            for (let i = 0; i < contentList.length; i++) {
+                if (i == this.value) {
+                    contentList[i].classList.remove("hidden");
+                }
             }
         }
         this.classList.add("tab-active");
@@ -120,7 +138,22 @@
 
         return iframe;
     }
+
+    // function setEmodelRatio() {
+    //     if (browser) {
+    //         const youtubeContents =
+    //             document.querySelectorAll(".emodel-area");
+
+    //         for (let i = 0; i < youtubeContents.length; i++) {
+    //             youtubeContents[i].style.width = "90%";
+    //             const elementWidth = youtubeContents[i].offsetWidth;
+    //             youtubeContents[i].style.height = `${elementWidth / 1.7778}px`;
+    //         }
+    //     }
+    // }
 </script>
+
+<svelte:window bind:innerWidth={x} />
 
 {#if !allSiteData.ld_view_type || allSiteData.ld_view_type == "old"}
     {#each imgList as img, idx}
@@ -134,75 +167,85 @@
             </div>
         {/if}
     {/each}
-{:else}
-    {#if menuData.link == "emodel"}
-        <div class="pt-5">
-            <div
-                role="tablist"
-                class="tabs tabs-lift tabs-xl justify-center pretendard"
-            >
-                {#each menuData.emenu as emodel, idx}
-                    {#if idx == 0}
-                        <button
-                            role="tab"
-                            class="tab tab-active"
-                            value={idx}
-                            on:click={changTab}
-                        >
-                            {emodel.type}
-                        </button>
-                    {:else}
-                        <button
-                            role="tab"
-                            class="tab"
-                            value={idx}
-                            on:click={changTab}
-                        >
-                            {emodel.type}
-                        </button>
-                    {/if}
-                {/each}
-            </div>
+{:else if menuData.link == "emodel"}
+    <div class="pt-5">
+        <div
+            role="tablist"
+            class="tabs tabs-lift tabs-xl justify-center pretendard"
+        >
+            {#each menuData.emenu as emodel, idx}
+                {#if idx == 0}
+                    <button
+                        role="tab"
+                        class="tab tab-active"
+                        value={idx}
+                        on:click={changTab}
+                    >
+                        {emodel.type}
+                    </button>
+                {:else}
+                    <button
+                        role="tab"
+                        class="tab"
+                        value={idx}
+                        on:click={changTab}
+                    >
+                        {emodel.type}
+                    </button>
+                {/if}
+            {/each}
+        </div>
 
-            <div class="border">
-                {#each menuData.emenu as emodel, idx}
-                    <div class="h-screen">
+        <div class="border">
+            {#each menuData.emenu as emodel, idx}
+                {#if idx == 0}
+                    <div class="emodel-area w-[100%] type{idx}">
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <iframe
-                            src="https://sws360.com/2024/jpl/dunsanelif_emodel_84a/index.htm"
+                            src={emodel.iframe_link}
                             frameborder="0"
                             width="100%"
                             height="800px"
                         ></iframe>
                     </div>
-                {/each}
-            </div>
-        </div>
-    {:else}
-        <div class="mt-5">
-            {#each imgArr as img}
-                {#if img.includes("iframe")}
-                    <div
-                        class="mb-3"
-                        class:observe-hidden={menuData.effect == "on"}
-                        class:observe-fade-up={menuData.effect == "on"}
-                        data-delay="100"
-                    >
-                        {@html img}
-                    </div>
                 {:else}
-                    <div
-                        class="mb-3"
-                        class:observe-hidden={menuData.effect == "on"}
-                        class:observe-fade-up={menuData.effect == "on"}
-                        data-delay="100"
-                    >
-                        <img src={img} alt="" class="w-full" />
+                    <div class="emodel-area w-[100%] type{idx} hidden">
+                        <!-- svelte-ignore a11y-missing-attribute -->
+                        <iframe
+                            src={emodel.iframe_link}
+                            frameborder="0"
+                            width="100%"
+                            height="800px"
+                        ></iframe>
                     </div>
                 {/if}
             {/each}
         </div>
-    {/if}
+    </div>
+{:else}
+    <div class="mt-5">
+        {#each imgArr as img}
+            {#if img.includes("iframe")}
+                <div
+                    class="mb-3"
+                    class:observe-hidden={menuData.effect == "on"}
+                    class:observe-fade-up={menuData.effect == "on"}
+                    data-delay="100"
+                >
+                    {@html img}
+                </div>
+            {:else}
+                <div
+                    class="mb-3"
+                    class:observe-hidden={menuData.effect == "on"}
+                    class:observe-fade-up={menuData.effect == "on"}
+                    data-delay="100"
+                >
+                    <img src={img} alt="" class="w-full" />
+                </div>
+            {/if}
+        {/each}
+    </div>
 {/if}
 
 <style>

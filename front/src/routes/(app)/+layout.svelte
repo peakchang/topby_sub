@@ -370,6 +370,7 @@
                 class="flex"
                 class:justify-start={headerData.logo_location == "left"}
                 class:justify-center={headerData.logo_location == "center"}
+                data-sveltekit-reload
             >
                 <a href="/">
                     <img
@@ -381,9 +382,10 @@
             </div>
         </div>
 
+        
         <!-- 메뉴 부분!!! -->
         <div
-            class="pretendard border-b mx-auto dark:text-white"
+            class="pretendard border-b mx-auto dark:text-white bg-white"
             style="padding: {menuData.padding_y}px; pretendard; max-width:{screenWidth};"
         >
             <ul

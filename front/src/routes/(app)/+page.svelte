@@ -27,8 +27,6 @@
     let observer;
     let elementsToObserve;
     let mainContents = [];
-    let contentArea;
-    let backgroundArea;
     let x = 0;
 
     export let data;
@@ -63,8 +61,8 @@
 
     $: x, set_x();
     function set_x() {
-        setContentParentHeight();
-        setContentRatio();
+        // setContentParentHeight();
+        setSectionHeight();
         setYoutubeRatio();
     }
 
@@ -104,17 +102,25 @@
         }
     });
 
-    // 내부 요소에 맞춰 위 아래 padding 값 넣고 사이즈 맞춰주는 함수
-    function setContentParentHeight() {
+    function setSectionHeight() {
         if (browser) {
-            contentArea = document.querySelectorAll(`.content-area`);
+            const backgroundArea = document.querySelectorAll(".background-area");
+            const contentArea = document.querySelectorAll(`.content-area`);
+            let ratioNum = -1;
+            let heightNum = -1;
             for (let i = 0; i < mainContents.length; i++) {
                 const data = mainContents[i];
-                let workNum = -1;
-
-                if (data.bgType == "height") {
-                    workNum++;
-                    const element = contentArea[workNum];
+                if (data.bgType == "ratio") {
+                    ratioNum++;
+                    const width = data.backgroundWidth;
+                    const height = data.backgroundHeight;
+                    const aspectRatio = height / width;
+                    const elementWidth = backgroundArea[ratioNum].offsetWidth;
+                    backgroundArea[ratioNum].style.height =
+                        `${elementWidth * aspectRatio}px`;
+                } else if (data.bgType == "height") {
+                    heightNum++;
+                    const element = contentArea[heightNum];
                     const parent = element.parentElement;
                     const height = element.offsetHeight;
 
@@ -125,28 +131,6 @@
                     } catch (error) {
                         console.error(error.message);
                     }
-                }
-            }
-        }
-    }
-
-    function setContentRatio() {
-        if (browser) {
-            let backgroundArea = document.querySelectorAll(".background-area");
-
-            for (let i = 0; i < mainContents.length; i++) {
-                const data = mainContents[i];
-                let workNum = -1;
-
-                if (data.bgType == "ratio") {
-                    workNum++;
-                    const width = data.backgroundWidth;
-                    const height = data.backgroundHeight;
-                    const aspectRatio = height / width;
-
-                    const elementWidth = backgroundArea[workNum].offsetWidth;
-                    backgroundArea[workNum].style.height =
-                        `${elementWidth * aspectRatio}px`;
                 }
             }
         }
@@ -248,7 +232,9 @@
                                 style="height: {content.marginHeight}px;"
                             ></div>
                         {:else if content.youtubeTag}
-                            <div class="youtube-container mt-3 flex justify-center">
+                            <div
+                                class="youtube-container mt-3 flex justify-center"
+                            >
                                 {@html content.youtubeTag}
                             </div>
                         {/if}
