@@ -206,7 +206,7 @@
 {#if !siteData.ld_view_type || siteData.ld_view_type == "old"}
     <div class="menu {isMenuVisible ? 'visible' : 'hidden'} z-[999]">
         <div
-            class="max-w-[896px] min-w-[600px] w-full mx-auto p-3 pretendard"
+            class="max-w-[896px] w-full mx-auto p-3 pretendard"
             data-sveltekit-preload-data="tap"
         >
             <div
