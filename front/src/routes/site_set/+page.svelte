@@ -35,13 +35,9 @@
             mainContents = data.ld_json_main;
         }
 
-        console.log(data.allData);
-        console.log(data.allData.ld_phone_num);
-
         popupImg = data.allData.ld_popup_img;
         eventImg = data.allData.ld_event_img;
         phoneNumber = data.allData.ld_phone_num;
-        console.log(phoneNumber);
 
         smsNumber = data.allData.ld_sms_num;
         smsContent = data.allData.ld_sms_content;
@@ -113,6 +109,9 @@
     let contentImageAlign = "";
     let contentImageEffect = "on";
     let contentImageEffectDealy = "100";
+    // 유튜브 관련 변수
+    let contentYoutubeLinkTemp = "";
+    let contentYoutubeTag = "";
 
     // 기타 정보 변수!!
     let popupImg = "";
@@ -210,8 +209,9 @@
     }
 
     async function backgroundImageUpload(e) {
-        const imgPath = e.detail.imgPath;
-        sectionObj["backgroundImg"] = imgPath;
+        sectionObj["backgroundImg"] = e.detail.imgPath;
+        sectionObj["backgroundWidth"] = e.detail.width;
+        sectionObj["backgroundHeight"] = e.detail.height;
     }
 
     function contentImageUpload(e) {
@@ -236,7 +236,11 @@
             contentObj["align"] = contentImageAlign;
             contentObj["effect"] = contentImageEffect;
             contentObj["delay"] = contentImageEffectDealy;
+        } else if (addContentType == "youtube") {
+            contentObj["youtubeTag"] = contentYoutubeTag;
         }
+
+        console.log(contentObj);
 
         if (contentModifyStatus && insertIdx != undefined) {
             contentModifyStatus = false;
@@ -260,6 +264,8 @@
             insertIdx = undefined;
         }
 
+        console.log(sectionObj.contentList);
+
         addContentStatus = undefined;
 
         // 임시 변수 전부 초기화!
@@ -276,9 +282,14 @@
         contentImageAlign = "";
         contentImageEffect = "on";
         contentImageEffectDealy = "100";
+
+        contentYoutubeLinkTemp = "";
+        contentYoutubeTag = "";
     }
 
     function sectionUpdate() {
+        console.log(sectionObj);
+
         if (!sectionModifyStatus) {
             const tempArr = [...mainContents];
             tempArr.push(sectionObj);
@@ -289,6 +300,9 @@
             mainContents = tempArr;
             sectionModifyStatus = false;
         }
+
+        console.log(mainContents);
+
         sectionObj = { contentList: [] }; // 섹션 초기화
         sectionStatus = false; // 섹션 창 닫기
     }
@@ -377,6 +391,9 @@
             contentImageAlign = getSectionObj["align"];
             contentImageEffect = getSectionObj["effect"];
             contentImageEffectDealy = getSectionObj["delay"];
+        } else if (contentType == "youtube") {
+            contentYoutubeTag = getSectionObj["youtubeTag"];
+            contentYoutubeLinkTemp = iframeToWatchURL(contentYoutubeTag);
         }
     }
 
@@ -410,15 +427,14 @@
 
     async function updateSiteSet() {
         console.log(menuObj);
+        console.log(mainContents);
+        console.log(logoObj);
 
         for (let i = 0; i < menuObj.menus.length; i++) {
             let imgArr = menuObj.menus[i].imgArr;
-            console.log(imgArr);
             if (imgArr) {
                 menuObj.menus[i].imgArr = removeNulls(imgArr);
             }
-
-            console.log(menuObj.menus[i].imgArr);
         }
 
         for (let l = 0; l < mainContents.length; l++) {
@@ -459,7 +475,6 @@
 
     function add_eModel() {
         // eModelBool
-        console.log(menuObj.menus);
         const tempArr = [...menuObj.menus];
         tempArr.push({ name: "e-모델하우스", link: "emodel", emenu: [] });
         menuObj.menus = tempArr;
@@ -467,9 +482,6 @@
     }
 
     function add_emodel_ele() {
-        console.log(this.value);
-
-        console.log(menuObj.menus);
         // menuObj.menus[this.value]['emenu']
         const emodelObj = { type: eModelType, iframe_link: eModelLink };
         const tempArr = [...menuObj.menus[this.value]["emenu"]];
@@ -486,14 +498,10 @@
     let instBool = false;
 
     function siteInstructionFunc() {
-        console.log(instBool);
-        
         if (!instBool) {
             instBool = true;
             if (browser) {
                 const instList = document.querySelectorAll(".site-instruction");
-                console.log(instList);
-                
                 for (let i = 0; i < instList.length; i++) {
                     const element = instList[i];
                     element.classList.remove("hidden");
@@ -509,6 +517,28 @@
                 }
             }
         }
+    }
+
+    function generateYouTubeIframe(url) {
+        const match = url.match(
+            /(?:youtu\.be\/|v=|\/embed\/)([a-zA-Z0-9_-]{11})/,
+        );
+        const videoId = match ? match[1] : null;
+
+        if (!videoId) {
+            return false;
+        }
+
+        return `<iframe class="youtube-iframe" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    }
+
+    function iframeToWatchURL(iframeString) {
+        const match = iframeString.match(
+            /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+        );
+        const videoId = match ? match[1] : null;
+
+        return `https://www.youtube.com/watch?v=${videoId}`;
     }
 </script>
 
@@ -533,10 +563,7 @@
         미리보기
     </button>
 
-    <button
-        class="btn btn-secondary btn-sm"
-        on:click={siteInstructionFunc}
-    >
+    <button class="btn btn-secondary btn-sm" on:click={siteInstructionFunc}>
         설명 보기
     </button>
 </div>
@@ -769,13 +796,53 @@
                     </td>
                 </tr>
                 <tr>
-                    <th class="border px-1 py-2">섹션 높이</th>
+                    <th class="border px-1 py-2">섹션 타입</th>
                     <td class="border px-1 py-2 w-3/4">
-                        <input
-                            type="text"
-                            class="border p-1 w-24"
-                            bind:value={sectionObj["height"]}
-                        /> px
+                        <div class="p-1.5">
+                            <label class="mr-3">
+                                <input
+                                    type="radio"
+                                    value="ratio"
+                                    class="radio radio-success mr-1 radio-sm"
+                                    bind:group={sectionObj["bgType"]}
+                                />
+                                <span class="text-sm">비율 맞춤</span>
+                                <span class="text-xs">(메인 이미지용)</span>
+                            </label>
+
+                            <label>
+                                <input
+                                    type="radio"
+                                    value="height"
+                                    class="radio radio-success mr-1 radio-sm"
+                                    checked="checked"
+                                    bind:group={sectionObj["bgType"]}
+                                />
+                                <span class="text-sm">높이 맞춤</span>
+                                <span class="text-xs">(하부 이미지용)</span>
+                            </label>
+
+                            /
+
+                            <span class="text-sm">상단 여백 : </span>
+                            <input
+                                type="text"
+                                class="text-sm border p-1 w-16 focus:outline-none focus:border-blue-600 rounded-md"
+                                bind:value={sectionObj["paddingTopVal"]}
+                            />
+
+                            <span class="text-sm">하단 여백 : </span>
+                            <input
+                                type="text"
+                                class="text-sm border p-1 w-16 focus:outline-none focus:border-blue-600 rounded-md"
+                                bind:value={sectionObj["paddingBottomVal"]}
+                            />
+                        </div>
+
+                        <div class="text-right text-xs pr-8 text-red-400">
+                            ※ 상단 / 하단 여백은 높이 맞춤용이므로, 비율맞춤에선
+                            적용 안됨!
+                        </div>
                     </td>
                 </tr>
 
@@ -786,6 +853,7 @@
                             {#each sectionObj.contentList as content, idx}
                                 {#if content.marginHeight}
                                     <div class="border p-2">
+                                        <span>({idx + 1})</span>
                                         <button
                                             class="btn btn-outline btn-info btn-sm mr-1"
                                             value={idx}
@@ -807,6 +875,7 @@
                                     </div>
                                 {:else if content.text}
                                     <div class="border p-2">
+                                        <span>({idx + 1})</span>
                                         <button
                                             class="btn btn-outline btn-info btn-sm mr-1"
                                             value={idx}
@@ -832,6 +901,7 @@
                                     </div>
                                 {:else if content.imgPath}
                                     <div class="border p-2">
+                                        <span>({idx + 1})</span>
                                         <button
                                             class="btn btn-outline btn-info btn-sm mr-1"
                                             value={idx}
@@ -864,6 +934,46 @@
                                         <span>정렬 : {content.align}</span> /
                                         <span>효과 : {content.effect}</span>
                                     </div>
+                                {:else if content.youtubeTag}
+                                    <div class="border p-2">
+                                        <span>({idx + 1})</span>
+                                        <button
+                                            class="btn btn-outline btn-info btn-sm mr-1"
+                                            value={idx}
+                                            data-type="youtube"
+                                            on:click={modifyContentFunc}
+                                        >
+                                            수정
+                                        </button>
+
+                                        <button
+                                            class="btn btn-outline btn-error btn-sm mr-3"
+                                            value={idx}
+                                            data-type="youtube"
+                                            on:click={deleteContentFunc}
+                                        >
+                                            삭제
+                                        </button>
+
+                                        <div></div>
+
+                                        <div class=" w-28">
+                                            영상 :
+                                            {@html content.youtubeTag}
+                                        </div>
+                                    </div>
+                                {:else}
+                                    <div class="border p-2">
+                                        <span>({idx + 1})</span>
+                                        <button
+                                            class="btn btn-outline btn-error btn-sm mr-3"
+                                            value={idx}
+                                            data-type="youtube"
+                                            on:click={deleteContentFunc}
+                                        >
+                                            삭제
+                                        </button>
+                                    </div>
                                 {/if}
                             {/each}
                         {/if}
@@ -876,6 +986,9 @@
                                         showToast("컨텐츠 타입을 선택하세요");
                                     }
                                     addContentStatus = addContentType;
+                                    console.log(addContentStatus);
+
+                                    console.log(addContentType);
                                 }}
                             >
                                 컨텐츠 선택
@@ -903,7 +1016,7 @@
                                 <span class="ml-0.5">텍스트</span>
                             </label>
 
-                            <label class="mr-5">
+                            <label class="mr-3">
                                 <input
                                     type="radio"
                                     value="image"
@@ -913,14 +1026,24 @@
                                 <span class="ml-0.5">이미지</span>
                             </label>
 
+                            <label class="mr-5">
+                                <input
+                                    type="radio"
+                                    value="youtube"
+                                    class="radio radio-success radio-xs"
+                                    bind:group={addContentType}
+                                />
+                                <span class="ml-0.5">유튜브</span>
+                            </label>
+
                             <input
                                 type="text"
                                 class="border p-1 w-16"
                                 bind:value={insertIdx}
                             />
                             <span class="text-xs"
-                                >(중간에 삽입하려면 입력하세요 맨처음 : 0 /
-                                마지막 전 : {sectionObj.contentList.length - 1})
+                                >(중간에 삽입하려면 원하는 부분 - 1 을
+                                입력하세요)
                             </span>
                         </div>
 
@@ -940,14 +1063,12 @@
                                 <div>
                                     여백 높이 : <input
                                         type="text"
-                                        class="border p-1 w-24"
+                                        class="border p-1 w-24 focus:outline-none focus:border-blue-500"
                                         bind:value={contentMarginHeight}
                                     /> px
                                 </div>
                             </div>
-                        {/if}
-
-                        {#if addContentStatus == "text"}
+                        {:else if addContentStatus == "text"}
                             <div
                                 class="my-3 py-2 text-center border border-green-500"
                             >
@@ -965,13 +1086,14 @@
                                 <div>
                                     폰트 사이즈 : <input
                                         type="text"
-                                        class="border p-1 w-24"
+                                        class="border p-1 w-24 focus:outline-none focus:border-blue-500"
                                         bind:value={contentFontSize}
                                     />
+
                                     px / 폰트 색상 :
                                     <input
                                         type="text"
-                                        class="border p-1 w-24"
+                                        class="border p-1 w-24 focus:outline-none focus:border-blue-500"
                                         bind:value={contentFontColor}
                                     />
                                 </div>
@@ -1035,14 +1157,12 @@
                                 <div class="mt-3">
                                     딜레이 : <input
                                         type="text"
-                                        class="border p-1 w-24"
+                                        class="border p-1 w-24 focus:outline-none focus:border-blue-500"
                                         bind:value={contentTextEffectDealy}
                                     /> (100 = 1초)
                                 </div>
                             </div>
-                        {/if}
-
-                        {#if addContentStatus == "image"}
+                        {:else if addContentStatus == "image"}
                             <div
                                 class="my-3 py-2 text-center border border-blue-500"
                             >
@@ -1081,7 +1201,7 @@
                                 <div class="mt-3">
                                     이미지 가로 사이즈 : <input
                                         type="text"
-                                        class="border p-1 w-24"
+                                        class="border p-1 w-24 focus:outline-none focus:border-blue-500"
                                         bind:value={contentImageWidth}
                                     /> %
                                 </div>
@@ -1146,9 +1266,52 @@
                                 <div class="mt-3">
                                     딜레이 : <input
                                         type="text"
-                                        class="border p-1 w-24"
+                                        class="border p-1 w-24 focus:outline-none focus:border-blue-500"
                                         bind:value={contentImageEffectDealy}
                                     /> (100 = 1초)
+                                </div>
+                            </div>
+                        {:else if addContentStatus == "youtube"}
+                            <div
+                                class="my-3 py-2 text-center border border-blue-500"
+                            >
+                                <div class="mt-3">
+                                    {#if contentYoutubeTag}
+                                        <div class="my-5 flex justify-center">
+                                            {@html contentYoutubeTag}
+                                        </div>
+                                    {/if}
+
+                                    <div
+                                        class="flex justify-center items-center gap-2"
+                                    >
+                                        <span>유튜브 링크 :</span>
+                                        <input
+                                            type="text"
+                                            class="border p-1 w-36 focus:outline-none focus:border-blue-500 rounded-md"
+                                            bind:value={contentYoutubeLinkTemp}
+                                        />
+                                        <button
+                                            class="btn btn-info btn-sm text-white"
+                                            on:click={() => {
+                                                const tempTag =
+                                                    generateYouTubeIframe(
+                                                        contentYoutubeLinkTemp,
+                                                    );
+                                                if (!tempTag) {
+                                                    showToast(
+                                                        "유효한 유튜브 링크가 아닙니다.",
+                                                    );
+                                                } else {
+                                                    contentYoutubeTag = tempTag;
+                                                }
+
+                                                console.log(mainContents);
+                                            }}
+                                        >
+                                            적용
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         {/if}

@@ -52,14 +52,15 @@
     });
 </script>
 
-
-
-<div >
+<div>
     {#each mainContents as mainContent}
         <div
+            
             style="background-image: url({mainContent[
                 'backgroundImg'
-            ]}); height:{mainContent['height']}px; background-repeat: no-repeat; background-size: 100% auto;"
+            ]}); height:{mainContent[
+                'height'
+            ]}px; background-repeat: no-repeat; background-size: 100% auto;"
         >
             {#each mainContent.contentList as content}
                 {#if content.text}

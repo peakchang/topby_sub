@@ -27,6 +27,9 @@
     let observer;
     let elementsToObserve;
     let mainContents = [];
+    let contentArea;
+    let backgroundArea;
+    let x = 0;
 
     export let data;
 
@@ -49,13 +52,20 @@
             // 신버전 코드
             try {
                 mainContents = JSON.parse(siteData.ld_json_main);
-                console.log(mainContents);
 
                 // 받은 JSON 데이터 처리
             } catch (error) {
+                console.log("에러 들어옴?!");
                 console.error("JSON 파싱 오류:", error);
             }
         }
+    }
+
+    $: x, set_x();
+    function set_x() {
+        setContentParentHeight();
+        setContentRatio();
+        setYoutubeRatio();
     }
 
     onMount(() => {
@@ -64,6 +74,9 @@
             if (browser) {
                 elementsToObserve =
                     document.querySelectorAll(".observe-fade-up");
+
+                // setContentParentHeight();
+                // setContentRatio();
             }
             observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
@@ -90,7 +103,70 @@
             });
         }
     });
+
+    // 내부 요소에 맞춰 위 아래 padding 값 넣고 사이즈 맞춰주는 함수
+    function setContentParentHeight() {
+        if (browser) {
+            contentArea = document.querySelectorAll(`.content-area`);
+            for (let i = 0; i < mainContents.length; i++) {
+                const data = mainContents[i];
+                let workNum = -1;
+
+                if (data.bgType == "height") {
+                    workNum++;
+                    const element = contentArea[workNum];
+                    const parent = element.parentElement;
+                    const height = element.offsetHeight;
+
+                    try {
+                        parent.style.height = `${height + Number(data.paddingTopVal) + Number(data.paddingBottomVal)}px`;
+                        parent.style.paddingTop = `${Number(data.paddingTopVal)}px`;
+                        parent.style.paddingBottom = `${Number(data.paddingBottomVal)}px`;
+                    } catch (error) {
+                        console.error(error.message);
+                    }
+                }
+            }
+        }
+    }
+
+    function setContentRatio() {
+        if (browser) {
+            let backgroundArea = document.querySelectorAll(".background-area");
+
+            for (let i = 0; i < mainContents.length; i++) {
+                const data = mainContents[i];
+                let workNum = -1;
+
+                if (data.bgType == "ratio") {
+                    workNum++;
+                    const width = data.backgroundWidth;
+                    const height = data.backgroundHeight;
+                    const aspectRatio = height / width;
+
+                    const elementWidth = backgroundArea[workNum].offsetWidth;
+                    backgroundArea[workNum].style.height =
+                        `${elementWidth * aspectRatio}px`;
+                }
+            }
+        }
+    }
+
+    function setYoutubeRatio() {
+        if (browser) {
+            const youtubeContents =
+                document.querySelectorAll(".youtube-iframe");
+
+            for (let i = 0; i < youtubeContents.length; i++) {
+                youtubeContents[i].style.width = "90%";
+                const elementWidth = youtubeContents[i].offsetWidth;
+                youtubeContents[i].style.height = `${elementWidth / 1.7778}px`;
+            }
+        }
+    }
 </script>
+
+<svelte:window bind:innerWidth={x} />
 
 {#if !siteData["ld_view_type"] || siteData["ld_view_type"] == "old"}
     {#if siteData.ld_banner_img}
@@ -135,47 +211,53 @@
     <div class="mb-5">
         {#each mainContents as mainContent}
             <div
-                style="background-image: url({mainContent[
-                    'backgroundImg'
-                ]}); height:{mainContent[
-                    'height'
-                ]}px; background-repeat: no-repeat; background-size: 100% auto;"
+                class:background-area={mainContent["bgType"] == "ratio"}
+                style="background-image: url({mainContent['backgroundImg']});"
             >
-                {#each mainContent.contentList as content}
-                    {#if content.text}
-                        <div
-                            class="px-3 pretendard"
-                            class:observe-hidden={content.effect == "on"}
-                            class:observe-fade-up={content.effect == "on"}
-                            data-delay={content.delay}
-                            style="text-align : {content.align}; color :{content.fontColor};  font-size : {content.fontSize}px; white-space: pre-line;"
-                        >
-                            {content.text}
-                        </div>
-                    {:else if content.imgPath}
-                        <div
-                            class="flex"
-                            class:justify-center={content.align == "center"}
-                            class:justify-start={content.align == "left"}
-                            class:justify-end={content.align == "right"}
-                            class:observe-hidden={content.effect == "on"}
-                            class:observe-fade-up={content.effect == "on"}
-                            data-delay={content.delay}
-                        >
-                            <div style="width:{content.width}%;">
-                                <img src={content.imgPath} alt="" />
+                <!-- height:{mainContent[
+                'height'
+            ]}px; -->
+                <div class:content-area={mainContent["bgType"] == "height"}>
+                    {#each mainContent.contentList as content}
+                        {#if content.text}
+                            <div
+                                class="px-3 pretendard"
+                                class:observe-hidden={content.effect == "on"}
+                                class:observe-fade-up={content.effect == "on"}
+                                data-delay={content.delay}
+                                style="text-align : {content.align}; color :{content.fontColor};  font-size : {content.fontSize}px; white-space: pre-line;"
+                            >
+                                {content.text}
                             </div>
-                        </div>
-                    {:else if content.marginHeight}
-                        <div style="height: {content.marginHeight}px;"></div>
-                    {/if}
-                {/each}
+                        {:else if content.imgPath}
+                            <div
+                                class="flex"
+                                class:justify-center={content.align == "center"}
+                                class:justify-start={content.align == "left"}
+                                class:justify-end={content.align == "right"}
+                                class:observe-hidden={content.effect == "on"}
+                                class:observe-fade-up={content.effect == "on"}
+                                data-delay={content.delay}
+                            >
+                                <div style="width:{content.width}%;">
+                                    <img src={content.imgPath} alt="" />
+                                </div>
+                            </div>
+                        {:else if content.marginHeight}
+                            <div
+                                style="height: {content.marginHeight}px;"
+                            ></div>
+                        {:else if content.youtubeTag}
+                            <div class="youtube-container mt-3 flex justify-center">
+                                {@html content.youtubeTag}
+                            </div>
+                        {/if}
+                    {/each}
+                </div>
             </div>
         {/each}
     </div>
 {/if}
-
-
 
 <style>
     /* 구버전 CSS */
@@ -203,5 +285,10 @@
     .fade-up-active {
         opacity: 1;
         transform: translateY(0);
+    }
+
+    .background-area {
+        background-repeat: no-repeat;
+        background-size: 100% auto;
     }
 </style>

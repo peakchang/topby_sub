@@ -44,8 +44,6 @@
         seoValue = data.seoValue;
         siteData = data.subView;
 
-        console.log(siteData);
-
         const popupShow = Cookies.get("popup_close");
         if (popupShow == "ok") {
             showPopup = false;
@@ -383,9 +381,10 @@
             </div>
         </div>
 
+        <!-- 메뉴 부분!!! -->
         <div
-            class="pretendard border-b mx-auto"
-            style="padding: {menuData.padding_y}px; pretendard; background-color:white; max-width:{screenWidth};"
+            class="pretendard border-b mx-auto dark:text-white"
+            style="padding: {menuData.padding_y}px; pretendard; max-width:{screenWidth};"
         >
             <ul
                 class="flex justify-around"

@@ -27,11 +27,8 @@
                     imageFile,
                     options,
                 );
-                console.log("Compressed file:", compressedFile);
-                console.log(compressedFile.name);
-
+                const { width, height } = await getDimensions(compressedFile);
                 let imgForm = new FormData();
-
                 const timestamp = new Date().getTime();
                 const fileName = `${timestamp}${Math.random()
                     .toString(36)
@@ -68,6 +65,8 @@
                     const imgPath = res.data.baseUrl;
                     dispatch("sendImgPath", {
                         imgPath,
+                        width,
+                        height,
                     });
                 }
             } catch (error) {
@@ -76,7 +75,22 @@
             }
         };
     };
+
+    const getDimensions = (file) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                resolve({
+                    width: img.width,
+                    height: img.height,
+                });
+            };
+            img.onerror = reject;
+            img.src = URL.createObjectURL(file);
+        });
+    };
 </script>
 
-
-<button class="btn btn-accent btn-sm text-white" on:click={uploadImageoAct}>이미지 업로드</button>
+<button class="btn btn-accent btn-sm text-white" on:click={uploadImageoAct}
+    >이미지 업로드</button
+>
