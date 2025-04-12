@@ -224,7 +224,7 @@
                                 data-delay={content.delay}
                             >
                                 <div style="width:{content.width}%;">
-                                    <img src={content.imgPath} alt="" />
+                                    <img src={content.imgPath} alt="" class="w-full" />
                                 </div>
                             </div>
                         {:else if content.marginHeight}

@@ -45,6 +45,10 @@
         footer = data.allData.ld_footer;
 
         siteName = data.allData.ld_name;
+        if (data.allData.ld_db_input_subject) {
+            invitationName = data.allData.ld_db_input_subject;
+        }
+
         phoneBottomImg = data.allData.ld_mobile_bt_phone_img;
         eventBottomImg = data.allData.ld_mobile_bt_event_img;
     }
@@ -124,6 +128,7 @@
 
     // 변수 추가!!
     let siteName = "";
+    let invitationName = "초대장 발급 확인";
     let phoneBottomImg = "";
     let eventBottomImg = "";
 
@@ -448,22 +453,29 @@
         const ld_json_main = JSON.stringify(mainContents);
         const ld_json_menus = JSON.stringify(menuObj);
 
+        const ld_popup_img = popupImg;
+
+        const uploadDataObj = {
+            ld_json_header,
+            ld_json_main,
+            ld_json_menus,
+            ld_popup_img: popupImg,
+            ld_event_img: eventImg,
+            ld_phone_num: phoneNumber,
+            ld_sms_num: smsNumber,
+            ld_sms_content: smsContent,
+            ld_personal_info_view: personalInfoView,
+            ld_footer: footer,
+            ld_name: siteName,
+            ld_mobile_bt_phone_img: phoneBottomImg,
+            ld_mobile_bt_event_img: eventBottomImg,
+            ld_db_input_subject: invitationName,
+        };
+
         try {
             const res = await axios.post(`${back_api}/update_site_set`, {
                 get_id: getId,
-                ld_json_header,
-                ld_json_main,
-                ld_json_menus,
-                popupImg,
-                eventImg,
-                phoneNumber,
-                smsNumber,
-                smsContent,
-                personalInfoView,
-                footer,
-                siteName,
-                phoneBottomImg,
-                eventBottomImg,
+                uploadDataObj,
             });
             if (res.status == 200) {
                 showToast("업데이트가 완료 되었습니다.");
@@ -551,9 +563,9 @@
 {/if}
 
 <div class="fixed top-11 right-6 lg:right-1/4 pretendard">
-    <button class="btn btn-primary btn-sm" on:click={updateSiteSet}
-        >작업 업로드</button
-    >
+    <button class="btn btn-primary btn-sm" on:click={updateSiteSet}>
+        작업 업로드
+    </button>
     <button
         class="btn btn-secondary btn-sm"
         on:click={() => {
@@ -1654,9 +1666,9 @@
         <div>
             <table class="w-full">
                 <tr>
-                    <th class="border p-2 text-sm" style="width:15%"
-                        >사이트명</th
-                    >
+                    <th class="border p-2 text-sm" style="width:15%">
+                        사이트명
+                    </th>
                     <td class="border p-1 text-sm" style="width:35%">
                         <input
                             type="text"
@@ -1664,12 +1676,21 @@
                             bind:value={siteName}
                         />
                     </td>
-                    <td colspan="2" class="border"></td>
+                    <th class="border p-2 text-sm" style="width:15%">
+                        DB 접수 제목
+                    </th>
+                    <td class="border p-1 text-sm" style="width:35%">
+                        <input
+                            type="text"
+                            class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
+                            bind:value={invitationName}
+                        />
+                    </td>
                 </tr>
                 <tr>
-                    <th class="border p-2 text-sm" style="width:15%"
-                        >전화번호</th
-                    >
+                    <th class="border p-2 text-sm" style="width:15%">
+                        전화번호
+                    </th>
                     <td class="border p-1 text-sm" style="width:35%">
                         <input
                             type="text"
@@ -1680,7 +1701,7 @@
                     <th class="border p-2 text-sm" style="width:15%">
                         문자 전화번호
                     </th>
-                    <td class="border p-2 text-sm" style="width:35%">
+                    <td class="border p-1 text-sm" style="width:35%">
                         <input
                             type="text"
                             class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
@@ -1689,9 +1710,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <th class="border p-2 text-sm" style="width:15%"
-                        >문자내용</th
-                    >
+                    <th class="border p-2 text-sm" style="width:15%">
+                        문자내용
+                    </th>
                     <td class="border p-2 text-sm" style="width:35%">
                         <textarea
                             class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"

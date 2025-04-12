@@ -164,15 +164,9 @@ export const getRandomNumbers = (maxCount, count) => {
 }
 
 export const customerSubmit = async (name, phone, siteName) => {
-    if (!name || !phone) {
-        alert('항목이 비어있습니다.')
-        return
-    }
 
-    if(!validatePhoneNumber(phone)){
-        alert('정상적인 휴대폰 번호만 가능합니다.')
-        return
-    }
+
+    
 
     try {
         const res = await axios.post(`${back_api}/update_customer`, {

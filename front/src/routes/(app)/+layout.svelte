@@ -4,7 +4,7 @@
     import SeoMeta from "$lib/components/SeoMeta.svelte";
     import { onMount } from "svelte";
     import ModalCustom from "$lib/components/ModalCustom.svelte";
-    import { customerSubmit } from "$lib/lib";
+    import { customerSubmit, validatePhoneNumber } from "$lib/lib";
     import Cookies from "js-cookie";
     import axios from "axios";
     import { back_api } from "$src/lib/const";
@@ -36,6 +36,7 @@
     let showPopup = false;
     let personalInfo;
     let chk_modal;
+    let inviteChk = false;
 
     export let data;
     $: data, setData();
@@ -43,6 +44,7 @@
         // 공통 부분!!
         seoValue = data.seoValue;
         siteData = data.subView;
+        console.log(siteData);
 
         const popupShow = Cookies.get("popup_close");
         if (popupShow == "ok") {
@@ -53,6 +55,7 @@
 
         // 구버전!!!!
         if (!siteData.ld_view_type || siteData.ld_view_type == "old") {
+            siteData.ld_personal_info_view = "on";
             menuList = JSON.parse(siteData.ld_menu);
             if (siteData.ld_banner_img) {
                 bannerList = siteData.ld_banner_img.split(",");
@@ -382,7 +385,6 @@
             </div>
         </div>
 
-        
         <!-- 메뉴 부분!!! -->
         <div
             class="pretendard border-b mx-auto dark:text-white bg-white"
@@ -446,7 +448,9 @@
         <div class="w-full p-5 bg-[#f7f4ec] flex flex-col justify-center gap-8">
             <div>
                 <div class="text-3xl font-bold mb-2 text-center">
-                    초대장 발급 확인
+                    {siteData.ld_db_input_subject
+                        ? siteData.ld_db_input_subject
+                        : "초대장 발급 확인"}
                 </div>
                 <!-- <div class="text-xs">
 					관심고객 등록을 통하여 이름, 전화번호만을 수집하며, 정보 및
@@ -483,6 +487,7 @@
                                     <input
                                         type="checkbox"
                                         class="checkbox checkbox-neutral checkbox-sm"
+                                        bind:checked={inviteChk}
                                     />
                                     <span>개인정보 보호동의</span>
                                 </label>
@@ -534,6 +539,31 @@
                             const siteName = siteData.ld_site
                                 ? siteData.ld_site
                                 : siteData.ld_domain;
+
+                            if (!customerName) {
+                                alert("성함을 입력 해주세요.");
+                                return;
+                            }
+
+                            if (!customerPhone) {
+                                alert("전화번호를 입력 해주세요.");
+                                return;
+                            }
+
+                            if (
+                                !inviteChk &&
+                                siteData.ld_personal_info_view == "on"
+                            ) {
+                                alert(
+                                    "개인정보 보호동의에 체크해주셔야 합니다.",
+                                );
+                                return;
+                            }
+
+                            if (!validatePhoneNumber(customerPhone)) {
+                                alert("정상적인 휴대폰 번호만 가능합니다.");
+                                return false;
+                            }
                             const resSend = customerSubmit(
                                 customerName,
                                 customerPhone,
@@ -542,6 +572,9 @@
 
                             if (resSend) {
                                 chk_modal.showModal();
+                                customerName = "";
+                                customerPhone = "";
+                                inviteChk = false;
                             }
                         }}
                     >
@@ -584,7 +617,14 @@
         <div class="modal-action">
             <form method="dialog">
                 <!-- if there is a button in form, it will close the modal -->
-                <button class="btn">닫기</button>
+                <button
+                    class="btn"
+                    on:click={() => {
+                        inviteChk = true;
+                    }}
+                >
+                    확인 및 닫기
+                </button>
             </form>
         </div>
     </div>
