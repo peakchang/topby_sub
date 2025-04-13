@@ -405,15 +405,15 @@
             style="padding: {menuData.padding_y}px; pretendard; max-width:{screenWidth};"
         >
             <ul
-                class="flex justify-around dark"
+                class="flex justify-around"
                 data-sveltekit-preload-data="tap"
                 data-sveltekit-reload
             >
                 <li>didi</li>
                 {#if menuData.menus}
                     {#each menuData.menus as menu}
-                        <a href="/{menu.link}">
-                            <li class="menu-list">{menu.name}</li>
+                        <a href="/{menu.link}" class=" dark:text-white">
+                            <li class="menu-list ">{menu.name}</li>
                         </a>
                     {/each}
                 {/if}
