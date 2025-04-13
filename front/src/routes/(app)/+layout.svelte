@@ -39,6 +39,9 @@
     let chk_modal;
     let inviteChk = false;
 
+    // 임시!
+    let isDarkMode = false;
+
     export let data;
     $: data, setData();
     function setData() {
@@ -107,14 +110,9 @@
         // 다크모드 처리
 
         if (browser) {
-            const isDarkMode = window.matchMedia(
+            isDarkMode = window.matchMedia(
                 "(prefers-color-scheme: dark)",
             ).matches;
-            if (isDarkMode) {
-                alert("다크모드 입니다.");
-            } else {
-                alert("다크모드가 아닙니다.");
-            }
         }
     });
 
@@ -409,11 +407,15 @@
                 data-sveltekit-preload-data="tap"
                 data-sveltekit-reload
             >
-                <li>didi</li>
+                {#if isDarkMode}
+                    <li>dark</li>
+                {:else}
+                    <li>light</li>
+                {/if}
                 {#if menuData.menus}
                     {#each menuData.menus as menu}
                         <a href="/{menu.link}" class=" dark:text-white">
-                            <li class="menu-list ">{menu.name}</li>
+                            <li class="menu-list">{menu.name}</li>
                         </a>
                     {/each}
                 {/if}
