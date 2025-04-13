@@ -9,6 +9,7 @@
     import axios from "axios";
     import { back_api } from "$src/lib/const";
     import { goto } from "$app/navigation";
+    import { browser } from "$app/environment";
 
     let seoValue = {};
     let siteData = {};
@@ -101,6 +102,19 @@
         // 구버전 onMount 코드!!!
         if (!siteData.ld_view_type || siteData.ld_view_type == "old") {
             AOS.init();
+        }
+
+        // 다크모드 처리
+
+        if (browser) {
+            const isDarkMode = window.matchMedia(
+                "(prefers-color-scheme: dark)",
+            ).matches;
+            if (isDarkMode) {
+                alert("다크모드 입니다.");
+            } else {
+                alert("다크모드가 아닙니다.");
+            }
         }
     });
 
@@ -387,18 +401,19 @@
 
         <!-- 메뉴 부분!!! -->
         <div
-            class="pretendard border-b mx-auto dark:text-white bg-white"
+            class="pretendard border-b mx-auto bg-white dark:text-white"
             style="padding: {menuData.padding_y}px; pretendard; max-width:{screenWidth};"
         >
             <ul
-                class="flex justify-around"
+                class="flex justify-around dark"
                 data-sveltekit-preload-data="tap"
                 data-sveltekit-reload
             >
+                <li>didi</li>
                 {#if menuData.menus}
                     {#each menuData.menus as menu}
                         <a href="/{menu.link}">
-                            <li>{menu.name}</li>
+                            <li class="menu-list">{menu.name}</li>
                         </a>
                     {/each}
                 {/if}
@@ -631,6 +646,12 @@
 </dialog>
 
 <style>
+    @media (prefers-color-scheme: dark) {
+        .dark .menu-list {
+            color: white !important;
+        }
+    }
+
     @font-face {
         font-family: "OKDDUNG";
         src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/OKDDUNG.woff2")
