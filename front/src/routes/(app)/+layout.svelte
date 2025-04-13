@@ -401,7 +401,7 @@
 
         <!-- 메뉴 부분!!! -->
         <div
-            class="pretendard border-b mx-auto bg-white dark:text-white"
+            class="pretendard border-b mx-auto bg-white dark:bg-black"
             style="padding: {menuData.padding_y}px; pretendard; max-width:{screenWidth};"
         >
             <ul
