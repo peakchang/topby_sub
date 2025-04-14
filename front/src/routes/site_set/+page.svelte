@@ -44,6 +44,10 @@
         personalInfoView = data.allData.ld_personal_info_view;
         footer = data.allData.ld_footer;
 
+        cardImg = data.allData.ld_card_image;
+        siteDescription = data.allData.ld_description;
+        addScript = data.allData.ld_add_scripts;
+
         siteName = data.allData.ld_name;
         if (data.allData.ld_db_input_subject) {
             invitationName = data.allData.ld_db_input_subject;
