@@ -94,13 +94,12 @@
                 }
 
                 const headerArea = document.querySelector(".header-area");
-                const menuArea = document.querySelector('.menu-area')
+                const menuArea = document.querySelector(".menu-area");
                 const headerHeight = headerArea.offsetHeight;
                 const menuHeight = menuArea.offsetHeight;
                 console.log(headerHeight);
                 console.log(menuHeight);
-                mainPageMarginTop = headerHeight + menuHeight
-                
+                mainPageMarginTop = headerHeight + menuHeight;
             }
         }
     }
@@ -394,7 +393,7 @@
     <!-- 리얼 헤더!! -->
     <div class="fixed top-0 left-0 w-full z-50">
         <div
-        class="header-area"
+            class="header-area"
             style="background-color: {headerData.header_color}; padding: {headerData.header_padding}px"
         >
             <div
@@ -415,8 +414,8 @@
 
         <!-- 메뉴 부분!!! -->
         <div
-            class="pretendard border-b mx-auto bg-white dark:bg-black menu-area"
-            style="padding: {menuData.padding_y}px; pretendard; max-width:{screenWidth};"
+            class="pretendard border-b mx-auto menu-area"
+            style="padding: {menuData.padding_y}px; pretendard; max-width:{screenWidth}; background-color:white !important;"
         >
             <ul
                 class="flex justify-around"
@@ -430,8 +429,17 @@
                 {/if}
                 {#if menuData.menus}
                     {#each menuData.menus as menu}
-                        <a href="/{menu.link}" class=" dark:text-white">
-                            <li class="menu-list">{menu.name}</li>
+                        <a
+                            href="/{menu.link}"
+                            class=" dark:text-white"
+                            style="color: black !important;"
+                        >
+                            <li
+                                class="menu-list"
+                                style="color: black !important;"
+                            >
+                                {menu.name}
+                            </li>
                         </a>
                     {/each}
                 {/if}
