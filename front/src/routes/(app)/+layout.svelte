@@ -384,34 +384,36 @@
             class="header-area"
             style="background-color: {headerData.header_color}; padding: {headerData.header_padding}px"
         >
-            <!-- <a href="TEL:{siteData.ld_phone_num}" on:click={addCallCount}>
-            <div class=" fixed top-0 right-5 text-white z-[999]">
-                <div
-                    class="cursor-pointer bg-white rounded-full"
-                    style="margin-top: {Number(headerData.header_padding) +
-                        callImgMarginBlank}px;"
-                >
-                    <img src="/call-icon.png" alt="" width={callImgWidth} />
-                </div>
-            </div>
-        </a> -->
-
             <div
-                class="flex logo-area bg-red-500 mx-auto relative"
+                class="flex logo-area mx-auto relative"
                 class:justify-start={headerData.logo_location == "left"}
                 class:justify-center={headerData.logo_location == "center"}
                 style="max-width:860px;"
             >
                 <div
-                    class="absolute top-5 right-5 rounded-full bg-white"
+                    class="absolute top-0 right-0 rounded-full"
                     style="z-index=999999;"
                 >
-                    <a href="/">
-                        <img src="/call-icon.png" alt="" width="35" />
-                    </a>
+                    <div
+                        class="cursor-pointer bg-white rounded-full"
+                        style="margin-top: {callImgMarginBlank}px;"
+                    >
+                        <a
+                            href="TEL:{siteData.ld_phone_num}"
+                            on:click={addCallCount}
+                        >
+                            <img src="/call-icon.png" alt="" width="35" />
+                        </a>
+                    </div>
                 </div>
 
-                asldfjalisdjfliajsdf
+                <a href="/">
+                    <img
+                        src={headerData.logo_img}
+                        alt=""
+                        width={headerData.logo_width}
+                    />
+                </a>
             </div>
 
             <!-- <div
