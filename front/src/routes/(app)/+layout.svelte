@@ -422,11 +422,6 @@
                 data-sveltekit-preload-data="tap"
                 data-sveltekit-reload
             >
-                {#if isDarkMode}
-                    <li>dark</li>
-                {:else}
-                    <li>light</li>
-                {/if}
                 {#if menuData.menus}
                     {#each menuData.menus as menu}
                         <a
