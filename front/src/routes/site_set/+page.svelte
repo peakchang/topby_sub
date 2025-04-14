@@ -72,7 +72,6 @@
     let logoObj = {
         logo_location: "center",
         logo_width: "",
-        header_height: "50",
         header_padding: "15",
         header_color: "black",
     };
@@ -673,12 +672,7 @@
             <tr>
                 <th class="border px-1 py-2">헤더 높이 / 여백 / 배경색</th>
                 <td class="border px-1 py-2 w-3/4">
-                    헤더 높이 : <input
-                        type="text"
-                        class="border p-1 w-24"
-                        bind:value={logoObj["header_height"]}
-                    />
-                    px / 위 아래 여백 :
+                    위 아래 여백 :
                     <input
                         type="text"
                         class="border p-1 w-24"

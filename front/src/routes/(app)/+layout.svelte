@@ -32,6 +32,8 @@
     let menuData = {};
     let mainPageMarginTop = 0;
     let screenWidth = "860px";
+    let callImgWidth = 0;
+    let callImgMarginBlank = 0;
 
     // 공통 변수!!
     let showPopup = false;
@@ -72,6 +74,7 @@
             // 신버전!!!
             try {
                 headerData = JSON.parse(siteData.ld_json_header);
+                console.log(headerData);
             } catch (error) {
                 console.error("JSON 파싱 오류:", error);
             }
@@ -81,9 +84,24 @@
             } catch (error) {
                 console.error("JSON 파싱 오류:", error);
             }
-            mainPageMarginTop =
-                Number(menuData.padding_y) * 2 +
-                Number(headerData.header_height);
+
+            if (browser) {
+                const element = document.querySelector(".logo-area");
+                callImgWidth = element.offsetHeight;
+                if (callImgWidth > 35) {
+                    callImgMarginBlank = (callImgWidth - 35) / 2;
+                    callImgWidth = 35;
+                }
+
+                const headerArea = document.querySelector(".header-area");
+                const menuArea = document.querySelector('.menu-area')
+                const headerHeight = headerArea.offsetHeight;
+                const menuHeight = menuArea.offsetHeight;
+                console.log(headerHeight);
+                console.log(menuHeight);
+                mainPageMarginTop = headerHeight + menuHeight
+                
+            }
         }
     }
 
@@ -365,13 +383,10 @@
         <div class=" fixed top-0 right-5 text-white z-[999]">
             <div
                 class="cursor-pointer bg-white rounded-full"
-                style="margin-top: {headerData.header_height / 5}px;"
+                style="margin-top: {Number(headerData.header_padding) +
+                    callImgMarginBlank}px;"
             >
-                <img
-                    src="/call-icon.png"
-                    alt=""
-                    width={headerData.header_height / 2}
-                />
+                <img src="/call-icon.png" alt="" width={callImgWidth} />
             </div>
         </div>
     </a>
@@ -379,10 +394,11 @@
     <!-- 리얼 헤더!! -->
     <div class="fixed top-0 left-0 w-full z-50">
         <div
-            style="background-color: {headerData.header_color}; height:{headerData.header_height}px; padding: {headerData.header_padding}px"
+        class="header-area"
+            style="background-color: {headerData.header_color}; padding: {headerData.header_padding}px"
         >
             <div
-                class="flex"
+                class="flex logo-area"
                 class:justify-start={headerData.logo_location == "left"}
                 class:justify-center={headerData.logo_location == "center"}
                 data-sveltekit-reload
@@ -399,7 +415,7 @@
 
         <!-- 메뉴 부분!!! -->
         <div
-            class="pretendard border-b mx-auto bg-white dark:bg-black"
+            class="pretendard border-b mx-auto bg-white dark:bg-black menu-area"
             style="padding: {menuData.padding_y}px; pretendard; max-width:{screenWidth};"
         >
             <ul
@@ -431,7 +447,7 @@
 {:else}
     <div
         class="mx-auto"
-        style="margin-top: {mainPageMarginTop + 25}px; max-width:{screenWidth};"
+        style="margin-top: {mainPageMarginTop + 10}px; max-width:{screenWidth};"
     >
         <slot />
     </div>
