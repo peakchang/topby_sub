@@ -378,24 +378,28 @@
 
     <!-- 헤더 전화하기 버튼!! -->
 
-    <a href="TEL:{siteData.ld_phone_num}" on:click={addCallCount}>
-        <div class=" fixed top-0 right-5 text-white z-[999]">
-            <div
-                class="cursor-pointer bg-white rounded-full"
-                style="margin-top: {Number(headerData.header_padding) +
-                    callImgMarginBlank}px;"
-            >
-                <img src="/call-icon.png" alt="" width={callImgWidth} />
-            </div>
-        </div>
-    </a>
-
     <!-- 리얼 헤더!! -->
     <div class="fixed top-0 left-0 w-full z-50">
         <div
-            class="header-area"
+            class="header-area relative"
             style="background-color: {headerData.header_color}; padding: {headerData.header_padding}px"
         >
+            <div class="absolute top-5 right-5 rounded-full bg-white" style="z-index=999999;">
+                <img src="/call-icon.png" alt="" width="35" />
+            </div>
+
+            <!-- <a href="TEL:{siteData.ld_phone_num}" on:click={addCallCount}>
+            <div class=" fixed top-0 right-5 text-white z-[999]">
+                <div
+                    class="cursor-pointer bg-white rounded-full"
+                    style="margin-top: {Number(headerData.header_padding) +
+                        callImgMarginBlank}px;"
+                >
+                    <img src="/call-icon.png" alt="" width={callImgWidth} />
+                </div>
+            </div>
+        </a> -->
+
             <div
                 class="flex logo-area"
                 class:justify-start={headerData.logo_location == "left"}
@@ -409,6 +413,8 @@
                         width={headerData.logo_width}
                     />
                 </a>
+
+                
             </div>
         </div>
 
@@ -531,7 +537,9 @@
                                         class="checkbox checkbox-neutral checkbox-sm"
                                         bind:checked={inviteChk}
                                     />
-                                    <span style="color:black !important;">개인정보 보호동의</span>
+                                    <span style="color:black !important;"
+                                        >개인정보 보호동의</span
+                                    >
                                 </label>
                             </div>
                             <button
