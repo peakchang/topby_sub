@@ -486,7 +486,10 @@
     {/if}
 
     <div class="md:w-1/2 md:px-5 suit-font flex items-stretch pretendard">
-        <div class="w-full p-5 bg-[#f7f4ec] flex flex-col justify-center gap-8">
+        <div
+            class="w-full p-5 flex flex-col justify-center gap-8 rounded-md"
+            style="background-color: #f7f4ec !important;"
+        >
             <div>
                 <div
                     class="text-3xl font-bold mb-2 text-center"
