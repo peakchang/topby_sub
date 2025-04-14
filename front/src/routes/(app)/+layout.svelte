@@ -381,13 +381,9 @@
     <!-- 리얼 헤더!! -->
     <div class="fixed top-0 left-0 w-full z-50">
         <div
-            class="header-area relative"
+            class="header-area"
             style="background-color: {headerData.header_color}; padding: {headerData.header_padding}px"
         >
-            <div class="absolute top-5 right-5 rounded-full bg-white" style="z-index=999999;">
-                <img src="/call-icon.png" alt="" width="35" />
-            </div>
-
             <!-- <a href="TEL:{siteData.ld_phone_num}" on:click={addCallCount}>
             <div class=" fixed top-0 right-5 text-white z-[999]">
                 <div
@@ -401,11 +397,37 @@
         </a> -->
 
             <div
-                class="flex logo-area"
+                class="flex logo-area bg-red-500 mx-auto relative"
+                class:justify-start={headerData.logo_location == "left"}
+                class:justify-center={headerData.logo_location == "center"}
+                style="max-width:860px;"
+            >
+                <div
+                    class="absolute top-5 right-5 rounded-full bg-white"
+                    style="z-index=999999;"
+                >
+                    <a href="/">
+                        <img src="/call-icon.png" alt="" width="35" />
+                    </a>
+                </div>
+
+                asldfjalisdjfliajsdf
+            </div>
+
+            <!-- <div
+                class="flex logo-area relative max-w-[860px]"
                 class:justify-start={headerData.logo_location == "left"}
                 class:justify-center={headerData.logo_location == "center"}
                 data-sveltekit-reload
             >
+                <div
+                    class="absolute top-5 right-5 rounded-full bg-white"
+                    style="z-index=999999;"
+                >
+                    <img src="/call-icon.png" alt="" width="35" />
+                </div>
+
+
                 <a href="/">
                     <img
                         src={headerData.logo_img}
@@ -413,9 +435,7 @@
                         width={headerData.logo_width}
                     />
                 </a>
-
-                
-            </div>
+            </div> -->
         </div>
 
         <!-- 메뉴 부분!!! -->
