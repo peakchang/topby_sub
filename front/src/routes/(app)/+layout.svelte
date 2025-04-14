@@ -536,7 +536,7 @@
                                         class="checkbox checkbox-neutral checkbox-sm"
                                         bind:checked={inviteChk}
                                     />
-                                    <span>개인정보 보호동의</span>
+                                    <span style="color:black !important;">개인정보 보호동의</span>
                                 </label>
                             </div>
                             <button
@@ -559,7 +559,7 @@
                                 height="20"
                             />
                         </div>
-                        <div>
+                        <div style="color:black !important;">
                             모델하우스는 초대장이 있으신분만 방문 가능합니다.
                         </div>
                     </div>
@@ -573,7 +573,7 @@
                                 height="20"
                             />
                         </div>
-                        <div class="text-red-500">
+                        <div style="color:red !important;">
                             미 예약시 관람을 제한하는 점 양해 부탁드립니다.
                         </div>
                     </div>
