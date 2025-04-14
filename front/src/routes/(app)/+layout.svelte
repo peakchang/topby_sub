@@ -403,7 +403,7 @@
                             href="TEL:{siteData.ld_phone_num}"
                             on:click={addCallCount}
                         >
-                            <img src="/call-icon.png" alt="" width="35" />
+                            <img src="/call-icon.png" alt="" width="{callImgWidth}" />
                         </a>
                     </div>
                 </div>
