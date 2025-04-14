@@ -130,6 +130,9 @@
     let invitationName = "초대장 발급 확인";
     let phoneBottomImg = "";
     let eventBottomImg = "";
+    let cardImg = "";
+    let siteDescription = "";
+    let addScript = "";
 
     // ***********************************************
 
@@ -158,6 +161,9 @@
     function eventBottomImgUpdate(e) {
         eventBottomImg = e.detail.imgPath;
     }
+    function cardImgUpdate(e) {
+        cardImg = e.detail.imgPath;
+    }
 
     async function deleteImage() {
         if (!confirm("이미지를 삭제 하시겠습니까?")) {
@@ -165,20 +171,32 @@
         }
 
         let imgUrlArr = [];
-        if (this.value == "logo") {
-            imgUrlArr = logoObj["logo_img"].split("/");
-        } else if (this.value == "content") {
-            imgUrlArr = contentImagePath.split("/");
-        } else if (this.value == "background") {
-            imgUrlArr = sectionObj["backgroundImg"].split("/");
-        } else if (this.value == "popup") {
-            imgUrlArr = popupImg.split("/");
-        } else if (this.value == "event") {
-            imgUrlArr = eventImg.split("/");
-        } else if (this.value == "ph_bt_img") {
-            imgUrlArr = phoneBottomImg.split("/");
-        } else if (this.value == "event_bt_img") {
-            imgUrlArr = eventBottomImg.split("/");
+
+        switch (this.value) {
+            case "logo":
+                imgUrlArr = logoObj["logo_img"].split("/");
+                break;
+            case "content":
+                imgUrlArr = contentImagePath.split("/");
+                break;
+            case "background":
+                imgUrlArr = sectionObj["backgroundImg"].split("/");
+                break;
+            case "popup":
+                imgUrlArr = popupImg.split("/");
+                break;
+            case "event":
+                imgUrlArr = eventImg.split("/");
+                break;
+            case "ph_bt_img":
+                imgUrlArr = phoneBottomImg.split("/");
+                break;
+            case "event_bt_img":
+                imgUrlArr = eventBottomImg.split("/");
+                break;
+            case "card":
+                imgUrlArr = cardImg.split("/");
+                break;
         }
         const deleteImagePath = `subuploads/img/${imgUrlArr[4]}/${imgUrlArr[5]}`;
 
@@ -191,20 +209,31 @@
             );
 
             if (res.status == 200) {
-                if (this.value == "logo") {
-                    logoObj["logo_img"] = "";
-                } else if (this.value == "content") {
-                    contentImagePath = "";
-                } else if (this.value == "background") {
-                    sectionObj["backgroundImg"] = "";
-                } else if (this.value == "popup") {
-                    popupImg = "";
-                } else if (this.value == "event") {
-                    eventImg = "";
-                } else if (this.value == "ph_bt_img") {
-                    phoneBottomImg = "";
-                } else if (this.value == "event_bt_img") {
-                    eventBottomImg = "";
+                switch (this.value) {
+                    case "logo":
+                        logoObj["logo_img"] = "";
+                        break;
+                    case "content":
+                        contentImagePath = "";
+                        break;
+                    case "background":
+                        sectionObj["backgroundImg"] = "";
+                        break;
+                    case "popup":
+                        popupImg = "";
+                        break;
+                    case "event":
+                        eventImg = "";
+                        break;
+                    case "ph_bt_img":
+                        phoneBottomImg = "";
+                        break;
+                    case "event_bt_img":
+                        eventBottomImg = "";
+                        break;
+                    case "card":
+                        cardImg = "";
+                        break;
                 }
             }
         } catch (error) {
@@ -380,24 +409,27 @@
         let getSectionObj = sectionObj.contentList[this.value];
         const contentType = e.target.getAttribute("data-type");
         addContentStatus = contentType;
-        if (contentType == "blank") {
-            contentMarginHeight = getSectionObj["marginHeight"];
-        } else if (contentType == "text") {
-            contentText = getSectionObj["text"];
-            contentFontSize = getSectionObj["fontSize"];
-            contentFontColor = getSectionObj["fontColor"];
-            contentTextAlign = getSectionObj["align"];
-            contentTextEffect = getSectionObj["effect"];
-            contentTextEffectDealy = getSectionObj["delay"];
-        } else if (contentType == "image") {
-            contentImagePath = getSectionObj["imgPath"];
-            contentImageWidth = getSectionObj["width"];
-            contentImageAlign = getSectionObj["align"];
-            contentImageEffect = getSectionObj["effect"];
-            contentImageEffectDealy = getSectionObj["delay"];
-        } else if (contentType == "youtube") {
-            contentYoutubeTag = getSectionObj["youtubeTag"];
-            contentYoutubeLinkTemp = iframeToWatchURL(contentYoutubeTag);
+
+        switch (contentType) {
+            case "blank":
+                contentMarginHeight = getSectionObj["marginHeight"];
+                break;
+            case "text":
+                contentText = getSectionObj["text"];
+                contentFontSize = getSectionObj["fontSize"];
+                contentFontColor = getSectionObj["fontColor"];
+                contentTextAlign = getSectionObj["align"];
+                contentTextEffect = getSectionObj["effect"];
+                contentTextEffectDealy = getSectionObj["delay"];
+            case "image":
+                contentImagePath = getSectionObj["imgPath"];
+                contentImageWidth = getSectionObj["width"];
+                contentImageAlign = getSectionObj["align"];
+                contentImageEffect = getSectionObj["effect"];
+                contentImageEffectDealy = getSectionObj["delay"];
+            case "youtube":
+                contentYoutubeTag = getSectionObj["youtubeTag"];
+                contentYoutubeLinkTemp = iframeToWatchURL(contentYoutubeTag);
         }
     }
 
@@ -469,6 +501,9 @@
             ld_mobile_bt_phone_img: phoneBottomImg,
             ld_mobile_bt_event_img: eventBottomImg,
             ld_db_input_subject: invitationName,
+            ld_card_image: cardImg,
+            ld_description: siteDescription,
+            ld_add_scripts: addScript,
         };
 
         try {
@@ -595,6 +630,7 @@
             <textarea
                 rows="3"
                 class="w-full border border-gray-300 rounded-md focus:ring-0 focus:border-blue-500 p-2"
+                bind:value={siteDescription}
             ></textarea>
         </div>
     </div>
@@ -605,6 +641,7 @@
             <textarea
                 rows="3"
                 class="w-full border border-gray-300 rounded-md focus:ring-0 focus:border-blue-500 p-2"
+                bind:value={addScript}
             ></textarea>
         </div>
     </div>
@@ -1798,9 +1835,37 @@
                         {/if}
                     </td>
                 </tr>
+
+                <tr>
+                    <th class="border p-2">
+                        <p class="text-sm">명함 이미지</p>
+                        <p class="text-xs font-normal">
+                            (메세지 발송시 이미지)
+                        </p>
+                    </th>
+                    <td class="border">
+                        {#if cardImg}
+                            <img src={cardImg} alt="" />
+                        {/if}
+
+                        {#if cardImg}
+                            <button
+                                class="btn btn-error btn-sm text-white"
+                                value="card"
+                                on:click={deleteImage}
+                            >
+                                이미지 삭제
+                            </button>
+                        {:else}
+                            <OneImageUpload on:sendImgPath={cardImgUpdate}
+                            ></OneImageUpload>
+                        {/if}
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
             </table>
 
-            <div class="p-3 border">
+            <div class="p-3 border mt-5">
                 <div>푸터 내용</div>
                 <div>
                     <textarea

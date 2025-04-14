@@ -80,19 +80,44 @@
 
     async function deleteImageAct() {
         let imgUrlArr = [];
-        if (imgActType == "ld_logo") {
-            imgUrlArr = allData["ld_logo"].split("/");
-        } else if (imgActType == "ld_ph_img") {
-            imgUrlArr = allData["ld_ph_img"].split("/");
-        } else if (imgActType == "ld_popup_img") {
-            imgUrlArr = allData["ld_popup_img"].split("/");
-        } else if (imgActType == "ld_mobile_bt_phone_img") {
-            imgUrlArr = allData["ld_mobile_bt_phone_img"].split("/");
-        } else if (imgActType == "ld_mobile_bt_event_img") {
-            imgUrlArr = allData["ld_mobile_bt_event_img"].split("/");
-        } else if (imgActType == "ld_event_img") {
-            imgUrlArr = allData["ld_event_img"].split("/");
+
+        switch (imgActType) {
+            case "ld_logo":
+                imgUrlArr = allData["ld_logo"].split("/");
+                break;
+            case "ld_ph_img":
+                imgUrlArr = allData["ld_ph_img"].split("/");
+                break;
+            case "ld_popup_img":
+                imgUrlArr = allData["ld_popup_img"].split("/");
+                break;
+            case "ld_mobile_bt_phone_img":
+                console.log('여기로 들어옴?');
+                
+                imgUrlArr = allData["ld_mobile_bt_phone_img"].split("/");
+                break;
+            case "ld_mobile_bt_event_img":
+                imgUrlArr = allData["ld_mobile_bt_event_img"].split("/");
+                break;
+            case "ld_event_img":
+                imgUrlArr = allData["ld_event_img"].split("/");
         }
+
+        console.log(imgUrlArr);
+        
+        // if (imgActType == "ld_logo") {
+        //     imgUrlArr = allData["ld_logo"].split("/");
+        // } else if (imgActType == "ld_ph_img") {
+        //     imgUrlArr = allData["ld_ph_img"].split("/");
+        // } else if (imgActType == "ld_popup_img") {
+        //     imgUrlArr = allData["ld_popup_img"].split("/");
+        // } else if (imgActType == "ld_mobile_bt_phone_img") {
+        //     imgUrlArr = allData["ld_mobile_bt_phone_img"].split("/");
+        // } else if (imgActType == "ld_mobile_bt_event_img") {
+        //     imgUrlArr = allData["ld_mobile_bt_event_img"].split("/");
+        // } else if (imgActType == "ld_event_img") {
+        //     imgUrlArr = allData["ld_event_img"].split("/");
+        // }
 
         const deleteImagePath = `subuploads/img/${imgUrlArr[4]}/${imgUrlArr[5]}`;
         console.log(deleteImagePath);
