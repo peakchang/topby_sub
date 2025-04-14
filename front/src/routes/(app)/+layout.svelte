@@ -312,7 +312,17 @@
             <div
                 class="cursor-pointer"
                 on:click={() => {
-                    eventEle.scrollIntoView({ behavior: "smooth" });
+                    console.log("아니 씨바라~~~~~~~~~~~~~~~");
+
+                    const yOffset = -200; // 위로 200px 이동
+                    const y =
+                        eventEle.getBoundingClientRect().top +
+                        window.pageYOffset +
+                        yOffset;
+
+                    console.log(y);
+
+                    eventEle.scrollIntoView({ top: y, behavior: "smooth" });
                 }}
             >
                 {#if siteData.ld_mobile_bt_event_img}
@@ -368,7 +378,16 @@
     <div
         class="fixed bottom-16 md:bottom-1/3 right-5 z-[999] cursor-pointer"
         on:click={() => {
-            eventEle.scrollIntoView({ behavior: "smooth" });
+            if (browser) {
+                const y =
+                    eventEle.getBoundingClientRect().top +
+                    window.pageYOffset -
+                    135;
+
+                console.log(y);
+
+                window.scrollTo({ top: y, behavior: "smooth" });
+            }
         }}
     >
         <div class="w-20 md:w-24 animate-pulse">
@@ -403,7 +422,11 @@
                             href="TEL:{siteData.ld_phone_num}"
                             on:click={addCallCount}
                         >
-                            <img src="/call-icon.png" alt="" width="{callImgWidth}" />
+                            <img
+                                src="/call-icon.png"
+                                alt=""
+                                width={callImgWidth}
+                            />
                         </a>
                     </div>
                 </div>
