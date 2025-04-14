@@ -389,6 +389,7 @@
                 class:justify-start={headerData.logo_location == "left"}
                 class:justify-center={headerData.logo_location == "center"}
                 style="max-width:860px;"
+                data-sveltekit-reload
             >
                 <div
                     class="absolute top-0 right-0 rounded-full"
