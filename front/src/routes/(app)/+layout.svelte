@@ -609,7 +609,14 @@
                             />
                         </div>
                         <div style="color:black !important;">
-                            모델하우스는 초대장이 있으신분만 방문 가능합니다.
+                            {#if siteData.ld_invite_message}
+                                {siteData.ld_invite_message}
+                            {:else}
+                                <span>
+                                    모델하우스는 초대장이 있으신분만 방문
+                                    가능합니다.
+                                </span>
+                            {/if}
                         </div>
                     </div>
 
