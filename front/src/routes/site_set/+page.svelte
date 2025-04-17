@@ -47,6 +47,7 @@
         cardImg = data.allData.ld_card_image;
         siteDescription = data.allData.ld_description;
         addScript = data.allData.ld_add_scripts;
+        inviteMessage = data.allData.ld_invite_message;
 
         siteName = data.allData.ld_name;
         if (data.allData.ld_db_input_subject) {
@@ -137,6 +138,8 @@
     let cardImg = "";
     let siteDescription = "";
     let addScript = "";
+
+    let inviteMessage = "모델하우스는 초대장이 있으신분만 방문 가능합니다.";
 
     // ***********************************************
 
@@ -508,6 +511,7 @@
             ld_card_image: cardImg,
             ld_description: siteDescription,
             ld_add_scripts: addScript,
+            ld_invite_message : inviteMessage
         };
 
         try {
@@ -1779,6 +1783,18 @@
                                 없음
                             </label>
                         </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="border p-2 text-sm" style="width:15%">
+                        초대문구
+                    </th>
+                    <td class="border p-2 text-sm" colspan="3">
+                        <input
+                            type="text"
+                            class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
+                            bind:value={inviteMessage}
+                        />
                     </td>
                 </tr>
                 <tr>

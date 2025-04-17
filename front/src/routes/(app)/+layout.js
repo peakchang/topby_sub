@@ -52,6 +52,8 @@ export const load = async ({ fetch, url }) => {
     }
 
     console.log(subView);
+    console.log('여기까지는 나와?');
+    
 
 
     seoValue['title'] = subView.ld_name + addTitle
@@ -62,8 +64,13 @@ export const load = async ({ fetch, url }) => {
 
     if (subView.ld_view_type == 'new') {
         const mainJson = JSON.parse(subView.ld_json_main)
-        seoValue["og_image"] = subView.ld_card_image ? subView.ld_card_image : mainJson[0]['backgroundImg'].split(',')[0];
-        seoValue["image"] = mainJson ? mainJson[0]['backgroundImg'].split(',')[0] : subView.ld_card_image;
+        console.log(mainJson);
+        
+        if (mainJson.length > 0) {
+            seoValue["og_image"] = subView.ld_card_image ? subView.ld_card_image : mainJson[0]['backgroundImg'].split(',')[0];
+            seoValue["image"] = mainJson ? mainJson[0]['backgroundImg'].split(',')[0] : subView.ld_card_image;
+        }
+
     } else {
         seoValue["image"] = subView['ld_main_img'] ? subView['ld_main_img'].split(',')[0] : "";
     }
