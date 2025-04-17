@@ -47,7 +47,10 @@
         cardImg = data.allData.ld_card_image;
         siteDescription = data.allData.ld_description;
         addScript = data.allData.ld_add_scripts;
-        inviteMessage = data.allData.ld_invite_message;
+
+        if (data.allData.ld_invite_message) {
+            inviteMessage = data.allData.ld_invite_message;
+        }
 
         siteName = data.allData.ld_name;
         if (data.allData.ld_db_input_subject) {
@@ -511,7 +514,7 @@
             ld_card_image: cardImg,
             ld_description: siteDescription,
             ld_add_scripts: addScript,
-            ld_invite_message : inviteMessage
+            ld_invite_message: inviteMessage,
         };
 
         try {
