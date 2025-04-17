@@ -390,8 +390,12 @@
             }
         }}
     >
-        <div class="w-20 md:w-24 animate-pulse">
-            <img src="/move-icon.png" alt="" />
+        <div class="w-20 md:w-24 animate-pulse rounded-full overflow-hidden">
+            {#if siteData.ld_invite_image}
+                <img src={siteData.ld_invite_image} alt="" />
+            {:else}
+                <img src="/move-icon.png" alt="" />
+            {/if}
         </div>
     </div>
 

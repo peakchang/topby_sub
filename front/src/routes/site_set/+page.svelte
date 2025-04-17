@@ -31,34 +31,38 @@
             }
         }
 
-        if (data.ld_json_main) {
-            mainContents = data.ld_json_main;
-        }
+        if (data.ld_json_main) mainContents = data.ld_json_main;
+        if (data.allData.ld_popup_img) popupImg = data.allData.ld_popup_img;
+        if (data.allData.ld_event_img) eventImg = data.allData.ld_event_img;
+        if (data.allData.ld_phone_num) phoneNumber = data.allData.ld_phone_num;
+        if (data.allData.ld_sms_num) smsNumber = data.allData.ld_sms_num;
+        if (data.allData.ld_sms_content)
+            smsContent = data.allData.ld_sms_content;
+        if (data.allData.ld_personal_info_view)
+            personalInfoView = data.allData.ld_personal_info_view;
+        if (data.allData.ld_footer) footer = data.allData.ld_footer;
 
-        popupImg = data.allData.ld_popup_img;
-        eventImg = data.allData.ld_event_img;
-        phoneNumber = data.allData.ld_phone_num;
+        if (data.allData.ld_card_image) cardImg = data.allData.ld_card_image;
+        if (data.allData.ld_invite_image)
+            inviteImg = data.allData.ld_invite_image;
 
-        smsNumber = data.allData.ld_sms_num;
-        smsContent = data.allData.ld_sms_content;
-        personalInfoView = data.allData.ld_personal_info_view;
-        footer = data.allData.ld_footer;
+        if (data.allData.ld_description)
+            siteDescription = data.allData.ld_description;
 
-        cardImg = data.allData.ld_card_image;
-        siteDescription = data.allData.ld_description;
-        addScript = data.allData.ld_add_scripts;
+        if (data.allData.ld_add_scripts)
+            addScript = data.allData.ld_add_scripts;
 
-        if (data.allData.ld_invite_message) {
+        if (data.allData.ld_invite_message)
             inviteMessage = data.allData.ld_invite_message;
-        }
 
-        siteName = data.allData.ld_name;
-        if (data.allData.ld_db_input_subject) {
+        if (data.allData.ld_name) siteName = data.allData.ld_name;
+        if (data.allData.ld_db_input_subject)
             invitationName = data.allData.ld_db_input_subject;
-        }
 
-        phoneBottomImg = data.allData.ld_mobile_bt_phone_img;
-        eventBottomImg = data.allData.ld_mobile_bt_event_img;
+        if (data.allData.ld_mobile_bt_phone_img)
+            phoneBottomImg = data.allData.ld_mobile_bt_phone_img;
+        if (data.allData.ld_mobile_bt_event_img)
+            eventBottomImg = data.allData.ld_mobile_bt_event_img;
     }
 
     // 섹션 창이 보여지게 하는 변수
@@ -132,6 +136,7 @@
     let eventImg = "";
     let personalInfoView = "on";
     let footer = "";
+    let inviteImg = "";
 
     // 변수 추가!!
     let siteName = "";
@@ -175,6 +180,10 @@
         cardImg = e.detail.imgPath;
     }
 
+    function inviteImgUpdate(e) {
+        inviteImg = e.detail.imgPath;
+    }
+
     async function deleteImage() {
         if (!confirm("이미지를 삭제 하시겠습니까?")) {
             return;
@@ -204,8 +213,8 @@
             case "event_bt_img":
                 imgUrlArr = eventBottomImg.split("/");
                 break;
-            case "card":
-                imgUrlArr = cardImg.split("/");
+            case "invite":
+                imgUrlArr = inviteImg.split("/");
                 break;
         }
         const deleteImagePath = `subuploads/img/${imgUrlArr[4]}/${imgUrlArr[5]}`;
@@ -243,6 +252,9 @@
                         break;
                     case "card":
                         cardImg = "";
+                        break;
+                    case "invite":
+                        inviteImg = "";
                         break;
                 }
             }
@@ -515,6 +527,7 @@
             ld_description: siteDescription,
             ld_add_scripts: addScript,
             ld_invite_message: inviteMessage,
+            ld_invite_image: inviteImg,
         };
 
         try {
@@ -1884,7 +1897,30 @@
                             ></OneImageUpload>
                         {/if}
                     </td>
-                    <td colspan="2"></td>
+                    <th class="border p-2">
+                        <p class="text-sm">초대장 이미지</p>
+                        <p class="text-xs font-normal">
+                            (정사각형 이미지)
+                        </p>
+                    </th>
+                    <td class="border">
+                        {#if inviteImg}
+                            <img src={inviteImg} alt="" />
+                        {/if}
+
+                        {#if inviteImg}
+                            <button
+                                class="btn btn-error btn-sm text-white"
+                                value="invite"
+                                on:click={deleteImage}
+                            >
+                                이미지 삭제
+                            </button>
+                        {:else}
+                            <OneImageUpload on:sendImgPath={inviteImgUpdate}
+                            ></OneImageUpload>
+                        {/if}
+                    </td>
                 </tr>
             </table>
 
