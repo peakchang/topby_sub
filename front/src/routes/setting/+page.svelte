@@ -92,8 +92,8 @@
                 imgUrlArr = allData["ld_popup_img"].split("/");
                 break;
             case "ld_mobile_bt_phone_img":
-                console.log('여기로 들어옴?');
-                
+                console.log("여기로 들어옴?");
+
                 imgUrlArr = allData["ld_mobile_bt_phone_img"].split("/");
                 break;
             case "ld_mobile_bt_event_img":
@@ -104,7 +104,7 @@
         }
 
         console.log(imgUrlArr);
-        
+
         // if (imgActType == "ld_logo") {
         //     imgUrlArr = allData["ld_logo"].split("/");
         // } else if (imgActType == "ld_ph_img") {
@@ -413,9 +413,31 @@
                         <option value="both">둘다</option>
                     </select> -->
                 </td>
-                <th class="border p-1 text-xs md:text-sm">지역</th>
+                <th class="border p-1 text-xs md:text-sm">개인정보</th>
                 <td class="border p-1">
-                    <select
+                    <div class="text-center">
+                        <label class="mr-3">
+                            <input
+                                type="radio"
+                                value="on"
+                                class="radio radio-info"
+                                bind:group={allData["ld_personal_info_view"]}
+                            />
+                            있음
+                        </label>
+
+                        <label>
+                            <input
+                                type="radio"
+                                value="off"
+                                class="radio radio-info"
+                                bind:group={allData["ld_personal_info_view"]}
+                            />
+                            없음
+                        </label>
+                    </div>
+
+                    <!-- <select
                         bind:value={allData["ld_location"]}
                         class="text-sm border py-2 w-full rounded-md border-gray-300 p-1"
                     >
@@ -427,7 +449,7 @@
                                 {location}
                             </option>
                         {/each}
-                    </select>
+                    </select> -->
                 </td>
             </tr>
 
