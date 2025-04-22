@@ -61,7 +61,6 @@
 
         // 구버전!!!!
         if (!siteData.ld_view_type || siteData.ld_view_type == "old") {
-            siteData.ld_personal_info_view = "on";
             menuList = JSON.parse(siteData.ld_menu);
             if (siteData.ld_banner_img) {
                 bannerList = siteData.ld_banner_img.split(",");
