@@ -622,9 +622,7 @@
                     <button
                         class="w-full bg-[#ff5f11] text-white p-3 text-lg rounded-lg"
                         on:click={() => {
-                            const siteName = siteData.ld_site
-                                ? siteData.ld_site
-                                : siteData.ld_domain;
+                            const siteName = siteData.ld_site;
 
                             if (!customerName) {
                                 alert("성함을 입력 해주세요.");
@@ -671,7 +669,6 @@
         </div>
     </div>
 </div>
-
 
 <div class="fixed bottom-0 left-0 w-full z-[999] block md:hidden">
     <div class="flex">
@@ -771,6 +768,12 @@
         </div>
     </div>
 </dialog>
+
+<button
+    on:click={() => {
+        console.log(siteData);
+    }}>....</button
+>
 
 <style>
     @media (prefers-color-scheme: dark) {
