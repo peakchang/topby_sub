@@ -18,7 +18,7 @@
         getId = data.getId;
 
         if (data.ld_json_header) {
-            logoObj = data.ld_json_header;
+            headerObj = data.ld_json_header;
         }
         if (data.ld_json_menus) {
             menuObj = data.ld_json_menus;
@@ -81,9 +81,8 @@
     let visible = false;
 
     // 헤더 부분!!!
-    let logoObj = {
-        logo_location: "center",
-        logo_width: "",
+    let headerObj = {
+        logo_width: "180",
         header_padding: "15",
         header_color: "black",
     };
@@ -162,7 +161,11 @@
 
     function logoUpdate(e) {
         const imgPath = e.detail.imgPath;
-        logoObj["logo_img"] = imgPath;
+        headerObj["logo_img"] = imgPath;
+    }
+
+    function topPhoneUpdate(e) {
+        headerObj["phone_img"] = e.detail.imgPath;
     }
     function popupUpdate(e) {
         popupImg = e.detail.imgPath;
@@ -193,7 +196,10 @@
 
         switch (this.value) {
             case "logo":
-                imgUrlArr = logoObj["logo_img"].split("/");
+                imgUrlArr = headerObj["logo_img"].split("/");
+                break;
+            case "top-phone":
+                imgUrlArr = headerObj["phone_img"].split("/");
                 break;
             case "content":
                 imgUrlArr = contentImagePath.split("/");
@@ -230,7 +236,10 @@
             if (res.status == 200) {
                 switch (this.value) {
                     case "logo":
-                        logoObj["logo_img"] = "";
+                        headerObj["logo_img"] = "";
+                        break;
+                    case "top-phone":
+                        headerObj["phone_img"] = "";
                         break;
                     case "content":
                         contentImagePath = "";
@@ -486,7 +495,7 @@
     async function updateSiteSet() {
         console.log(menuObj);
         console.log(mainContents);
-        console.log(logoObj);
+        console.log(headerObj);
 
         for (let i = 0; i < menuObj.menus.length; i++) {
             let imgArr = menuObj.menus[i].imgArr;
@@ -502,7 +511,7 @@
             }
         }
 
-        const ld_json_header = JSON.stringify(logoObj);
+        const ld_json_header = JSON.stringify(headerObj);
         const ld_json_main = JSON.stringify(mainContents);
         const ld_json_menus = JSON.stringify(menuObj);
 
@@ -670,32 +679,108 @@
         </div>
     </div>
 
-    <div>
+    <div class="mb-5">
         <table class="w-full text-sm">
             <tr>
-                <th class="border px-1 py-2 w-1/4">로고 이미지</th>
-                <td class="border px-1 py-2 w-3/4">
-                    {#if logoObj["logo_img"]}
+                <th class="border px-1 py-2 w-1/6">로고 이미지</th>
+                <td class="border px-1 py-2 w-2/6">
+                    {#if headerObj["logo_img"]}
                         <div class="m-2 p-2 bg-gray-400">
-                            <img src={logoObj["logo_img"]} alt="" />
+                            <img src={headerObj["logo_img"]} alt="" />
                         </div>
                     {/if}
 
-                    {#if !logoObj["logo_img"]}
+                    {#if !headerObj["logo_img"]}
                         <OneImageUpload on:sendImgPath={logoUpdate}
                         ></OneImageUpload>
                     {/if}
 
-                    {#if logoObj["logo_img"]}
+                    {#if headerObj["logo_img"]}
                         <button
                             class="btn btn-error btn-sm text-white"
                             value="logo"
                             on:click={deleteImage}>로고 이미지 삭제</button
                         >
                     {/if}
+
+                    <div class="mt-3">
+                        사이즈 : <input
+                            type="text"
+                            class="border p-1 rounded-md focus:outline-none focus:border-blue-500"
+                            placeholder="미설정시 30%"
+                            bind:value={headerObj["logo_width"]}
+                        /> %
+                    </div>
+                </td>
+                <th class="border px-1 py-2 w-1/6">상단 전화번호<br />이미지</th
+                >
+                <td class="border px-1 py-2 w-2/6">
+                    {#if headerObj["phone_img"]}
+                        <div class="m-2 p-2 bg-gray-400">
+                            <img src={headerObj["phone_img"]} alt="" />
+                        </div>
+                    {/if}
+
+                    {#if !headerObj["phone_img"]}
+                        <OneImageUpload on:sendImgPath={topPhoneUpdate}
+                        ></OneImageUpload>
+                    {/if}
+
+                    {#if headerObj["phone_img"]}
+                        <button
+                            class="btn btn-error btn-sm text-white"
+                            value="top-phone"
+                            on:click={deleteImage}>이미지 삭제</button
+                        >
+                    {/if}
+                    <div class="mt-3">
+                        사이즈 : <input
+                            type="text"
+                            class="border p-1 rounded-md focus:outline-none focus:border-blue-500"
+                            placeholder="미설정시 30%"
+                            bind:value={headerObj["top_phone_width"]}
+                        /> %
+                    </div>
                 </td>
             </tr>
+
             <tr>
+                <th class="border px-1 py-2 w-1/6">헤더 색상</th>
+                <td class="border px-1 py-2 w-2/6">
+                    <div class="flex">
+                        <label class="mr-3 flex items-center gap-1">
+                            <input
+                                type="radio"
+                                class="radio radio-primary radio-xs"
+                                value="black"
+                                bind:group={headerObj["header_color"]}
+                            />
+                            <span>블랙</span>
+                        </label>
+
+                        <label class="mr-3 flex items-center gap-1">
+                            <input
+                                type="radio"
+                                class="radio radio-primary radio-xs"
+                                value="white"
+                                bind:group={headerObj["header_color"]}
+                            />
+                            <span>화이트</span>
+                        </label>
+                    </div>
+                </td>
+
+                <th class="border px-1 py-2 w-1/6">위아래 여백</th>
+                <td class="border px-1 py-2 w-2/6">
+                    <input
+                        type="text"
+                        class="border rounded-md p-1 focus:outline-none focus:border-blue-500"
+                        bind:value={headerObj["header_padding"]}
+                    />PX
+                </td>
+            </tr>
+
+            <!-- <tr>
                 <th class="border px-1 py-2">로고 위치</th>
                 <td class="border px-1 py-2 w-3/4">
                     <label class="mr-3">
@@ -703,7 +788,7 @@
                             type="radio"
                             class="radio radio-secondary radio-sm"
                             value="left"
-                            bind:group={logoObj["logo_location"]}
+                            bind:group={headerObj["logo_location"]}
                         />
                         왼쪽
                     </label>
@@ -713,7 +798,7 @@
                             type="radio"
                             class="radio radio-secondary radio-sm"
                             value="center"
-                            bind:group={logoObj["logo_location"]}
+                            bind:group={headerObj["logo_location"]}
                         />
                         가운데
                     </label>
@@ -725,28 +810,28 @@
                     <input
                         type="text"
                         class="border p-1"
-                        bind:value={logoObj["logo_width"]}
+                        bind:value={headerObj["logo_width"]}
                     /> px
                 </td>
-            </tr>
+            </tr> -->
 
-            <tr>
+            <!-- <tr>
                 <th class="border px-1 py-2">헤더 높이 / 여백 / 배경색</th>
                 <td class="border px-1 py-2 w-3/4">
                     위 아래 여백 :
                     <input
                         type="text"
                         class="border p-1 w-24"
-                        bind:value={logoObj["header_padding"]}
+                        bind:value={headerObj["header_padding"]}
                     />
                     px /
                     <input
                         type="text"
                         class="border p-1 w-24"
-                        bind:value={logoObj["header_color"]}
+                        bind:value={headerObj["header_color"]}
                     />
                 </td>
-            </tr>
+            </tr> -->
         </table>
     </div>
     <div class="text-xs text-blue-600 site-instruction hidden">
@@ -1899,13 +1984,13 @@
                     </td>
                     <th class="border p-2">
                         <p class="text-sm">초대장 이미지</p>
-                        <p class="text-xs font-normal">
-                            (정사각형 이미지)
-                        </p>
+                        <p class="text-xs font-normal">(정사각형 이미지)</p>
                     </th>
                     <td class="border">
                         {#if inviteImg}
-                            <img src={inviteImg} alt="" />
+                            <div class=" max-w-[150px]">
+                                <img src={inviteImg} alt="" class="w-full" />
+                            </div>
                         {/if}
 
                         {#if inviteImg}

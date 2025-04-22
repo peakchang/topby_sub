@@ -278,62 +278,6 @@
             </ul>
         </div>
     </div>
-
-    <div class="fixed bottom-0 left-0 w-full z-[999] block md:hidden">
-        <div class="flex">
-            {#if siteData.ld_phone_num}
-                <a href="TEL:{siteData.ld_phone_num}" on:click={addCallCount}>
-                    {#if siteData.ld_mobile_bt_phone_img}
-                        <div>
-                            <img src={siteData.ld_mobile_bt_phone_img} alt="" />
-                        </div>
-                    {:else}
-                        <div>
-                            <img src="/bottom-fix/left-phone.jpg" alt="" />
-                        </div>
-                    {/if}
-                </a>
-            {:else}
-                <a href="TEL:1644-9714" on:click={addCallCount}>
-                    {#if siteData.ld_mobile_bt_phone_img}
-                        <div>
-                            <img src={siteData.ld_mobile_bt_phone_img} alt="" />
-                        </div>
-                    {:else}
-                        <div>
-                            <img src="/bottom-fix/left-phone.jpg" alt="" />
-                        </div>
-                    {/if}
-                </a>
-            {/if}
-
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <!-- svelte-ignore a11y-no-static-element-interactions -->
-            <div
-                class="cursor-pointer"
-                on:click={() => {
-                    console.log("아니 씨바라~~~~~~~~~~~~~~~");
-
-                    const yOffset = -200; // 위로 200px 이동
-                    const y =
-                        eventEle.getBoundingClientRect().top +
-                        window.pageYOffset +
-                        yOffset;
-
-                    console.log(y);
-
-                    eventEle.scrollIntoView({ top: y, behavior: "smooth" });
-                }}
-            >
-                {#if siteData.ld_mobile_bt_event_img}
-                    <img src={siteData.ld_mobile_bt_event_img} alt="" />
-                {:else}
-                    <img src="/bottom-fix/right-form.jpg" alt="" />
-                {/if}
-            </div>
-        </div>
-    </div>
-
     <div
         class="hidden md:block fixed bottom-52 right-0 z-[999] rounded-l overflow-hidden bg-[#f7f4ec]"
     >
@@ -407,7 +351,7 @@
             class="header-area"
             style="background-color: {headerData.header_color}; padding: {headerData.header_padding}px"
         >
-            <div
+            <!-- <div
                 class="flex logo-area mx-auto relative"
                 class:justify-start={headerData.logo_location == "left"}
                 class:justify-center={headerData.logo_location == "center"}
@@ -442,6 +386,41 @@
                         width={headerData.logo_width}
                     />
                 </a>
+            </div> -->
+
+            <div
+                class="flex items-center justify-between logo-area mx-auto max-w-[860px] relative text-white"
+            >
+                <div
+                    style="width: {headerData.logo_width
+                        ? `${headerData.logo_width}%`
+                        : '30%'}"
+                >
+                    <a href="/">
+                        <img
+                            src={headerData.logo_img}
+                            alt=""
+                            style="width:100%"
+                        />
+                    </a>
+                </div>
+
+                <div
+                    style="width: {headerData.top_phone_width
+                        ? `${headerData.top_phone_width}%`
+                        : '30%'}"
+                >
+                    <a
+                        href="TEL:{siteData.ld_phone_num}"
+                        on:click={addCallCount}
+                    >
+                        <img
+                            src={headerData.phone_img}
+                            alt=""
+                            style="width:100%"
+                        />
+                    </a>
+                </div>
             </div>
 
             <!-- <div
@@ -512,6 +491,7 @@
     </div>
 {/if}
 
+<!-- 공통으로 들어가는 이미지!! -->
 <div
     class="max-w-[860px] mx-auto md:flex md:justify-center md:items-stretch"
     bind:this={eventEle}
@@ -689,6 +669,62 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="fixed bottom-0 left-0 w-full z-[999] block md:hidden">
+    <div class="flex">
+        {#if siteData.ld_phone_num}
+            <a href="TEL:{siteData.ld_phone_num}" on:click={addCallCount}>
+                {#if siteData.ld_mobile_bt_phone_img}
+                    <div>
+                        <img src={siteData.ld_mobile_bt_phone_img} alt="" />
+                    </div>
+                {:else}
+                    <div>
+                        <img src="/bottom-fix/left-phone.jpg" alt="" />
+                    </div>
+                {/if}
+            </a>
+        {:else}
+            <a href="TEL:1644-9714" on:click={addCallCount}>
+                {#if siteData.ld_mobile_bt_phone_img}
+                    <div>
+                        <img src={siteData.ld_mobile_bt_phone_img} alt="" />
+                    </div>
+                {:else}
+                    <div>
+                        <img src="/bottom-fix/left-phone.jpg" alt="" />
+                    </div>
+                {/if}
+            </a>
+        {/if}
+
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div
+            class="cursor-pointer"
+            on:click={() => {
+                console.log("아니 씨바라~~~~~~~~~~~~~~~");
+
+                const yOffset = -200; // 위로 200px 이동
+                const y =
+                    eventEle.getBoundingClientRect().top +
+                    window.pageYOffset +
+                    yOffset;
+
+                console.log(y);
+
+                eventEle.scrollIntoView({ top: y, behavior: "smooth" });
+            }}
+        >
+            {#if siteData.ld_mobile_bt_event_img}
+                <img src={siteData.ld_mobile_bt_event_img} alt="" />
+            {:else}
+                <img src="/bottom-fix/right-form.jpg" alt="" />
+            {/if}
         </div>
     </div>
 </div>
