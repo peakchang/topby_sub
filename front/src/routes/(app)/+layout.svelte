@@ -270,7 +270,7 @@
                 {#each menuList as menu}
                     {#if menu.pgLink && menu.pgName}
                         <a href="/{menu.pgLink}">
-                            <li>{menu.pgName}</li>
+                            <li style="color:black !important;">{menu.pgName}</li>
                         </a>
                     {/if}
                 {/each}
