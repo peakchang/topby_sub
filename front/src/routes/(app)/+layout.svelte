@@ -270,7 +270,9 @@
                 {#each menuList as menu}
                     {#if menu.pgLink && menu.pgName}
                         <a href="/{menu.pgLink}">
-                            <li style="color:black !important;">{menu.pgName}</li>
+                            <li style="color:black !important;">
+                                {menu.pgName}
+                            </li>
                         </a>
                     {/if}
                 {/each}
@@ -389,6 +391,7 @@
 
             <div
                 class="flex items-center justify-between logo-area mx-auto max-w-[860px] relative text-white"
+                data-sveltekit-reload
             >
                 <div
                     style="width: {headerData.logo_width
@@ -703,17 +706,16 @@
         <div
             class="cursor-pointer"
             on:click={() => {
-                console.log("아니 씨바라~~~~~~~~~~~~~~~");
+                if (browser) {
+                    const y =
+                        eventEle.getBoundingClientRect().top +
+                        window.pageYOffset -
+                        135;
 
-                const yOffset = -200; // 위로 200px 이동
-                const y =
-                    eventEle.getBoundingClientRect().top +
-                    window.pageYOffset +
-                    yOffset;
+                    console.log(y);
 
-                console.log(y);
-
-                eventEle.scrollIntoView({ top: y, behavior: "smooth" });
+                    window.scrollTo({ top: y, behavior: "smooth" });
+                }
             }}
         >
             {#if siteData.ld_mobile_bt_event_img}
