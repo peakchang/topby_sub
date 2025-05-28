@@ -273,17 +273,21 @@
                     const fileName = `${timestamp}${Math.random()
                         .toString(36)
                         .substring(2, 11)}.webp`;
+
+                    imgForm.append("folder", "testfolder2");
                     imgForm.append("onimg", resultImage, fileName);
-                    const res = await axios.post(
-                        `${back_api}/img_upload`,
-                        imgForm,
-                        {
-                            headers: {
-                                "Content-Type": "multipart/form-data",
+
+                    try {
+                        const res = await axios.post(
+                            `${back_api}/img_upload_set`,
+                            imgForm,
+                            {
+                                headers: {
+                                    "Content-Type": "multipart/form-data",
+                                },
                             },
-                        },
-                    );
-                    if (res.status == 200) {
+                        );
+
                         if (imgActType == "ld_logo") {
                             allData["ld_logo"] = res.data.baseUrl;
                         } else if (imgActType == "ld_ph_img") {
@@ -299,6 +303,10 @@
                         } else if (imgActType == "ld_event_img") {
                             allData["ld_event_img"] = res.data.baseUrl;
                         }
+                    } catch (err) {
+                        const m = err.response.data.message;
+                        alert(m ? m : "이미지 업로드 실패! 다시 시도해주세요!");
+                        return;
                     }
                 };
             };
@@ -314,15 +322,16 @@
             alert("복사할 도메인을 입력 해주세요");
             return;
         }
-        console.log(allData);
 
         allData["ld_domain"] = copyDomain;
-
-        // try {
-        //     const res = axios.post(`${back_api}/copy_site`, )
-        // } catch (error) {
-
-        // }
+        console.log(allData);
+        try {
+            const res = axios.post(`${back_api}/copy_site`, { allData });
+        } catch (err) {
+            const m = err.response.data.message;
+            alert(m ? m : "사이트 카피 실패 다시 시도해주세요.");
+            return;
+        }
     }
 </script>
 
