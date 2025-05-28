@@ -304,18 +304,69 @@
             };
         };
     };
+
+    // 사이트 복사 기능!!
+    let siteCopyAreaShow = false;
+    let copyDomain = "";
+
+    async function copySite() {
+        if (!copyDomain) {
+            alert("복사할 도메인을 입력 해주세요");
+            return;
+        }
+        console.log(allData);
+
+        allData["ld_domain"] = copyDomain;
+
+        // try {
+        //     const res = axios.post(`${back_api}/copy_site`, )
+        // } catch (error) {
+
+        // }
+    }
 </script>
 
 <div class="container max-w-[900px] py-10 px-3 mx-auto pretendard">
-    <div class="w-full flex items-center gap-4">
+    <div>
         <table class=" w-[350px]">
             <tr>
-                <th class="border p-2.5 w-[100px]">도메인</th>
+                <th class="border p-2.5 w-[80px] text-sm">도메인</th>
+                <td class="border p-2.5 pl-5 text-sm">{getId} </td>
                 <td class="border p-2.5 pl-5">
-                    <span>{allData["ld_domain"]}</span>
+                    <button
+                        class=" bg-orange-600 px-3 py-1.5 rounded-md text-white text-xs active:bg-orange-700"
+                        on:click={() => {
+                            siteCopyAreaShow = !siteCopyAreaShow;
+                        }}
+                    >
+                        사이트 복사
+                    </button>
                 </td>
             </tr>
         </table>
+
+        {#if siteCopyAreaShow}
+            <div
+                class="w-[350px] border mt-3 flex justify-between items-center p-3"
+            >
+                <div>
+                    <input
+                        type="text"
+                        class="border w-[250px] px-2 py-1.5 text-xs focus:outline-none focus:border-blue-500 rounded-md"
+                        placeholder="도메인주소를 입력하세요 (영어 소문자/숫자만)"
+                        bind:value={copyDomain}
+                    />
+                </div>
+                <div class="w-[100px] text-center">
+                    <button
+                        class="text-sm bg-lime-700 text-white px-4 py-1.5 active:bg-lime-800 rounded-lg"
+                        on:click={copySite}
+                    >
+                        적용
+                    </button>
+                </div>
+            </div>
+        {/if}
     </div>
 
     <div class="mt-3">
