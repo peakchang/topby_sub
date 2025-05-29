@@ -1,6 +1,7 @@
 <script>
     import { aosStyleList } from "$lib/const.js";
     import { customerSubmit } from "$lib/lib";
+    import { back_api_origin } from "$src/lib/const";
     import { browser } from "$app/environment";
     import { onMount } from "svelte";
 
@@ -156,18 +157,32 @@
 <svelte:window bind:innerWidth={x} />
 
 {#if !allSiteData.ld_view_type || allSiteData.ld_view_type == "old"}
+    <!-- 구버전 -->
     {#each imgList as img, idx}
         {#if idx == 0}
             <div class="mb-5">
-                <img src={img} alt="" class="w-full" />
+                <img
+                    src={img.includes("http")
+                        ? img
+                        : `${back_api_origin}${img}`}
+                    alt=""
+                    class="w-full"
+                />
             </div>
         {:else}
             <div class="mb-5" data-aos={dataAosList[idx]}>
-                <img src={img} alt="" class="w-full" />
+                <img
+                    src={img.includes("http")
+                        ? img
+                        : `${back_api_origin}${img}`}
+                    alt=""
+                    class="w-full"
+                />
             </div>
         {/if}
     {/each}
 {:else if menuData.link == "emodel"}
+    <!-- 신버전 emdel -->
     <div class="pt-5">
         <div
             role="tablist"
@@ -223,6 +238,7 @@
         </div>
     </div>
 {:else}
+    <!-- 신버전 -->
     <div class="mt-5">
         {#each imgArr as img}
             {#if img.includes("iframe")}
@@ -241,7 +257,13 @@
                     class:observe-fade-up={menuData.effect == "on"}
                     data-delay="100"
                 >
-                    <img src={img} alt="" class="w-full" />
+                    <img
+                        src={img.includes("http")
+                            ? img
+                            : `${back_api_origin}${img}`}
+                        alt=""
+                        class="w-full"
+                    />
                 </div>
             {/if}
         {/each}

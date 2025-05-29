@@ -346,7 +346,12 @@
     >
         <div class="w-20 md:w-24 animate-pulse rounded-full overflow-hidden">
             {#if siteData.ld_invite_image}
-                <img src={siteData.ld_invite_image} alt="" />
+                <img
+                    src={siteData.ld_invite_image.includes("http")
+                        ? siteData.ld_invite_image
+                        : `${back_api_origin}${siteData.ld_invite_image}`}
+                    alt=""
+                />
             {:else}
                 <img src="/move-icon.png" alt="" />
             {/if}
@@ -409,7 +414,9 @@
                 >
                     <a href="/">
                         <img
-                            src={headerData.logo_img}
+                            src={headerData.logo_img.includes("http")
+                                ? headerData.logo_img
+                                : `${back_api_origin}${headerData.logo_img}`}
                             alt=""
                             style="width:100%"
                         />
@@ -426,7 +433,9 @@
                         on:click={addCallCount}
                     >
                         <img
-                            src={headerData.phone_img}
+                            src={headerData.phone_img.includes("http")
+                                ? headerData.phone_img
+                                : `${back_api_origin}${headerData.phone_img}`}
                             alt=""
                             style="width:100%"
                         />
@@ -508,16 +517,18 @@
     bind:this={eventEle}
 >
     {#if siteData.ld_event_img}
-
         <div class="md:w-1/2">
             {#if siteData.ld_sms_content}
                 <a
                     href="SMS:{siteData.ld_sms_num}?body={siteData.ld_name} {siteData.ld_sms_content}"
                     on:click={addSmsCount}
                 >
-                    <img src={siteData["ld_event_img"].includes("http")
+                    <img
+                        src={siteData["ld_event_img"].includes("http")
                             ? siteData["ld_event_img"]
-                            : `${back_api_origin}${siteData["ld_event_img"]}`} alt="" />
+                            : `${back_api_origin}${siteData["ld_event_img"]}`}
+                        alt=""
+                    />
                 </a>
             {:else}
                 <a
@@ -696,7 +707,14 @@
             <a href="TEL:{siteData.ld_phone_num}" on:click={addCallCount}>
                 {#if siteData.ld_mobile_bt_phone_img}
                     <div>
-                        <img src={siteData["ld_mobile_bt_phone_img"].includes('http') ? siteData["ld_mobile_bt_phone_img"] : `${back_api_origin}${siteData["ld_mobile_bt_phone_img"]}`} alt="" />
+                        <img
+                            src={siteData["ld_mobile_bt_phone_img"].includes(
+                                "http",
+                            )
+                                ? siteData["ld_mobile_bt_phone_img"]
+                                : `${back_api_origin}${siteData["ld_mobile_bt_phone_img"]}`}
+                            alt=""
+                        />
                     </div>
                 {:else}
                     <div>
@@ -708,7 +726,14 @@
             <a href="TEL:1644-9714" on:click={addCallCount}>
                 {#if siteData.ld_mobile_bt_phone_img}
                     <div>
-                        <img src={siteData["ld_mobile_bt_phone_img"].includes('http') ? siteData["ld_mobile_bt_phone_img"] : `${back_api_origin}${siteData["ld_mobile_bt_phone_img"]}`} alt="" />
+                        <img
+                            src={siteData["ld_mobile_bt_phone_img"].includes(
+                                "http",
+                            )
+                                ? siteData["ld_mobile_bt_phone_img"]
+                                : `${back_api_origin}${siteData["ld_mobile_bt_phone_img"]}`}
+                            alt=""
+                        />
                     </div>
                 {:else}
                     <div>
@@ -736,7 +761,12 @@
             }}
         >
             {#if siteData.ld_mobile_bt_event_img}
-                <img src={siteData["ld_mobile_bt_event_img"].includes('http') ? siteData["ld_mobile_bt_event_img"] : `${back_api_origin}${siteData["ld_mobile_bt_event_img"]}`} alt="" />
+                <img
+                    src={siteData["ld_mobile_bt_event_img"].includes("http")
+                        ? siteData["ld_mobile_bt_event_img"]
+                        : `${back_api_origin}${siteData["ld_mobile_bt_event_img"]}`}
+                    alt=""
+                />
             {:else}
                 <img src="/bottom-fix/right-form.jpg" alt="" />
             {/if}

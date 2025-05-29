@@ -5,6 +5,7 @@
     import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
+    export let domainFolder = "";
 
     // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
     const uploadImageoAct = (e) => {
@@ -18,7 +19,7 @@
             const imageFile = e.target.files[0];
             const options = {
                 maxSizeMB: 1, // 최대 파일 크기 (MB)
-                maxWidthOrHeight: 1024, // 최대 너비 또는 높이
+                // maxWidthOrHeight: 1024, // 최대 너비 또는 높이
                 useWebWorker: true, // 웹 워커 사용
             };
 
@@ -35,7 +36,7 @@
                     .substring(2, 11)}.${compressedFile.name.split(".")[1]}`;
 
                 console.log(fileName);
-
+                imgForm.append("folder", domainFolder);
                 imgForm.append("onimg", compressedFile, fileName);
 
                 // FormData의 key 값과 value값 찾기
@@ -91,6 +92,6 @@
     };
 </script>
 
-<button class="btn btn-accent btn-sm text-white" on:click={uploadImageoAct}
-    >이미지 업로드</button
->
+<button class="btn btn-accent btn-sm text-white" on:click={uploadImageoAct}>
+    이미지 업로드
+</button>

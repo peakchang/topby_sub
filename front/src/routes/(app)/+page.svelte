@@ -1,5 +1,6 @@
 <script>
     import { browser } from "$app/environment";
+    import { back_api_origin } from "$src/lib/const";
     import { page } from "$app/stores";
     import { aosStyleList } from "$lib/const.js";
 
@@ -104,7 +105,8 @@
 
     function setSectionHeight() {
         if (browser) {
-            const backgroundArea = document.querySelectorAll(".background-area");
+            const backgroundArea =
+                document.querySelectorAll(".background-area");
             const contentArea = document.querySelectorAll(`.content-area`);
             let ratioNum = -1;
             let heightNum = -1;
@@ -153,6 +155,7 @@
 <svelte:window bind:innerWidth={x} />
 
 {#if !siteData["ld_view_type"] || siteData["ld_view_type"] == "old"}
+    <!-- 구버전 -->
     {#if siteData.ld_banner_img}
         <section>
             <div class="swiper mb-10 relative" bind:this={bannerSwiper}>
@@ -160,7 +163,12 @@
                 <div class="swiper-wrapper relative">
                     {#each bannerImgList as bannerImg}
                         <div class="swiper-slide">
-                            <img src={bannerImg} alt="" />
+                            <img
+                                src={bannerImg.includes("http")
+                                    ? bannerImg
+                                    : `${back_api_origin}${bannerImg}`}
+                                alt=""
+                            />
                         </div>
                     {/each}
                 </div>
@@ -188,15 +196,26 @@
 
     {#each mainImgList as mainImg, idx}
         <div class="mb-5">
-            <img src={mainImg} alt="" class="w-full" />
+            <img
+                src={mainImg.includes("http")
+                    ? mainImg
+                    : `${back_api_origin}${mainImg}`}
+                alt=""
+                class="w-full"
+            />
         </div>
     {/each}
 {:else}
+    <!-- 신버전 -->
     <div class="mb-5">
         {#each mainContents as mainContent}
             <div
                 class:background-area={mainContent["bgType"] == "ratio"}
-                style="background-image: url({mainContent['backgroundImg']});"
+                style="background-image: url({mainContent[
+                    'backgroundImg'
+                ].includes('http')
+                    ? mainContent['backgroundImg']
+                    : `${back_api_origin}${mainContent['backgroundImg']}`});"
             >
                 <!-- height:{mainContent[
                 'height'
@@ -224,7 +243,13 @@
                                 data-delay={content.delay}
                             >
                                 <div style="width:{content.width}%;">
-                                    <img src={content.imgPath} alt="" class="w-full" />
+                                    <img
+                                        src={content.imgPath.includes("http")
+                                            ? content.imgPath
+                                            : `${back_api_origin}${content.imgPath}`}
+                                        alt=""
+                                        class="w-full"
+                                    />
                                 </div>
                             </div>
                         {:else if content.marginHeight}

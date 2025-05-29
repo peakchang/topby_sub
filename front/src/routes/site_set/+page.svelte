@@ -1,7 +1,7 @@
 <script>
     import OneImageUpload from "$lib/components/OneImageUpload.svelte";
     import axios from "axios";
-    import { back_api } from "$src/lib/const";
+    import { back_api, back_api_origin } from "$src/lib/const";
     import SortableImgMovie from "$lib/components/SortableImgMovie.svelte";
     import { goto, invalidateAll } from "$app/navigation";
     import { onMount } from "svelte";
@@ -13,9 +13,13 @@
     $: data, setData();
 
     let getId = "";
+    let getDomain = "";
 
     function setData() {
+        console.log(data);
+
         getId = data.getId;
+        getDomain = data.allData.ld_domain;
 
         if (data.ld_json_header) {
             headerObj = data.ld_json_header;
@@ -223,7 +227,7 @@
                 imgUrlArr = inviteImg.split("/");
                 break;
         }
-        const deleteImagePath = `subuploads/img/${imgUrlArr[4]}/${imgUrlArr[5]}`;
+        const deleteImagePath = `subuploads/img/${imgUrlArr[imgUrlArr.length - 2]}/${imgUrlArr[imgUrlArr.length - 1]}`;
 
         try {
             const res = await axios.post(
@@ -539,6 +543,8 @@
             ld_invite_image: inviteImg,
         };
 
+        console.log(uploadDataObj);
+
         try {
             const res = await axios.post(`${back_api}/update_site_set`, {
                 get_id: getId,
@@ -686,13 +692,20 @@
                 <td class="border px-1 py-2 w-2/6">
                     {#if headerObj["logo_img"]}
                         <div class="m-2 p-2 bg-gray-400">
-                            <img src={headerObj["logo_img"]} alt="" />
+                            <img
+                                src={headerObj["logo_img"].includes("http")
+                                    ? headerObj["logo_img"]
+                                    : `${back_api_origin}${headerObj["logo_img"]}`}
+                                alt=""
+                            />
                         </div>
                     {/if}
 
                     {#if !headerObj["logo_img"]}
-                        <OneImageUpload on:sendImgPath={logoUpdate}
-                        ></OneImageUpload>
+                        <OneImageUpload
+                            on:sendImgPath={logoUpdate}
+                            domainFolder={getDomain}
+                        />
                     {/if}
 
                     {#if headerObj["logo_img"]}
@@ -717,13 +730,20 @@
                 <td class="border px-1 py-2 w-2/6">
                     {#if headerObj["phone_img"]}
                         <div class="m-2 p-2 bg-gray-400">
-                            <img src={headerObj["phone_img"]} alt="" />
+                            <img
+                                src={headerObj["phone_img"].includes("http")
+                                    ? headerObj["phone_img"]
+                                    : `${back_api_origin}${headerObj["phone_img"]}`}
+                                alt=""
+                            />
                         </div>
                     {/if}
 
                     {#if !headerObj["phone_img"]}
-                        <OneImageUpload on:sendImgPath={topPhoneUpdate}
-                        ></OneImageUpload>
+                        <OneImageUpload
+                            on:sendImgPath={topPhoneUpdate}
+                            domainFolder={getDomain}
+                        />
                     {/if}
 
                     {#if headerObj["phone_img"]}
@@ -933,11 +953,21 @@
                 <tr>
                     <th class="border px-1 py-2">백그라운드 이미지</th>
                     <td class="border px-1 py-2 w-3/4">
-                        <img src={sectionObj["backgroundImg"]} alt="" />
+                        {#if sectionObj["backgroundImg"]}
+                            <img
+                                src={sectionObj["backgroundImg"].includes(
+                                    "http",
+                                )
+                                    ? sectionObj["backgroundImg"]
+                                    : `${back_api_origin}${sectionObj["backgroundImg"]}`}
+                                alt=""
+                            />
+                        {/if}
                         {#if !sectionObj["backgroundImg"]}
                             <OneImageUpload
                                 on:sendImgPath={backgroundImageUpload}
-                            ></OneImageUpload>
+                                domainFolder={getDomain}
+                            />
                         {:else}
                             <button
                                 class="btn btn-error btn-sm text-white"
@@ -1330,7 +1360,11 @@
                                     {#if contentImagePath}
                                         <div class="m-1 p-1 bg-gray-400">
                                             <img
-                                                src={contentImagePath}
+                                                src={contentImagePath.includes(
+                                                    "http",
+                                                )
+                                                    ? contentImagePath
+                                                    : `${back_api_origin}${contentImagePath}`}
                                                 alt=""
                                             />
                                         </div>
@@ -1339,7 +1373,8 @@
                                     {#if !contentImagePath}
                                         <OneImageUpload
                                             on:sendImgPath={contentImageUpload}
-                                        ></OneImageUpload>
+                                            domainFolder={getDomain}
+                                        />
                                     {:else}
                                         <button
                                             class="btn btn-error btn-sm text-white"
@@ -1738,11 +1773,14 @@
                                     <SortableImgMovie
                                         on:updateImgeList={(e) => {
                                             const imgArr = e.detail.imgArr;
+                                            console.log(imgArr);
+
                                             updateImgArr(imgArr, idx);
                                         }}
                                         modifyImageList={menuObj["menus"][idx][
                                             "imgArr"
                                         ]}
+                                        domainFolder={getDomain}
                                     ></SortableImgMovie>
                                 </div>
                             </td>
@@ -1758,7 +1796,13 @@
         <div class="mt-5">
             <div class="mb-3">
                 {#if popupImg}
-                    <img src={popupImg} alt="" class=" max-w-full" />
+                    <img
+                        src={popupImg.includes("http")
+                            ? popupImg
+                            : `${back_api_origin}${popupImg}`}
+                        alt=""
+                        class=" max-w-full"
+                    />
                 {/if}
             </div>
             {#if popupImg}
@@ -1770,7 +1814,10 @@
                     이미지 삭제
                 </button>
             {:else}
-                <OneImageUpload on:sendImgPath={popupUpdate}></OneImageUpload>
+                <OneImageUpload
+                    on:sendImgPath={popupUpdate}
+                    domainFolder={getDomain}
+                />
             {/if}
         </div>
     </div>
@@ -1784,7 +1831,13 @@
         <div class="mt-5">
             <div class="mb-3">
                 {#if eventImg}
-                    <img src={eventImg} alt="" class=" max-w-full" />
+                    <img
+                        src={eventImg.includes("http")
+                            ? eventImg
+                            : `${back_api_origin}${eventImg}`}
+                        alt=""
+                        class=" max-w-full"
+                    />
                 {/if}
             </div>
             {#if eventImg}
@@ -1796,7 +1849,10 @@
                     이미지 삭제
                 </button>
             {:else}
-                <OneImageUpload on:sendImgPath={eventUpdate}></OneImageUpload>
+                <OneImageUpload
+                    on:sendImgPath={eventUpdate}
+                    domainFolder={getDomain}
+                />
             {/if}
         </div>
     </div>
@@ -1910,7 +1966,12 @@
                     </th>
                     <td class="border">
                         {#if phoneBottomImg}
-                            <img src={phoneBottomImg} alt="" />
+                            <img
+                                src={phoneBottomImg.includes("http")
+                                    ? phoneBottomImg
+                                    : `${back_api_origin}${phoneBottomImg}`}
+                                alt=""
+                            />
                         {/if}
 
                         {#if phoneBottomImg}
@@ -1924,7 +1985,8 @@
                         {:else}
                             <OneImageUpload
                                 on:sendImgPath={phoneBottomImgUpdate}
-                            ></OneImageUpload>
+                                domainFolder={getDomain}
+                            />
                         {/if}
                     </td>
                     <th class="border p-1 text-xs md:text-sm">
@@ -1938,7 +2000,12 @@
                     </th>
                     <td class="border">
                         {#if eventBottomImg}
-                            <img src={eventBottomImg} alt="" />
+                            <img
+                                src={eventBottomImg.includes("http")
+                                    ? eventBottomImg
+                                    : `${back_api_origin}${eventBottomImg}`}
+                                alt=""
+                            />
                         {/if}
 
                         {#if eventBottomImg}
@@ -1952,7 +2019,8 @@
                         {:else}
                             <OneImageUpload
                                 on:sendImgPath={eventBottomImgUpdate}
-                            ></OneImageUpload>
+                                domainFolder={getDomain}
+                            />
                         {/if}
                     </td>
                 </tr>
@@ -1966,7 +2034,12 @@
                     </th>
                     <td class="border">
                         {#if cardImg}
-                            <img src={cardImg} alt="" />
+                            <img
+                                src={cardImg.includes("http")
+                                    ? cardImg
+                                    : `${back_api_origin}${cardImg}`}
+                                alt=""
+                            />
                         {/if}
 
                         {#if cardImg}
@@ -1978,8 +2051,10 @@
                                 이미지 삭제
                             </button>
                         {:else}
-                            <OneImageUpload on:sendImgPath={cardImgUpdate}
-                            ></OneImageUpload>
+                            <OneImageUpload
+                                on:sendImgPath={cardImgUpdate}
+                                domainFolder={getDomain}
+                            />
                         {/if}
                     </td>
                     <th class="border p-2">
@@ -1989,7 +2064,13 @@
                     <td class="border">
                         {#if inviteImg}
                             <div class=" max-w-[150px]">
-                                <img src={inviteImg} alt="" class="w-full" />
+                                <img
+                                    src={inviteImg.includes("http")
+                                        ? inviteImg
+                                        : `${back_api_origin}${inviteImg}`}
+                                    alt=""
+                                    class="w-full"
+                                />
                             </div>
                         {/if}
 
@@ -2002,8 +2083,10 @@
                                 이미지 삭제
                             </button>
                         {:else}
-                            <OneImageUpload on:sendImgPath={inviteImgUpdate}
-                            ></OneImageUpload>
+                            <OneImageUpload
+                                on:sendImgPath={inviteImgUpdate}
+                                domainFolder={getDomain}
+                            />
                         {/if}
                     </td>
                 </tr>
