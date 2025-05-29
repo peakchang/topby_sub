@@ -162,14 +162,16 @@
                 <!-- Additional required wrapper -->
                 <div class="swiper-wrapper relative">
                     {#each bannerImgList as bannerImg}
-                        <div class="swiper-slide">
-                            <img
-                                src={bannerImg.includes("http")
-                                    ? bannerImg
-                                    : `${back_api_origin}${bannerImg}`}
-                                alt=""
-                            />
-                        </div>
+                        {#if bannerImg}
+                            <div class="swiper-slide">
+                                <img
+                                    src={bannerImg.includes("http")
+                                        ? bannerImg
+                                        : `${back_api_origin}${bannerImg}`}
+                                    alt=""
+                                />
+                            </div>
+                        {/if}
                     {/each}
                 </div>
                 <!-- If we need pagination -->
@@ -195,77 +197,92 @@
     {/if}
 
     {#each mainImgList as mainImg, idx}
-        <div class="mb-5">
-            <img
-                src={mainImg.includes("http")
-                    ? mainImg
-                    : `${back_api_origin}${mainImg}`}
-                alt=""
-                class="w-full"
-            />
-        </div>
+        {#if mainImg}
+            <div class="mb-5">
+                <img
+                    src={mainImg.includes("http")
+                        ? mainImg
+                        : `${back_api_origin}${mainImg}`}
+                    alt=""
+                    class="w-full"
+                />
+            </div>
+        {/if}
     {/each}
 {:else}
     <!-- 신버전 -->
     <div class="mb-5">
         {#each mainContents as mainContent}
-            <div
-                class:background-area={mainContent["bgType"] == "ratio"}
-                style="background-image: url({mainContent[
-                    'backgroundImg'
-                ].includes('http')
-                    ? mainContent['backgroundImg']
-                    : `${back_api_origin}${mainContent['backgroundImg']}`});"
-            >
-                <!-- height:{mainContent[
-                'height'
-            ]}px; -->
-                <div class:content-area={mainContent["bgType"] == "height"}>
-                    {#each mainContent.contentList as content}
-                        {#if content.text}
-                            <div
-                                class="px-3 pretendard"
-                                class:observe-hidden={content.effect == "on"}
-                                class:observe-fade-up={content.effect == "on"}
-                                data-delay={content.delay}
-                                style="text-align : {content.align}; color :{content.fontColor};  font-size : {content.fontSize}px; white-space: pre-line;"
-                            >
-                                {content.text}
-                            </div>
-                        {:else if content.imgPath}
-                            <div
-                                class="flex"
-                                class:justify-center={content.align == "center"}
-                                class:justify-start={content.align == "left"}
-                                class:justify-end={content.align == "right"}
-                                class:observe-hidden={content.effect == "on"}
-                                class:observe-fade-up={content.effect == "on"}
-                                data-delay={content.delay}
-                            >
-                                <div style="width:{content.width}%;">
-                                    <img
-                                        src={content.imgPath.includes("http")
-                                            ? content.imgPath
-                                            : `${back_api_origin}${content.imgPath}`}
-                                        alt=""
-                                        class="w-full"
-                                    />
+            {#if mainContent["backgroundImg"]}
+                <div
+                    class:background-area={mainContent["bgType"] == "ratio"}
+                    style="background-image: url({mainContent[
+                        'backgroundImg'
+                    ].includes('http')
+                        ? mainContent['backgroundImg']
+                        : `${back_api_origin}${mainContent['backgroundImg']}`});"
+                >
+                    <!-- height:{mainContent[
+                            'height'
+                        ]}px; -->
+                    <div class:content-area={mainContent["bgType"] == "height"}>
+                        {#each mainContent.contentList as content}
+                            {#if content.text}
+                                <div
+                                    class="px-3 pretendard"
+                                    class:observe-hidden={content.effect ==
+                                        "on"}
+                                    class:observe-fade-up={content.effect ==
+                                        "on"}
+                                    data-delay={content.delay}
+                                    style="text-align : {content.align}; color :{content.fontColor};  font-size : {content.fontSize}px; white-space: pre-line;"
+                                >
+                                    {content.text}
                                 </div>
-                            </div>
-                        {:else if content.marginHeight}
-                            <div
-                                style="height: {content.marginHeight}px;"
-                            ></div>
-                        {:else if content.youtubeTag}
-                            <div
-                                class="youtube-container mt-3 flex justify-center"
-                            >
-                                {@html content.youtubeTag}
-                            </div>
-                        {/if}
-                    {/each}
+                            {:else if content.imgPath}
+                                {#if content.imgPath}
+                                    <div
+                                        class="flex"
+                                        class:justify-center={content.align ==
+                                            "center"}
+                                        class:justify-start={content.align ==
+                                            "left"}
+                                        class:justify-end={content.align ==
+                                            "right"}
+                                        class:observe-hidden={content.effect ==
+                                            "on"}
+                                        class:observe-fade-up={content.effect ==
+                                            "on"}
+                                        data-delay={content.delay}
+                                    >
+                                        <div style="width:{content.width}%;">
+                                            <img
+                                                src={content.imgPath.includes(
+                                                    "http",
+                                                )
+                                                    ? content.imgPath
+                                                    : `${back_api_origin}${content.imgPath}`}
+                                                alt=""
+                                                class="w-full"
+                                            />
+                                        </div>
+                                    </div>
+                                {/if}
+                            {:else if content.marginHeight}
+                                <div
+                                    style="height: {content.marginHeight}px;"
+                                ></div>
+                            {:else if content.youtubeTag}
+                                <div
+                                    class="youtube-container mt-3 flex justify-center"
+                                >
+                                    {@html content.youtubeTag}
+                                </div>
+                            {/if}
+                        {/each}
+                    </div>
                 </div>
-            </div>
+            {/if}
         {/each}
     </div>
 {/if}
