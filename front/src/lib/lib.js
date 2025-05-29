@@ -2,6 +2,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { back_api } from "./const";
 import { goto } from "$app/navigation";
+import imageCompression from "browser-image-compression";
 
 
 export const isStrongPassword = (password) => {
@@ -165,9 +166,6 @@ export const getRandomNumbers = (maxCount, count) => {
 
 export const customerSubmit = async (name, phone, siteName) => {
 
-
-    
-
     try {
         const res = await axios.post(`${back_api}/update_customer`, {
             name, phone, siteName
@@ -181,7 +179,7 @@ export const customerSubmit = async (name, phone, siteName) => {
         }
     } catch (error) {
         console.error(error.message);
-        
+
         alert('에러가 발생했습니다. 관리자에게 문의해주세요')
     }
 }
@@ -189,10 +187,10 @@ export const customerSubmit = async (name, phone, siteName) => {
 export function validatePhoneNumber(phoneNumber) {
     // 숫자로만 이루어진지 확인하는 정규표현식
     var numericPattern = /^\d+$/;
-    
+
     // 010으로 시작하고 특수문자를 제외한 총 길이가 11인지 확인하는 정규표현식
     var pattern = /^010\d{8}$/;
-    
+
     return numericPattern.test(phoneNumber) && pattern.test(phoneNumber);
 }
 
@@ -217,3 +215,90 @@ export function validatePhoneNumber(phoneNumber) {
 //     goto(`/findjob/${data.st_id}`);
 
 // }
+
+
+
+/**
+ * 이미지 업로드 액션 생성 함수
+ *
+ * @param {string} back_api - 백엔드 API 주소
+ * @param {function} callback - 업로드 후 처리할 콜백 함수 (err, result) => {}
+ * @param {object} options - 추가 옵션: { folder: "폴더명", maxWidth: 숫자 }
+ * @returns {function} - 업로드 실행 함수
+ */
+const uploadImageAct = (back_api_url, callback, options = {}) => {
+
+    console.log('함수 진입은 해??');
+
+    const folder = options.folder || "testfolder2";
+    // const maxWidthOrHeight = options.maxWidth || 1200;
+
+    const input = document.createElement("input");
+    console.log(input);
+
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", ".png,.jpg,.jpeg,.webp");
+    input.click();
+
+    input.onchange = async (e) => {
+        const imageFile = e.target.files[0];
+        const options = {
+            maxSizeMB: 1, // 최대 파일 크기 (MB)
+            // maxWidthOrHeight: 1024, // 최대 너비 또는 높이
+            useWebWorker: true, // 웹 워커 사용
+        };
+
+        try {
+            const compressedFile = await imageCompression(
+                imageFile,
+                options,
+            );
+
+            let imgForm = new FormData();
+            const timestamp = new Date().getTime();
+            const fileName = `${timestamp}${Math.random()
+                .toString(36)
+                .substring(2, 11)}.${compressedFile.name.split(".")[1]}`;
+
+            console.log(fileName);
+
+            imgForm.append("folder", folder);
+            imgForm.append("onimg", compressedFile, fileName);
+
+            // FormData의 key 값과 value값 찾기
+            // let keys = imgForm.keys();
+            // for (const pair of keys) {
+            //     console.log(`name : ${pair}`);
+            // }
+
+            // let values = imgForm.values();
+            // for (const pair of values) {
+            //     console.log(`value : ${pair}`);
+            // }
+
+            const res = await axios.post(
+                back_api_url,
+                imgForm,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                },
+            );
+
+            console.log(res);
+            if (typeof callback === "function") {
+                callback(null, res.data);
+            }
+        } catch (err) {
+            const m = err.response?.data?.message;
+            if (typeof callback === "function") {
+                callback(err, null);
+            }
+        }
+    };
+
+
+}
+
+export default uploadImageAct;

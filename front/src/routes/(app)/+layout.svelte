@@ -7,7 +7,7 @@
     import { customerSubmit, validatePhoneNumber } from "$lib/lib";
     import Cookies from "js-cookie";
     import axios from "axios";
-    import { back_api } from "$src/lib/const";
+    import { back_api, back_api_origin } from "$src/lib/const";
     import { goto } from "$app/navigation";
     import { browser } from "$app/environment";
 
@@ -214,7 +214,12 @@
                 <i class="fa fa-times" aria-hidden="true"></i>
             </button>
         </div>
-        <img src={siteData.ld_popup_img} alt="" />
+        <img
+            src={siteData["ld_popup_img"].includes("http")
+                ? siteData["ld_popup_img"]
+                : `${back_api_origin}${siteData["ld_popup_img"]}`}
+            alt=""
+        />
     </div>
 {/if}
 
@@ -244,7 +249,9 @@
                 {#if siteData.ld_logo}
                     <a href="/">
                         <img
-                            src={siteData.ld_logo}
+                            src={siteData["ld_logo"].includes("http")
+                                ? siteData["ld_logo"]
+                                : `${back_api_origin}${siteData["ld_logo"]}`}
                             alt=""
                             class="w-full max-w-72"
                         />
@@ -256,7 +263,9 @@
                 {#if siteData.ld_ph_img && siteData.ld_phone_num}
                     <a href="TEL:{siteData.ld_phone_num}">
                         <img
-                            src={siteData.ld_ph_img}
+                            src={siteData["ld_ph_img"].includes("http")
+                                ? siteData["ld_ph_img"]
+                                : `${back_api_origin}${siteData["ld_ph_img"]}`}
                             alt=""
                             class="w-full max-w-72"
                         />
@@ -493,26 +502,37 @@
     </div>
 {/if}
 
+
+Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem repudiandae delectus nihil fugiat libero nulla sed dolor deleniti nostrum! Itaque dolores rem quasi, eligendi quis doloremque eos. Architecto, voluptatibus.
+
 <!-- 공통으로 들어가는 이미지!! -->
 <div
     class="max-w-[860px] mx-auto md:flex md:justify-center md:items-stretch"
     bind:this={eventEle}
 >
     {#if siteData.ld_event_img}
+
         <div class="md:w-1/2">
             {#if siteData.ld_sms_content}
                 <a
                     href="SMS:{siteData.ld_sms_num}?body={siteData.ld_name} {siteData.ld_sms_content}"
                     on:click={addSmsCount}
                 >
-                    <img src={siteData.ld_event_img} alt="" />
+                    <img src={siteData["ld_event_img"].includes("http")
+                            ? siteData["ld_event_img"]
+                            : `${back_api_origin}${siteData["ld_event_img"]}`} alt="" />
                 </a>
             {:else}
                 <a
                     href="SMS:{siteData.ld_sms_num}?body={siteData.ld_name} 이벤트 참여!"
                     on:click={addSmsCount}
                 >
-                    <img src={siteData.ld_event_img} alt="" />
+                    <img
+                        src={siteData["ld_event_img"].includes("http")
+                            ? siteData["ld_event_img"]
+                            : `${back_api_origin}${siteData["ld_event_img"]}`}
+                        alt=""
+                    />
                 </a>
             {/if}
         </div>
@@ -679,7 +699,7 @@
             <a href="TEL:{siteData.ld_phone_num}" on:click={addCallCount}>
                 {#if siteData.ld_mobile_bt_phone_img}
                     <div>
-                        <img src={siteData.ld_mobile_bt_phone_img} alt="" />
+                        <img src={siteData["ld_mobile_bt_phone_img"].includes('http') ? siteData["ld_mobile_bt_phone_img"] : `${back_api_origin}${siteData["ld_mobile_bt_phone_img"]}`} alt="" />
                     </div>
                 {:else}
                     <div>
@@ -691,7 +711,7 @@
             <a href="TEL:1644-9714" on:click={addCallCount}>
                 {#if siteData.ld_mobile_bt_phone_img}
                     <div>
-                        <img src={siteData.ld_mobile_bt_phone_img} alt="" />
+                        <img src={siteData["ld_mobile_bt_phone_img"].includes('http') ? siteData["ld_mobile_bt_phone_img"] : `${back_api_origin}${siteData["ld_mobile_bt_phone_img"]}`} alt="" />
                     </div>
                 {:else}
                     <div>
@@ -719,7 +739,7 @@
             }}
         >
             {#if siteData.ld_mobile_bt_event_img}
-                <img src={siteData.ld_mobile_bt_event_img} alt="" />
+                <img src={siteData["ld_mobile_bt_event_img"].includes('http') ? siteData["ld_mobile_bt_event_img"] : `${back_api_origin}${siteData["ld_mobile_bt_event_img"]}`} alt="" />
             {:else}
                 <img src="/bottom-fix/right-form.jpg" alt="" />
             {/if}

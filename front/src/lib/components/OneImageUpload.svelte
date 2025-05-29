@@ -50,7 +50,7 @@
                 // }
 
                 const res = await axios.post(
-                    `${back_api}/img_upload`,
+                    `${back_api}/img_upload_set`,
                     imgForm,
                     {
                         headers: {
@@ -62,7 +62,7 @@
                 console.log(res);
 
                 if (res.status == 200) {
-                    const imgPath = res.data.baseUrl;
+                    const imgPath = res.data.saveUrl;
                     dispatch("sendImgPath", {
                         imgPath,
                         width,

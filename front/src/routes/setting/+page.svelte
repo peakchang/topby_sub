@@ -1,8 +1,8 @@
 <script>
     import axios from "axios";
-    import { back_api } from "$src/lib/const";
+    import { back_api, back_api_origin } from "$src/lib/const";
     import SortableImg from "$components/SortableImg.svelte";
-    import { dataURItoBlob } from "$src/lib/lib";
+    import uploadImageAct from "$src/lib/lib";
     import _remove from "lodash/remove";
     import _some from "lodash/some";
     import _pullAt from "lodash/pullAt";
@@ -105,21 +105,7 @@
 
         console.log(imgUrlArr);
 
-        // if (imgActType == "ld_logo") {
-        //     imgUrlArr = allData["ld_logo"].split("/");
-        // } else if (imgActType == "ld_ph_img") {
-        //     imgUrlArr = allData["ld_ph_img"].split("/");
-        // } else if (imgActType == "ld_popup_img") {
-        //     imgUrlArr = allData["ld_popup_img"].split("/");
-        // } else if (imgActType == "ld_mobile_bt_phone_img") {
-        //     imgUrlArr = allData["ld_mobile_bt_phone_img"].split("/");
-        // } else if (imgActType == "ld_mobile_bt_event_img") {
-        //     imgUrlArr = allData["ld_mobile_bt_event_img"].split("/");
-        // } else if (imgActType == "ld_event_img") {
-        //     imgUrlArr = allData["ld_event_img"].split("/");
-        // }
-
-        const deleteImagePath = `subuploads/img/${imgUrlArr[4]}/${imgUrlArr[5]}`;
+        const deleteImagePath = `subuploads/img/${imgUrlArr[imgUrlArr.length - 2]}/${imgUrlArr[imgUrlArr.length - 1]}`;
         console.log(deleteImagePath);
 
         try {
@@ -221,97 +207,124 @@
         return tempImgArr;
     }
 
+    function uploadImageoAct() {
+        console.log("일단 들어는 와?!?!?!?!");
+
+        uploadImageAct(
+            `${back_api}/img_upload_set`,
+            (err, data) => {
+                console.log(err);
+                console.log(data);
+
+                if (imgActType == "ld_logo") {
+                    allData["ld_logo"] = data.saveUrl;
+                } else if (imgActType == "ld_ph_img") {
+                    allData["ld_ph_img"] = data.saveUrl;
+                } else if (imgActType == "ld_popup_img") {
+                    allData["ld_popup_img"] = data.saveUrl;
+                } else if (imgActType == "ld_mobile_bt_phone_img") {
+                    allData["ld_mobile_bt_phone_img"] = data.saveUrl;
+                } else if (imgActType == "ld_mobile_bt_event_img") {
+                    allData["ld_mobile_bt_event_img"] = data.saveUrl;
+                } else if (imgActType == "ld_event_img") {
+                    allData["ld_event_img"] = data.saveUrl;
+                }
+            },
+            { folder: allData.ld_domain },
+        );
+    }
+
     // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
-    const uploadImageoAct = (e) => {
-        const input = document.createElement("input");
-        input.setAttribute("type", "file");
-        input.setAttribute("accept", ".png,.jpg,.jpeg,.webp");
-        input.click();
+    // const uploadImageoAct = (e) => {
+    //     const input = document.createElement("input");
+    //     input.setAttribute("type", "file");
+    //     input.setAttribute("accept", ".png,.jpg,.jpeg,.webp");
+    //     input.click();
 
-        // input change
-        input.onchange = async (e) => {
-            const maxWidth = 1200;
-            const img_file = e.target.files[0];
-            const options = {
-                maxSizeMB: 0.7,
-                // maxWidthOrHeight: 1920,
-                useWebWorker: true,
-            };
+    //     // input change
+    //     input.onchange = async (e) => {
+    //         const maxWidth = 1200;
+    //         const img_file = e.target.files[0];
+    //         const options = {
+    //             maxSizeMB: 0.7,
+    //             // maxWidthOrHeight: 1920,
+    //             useWebWorker: true,
+    //         };
 
-            const reader = new FileReader();
-            reader.readAsDataURL(img_file);
-            reader.onload = function (r) {
-                let setWidth = 0;
-                let setHeight = 0;
-                const img = new Image();
-                img.src = r.target.result;
-                img.onload = async function (e) {
-                    if (img.width >= maxWidth) {
-                        var share = img.width / maxWidth;
-                        var setHeight = Math.floor(img.height / share);
-                        var setWidth = maxWidth;
-                    } else {
-                        setWidth = img.width;
-                        setHeight = img.height;
-                    }
+    //         const reader = new FileReader();
+    //         reader.readAsDataURL(img_file);
+    //         reader.onload = function (r) {
+    //             let setWidth = 0;
+    //             let setHeight = 0;
+    //             const img = new Image();
+    //             img.src = r.target.result;
+    //             img.onload = async function (e) {
+    //                 if (img.width >= maxWidth) {
+    //                     var share = img.width / maxWidth;
+    //                     var setHeight = Math.floor(img.height / share);
+    //                     var setWidth = maxWidth;
+    //                 } else {
+    //                     setWidth = img.width;
+    //                     setHeight = img.height;
+    //                 }
 
-                    var canvas = document.createElement("canvas");
-                    canvas.width = setWidth;
-                    canvas.height = setHeight;
-                    canvas.display = "inline-block";
-                    canvas
-                        .getContext("2d")
-                        .drawImage(img, 0, 0, setWidth, setHeight);
+    //                 var canvas = document.createElement("canvas");
+    //                 canvas.width = setWidth;
+    //                 canvas.height = setHeight;
+    //                 canvas.display = "inline-block";
+    //                 canvas
+    //                     .getContext("2d")
+    //                     .drawImage(img, 0, 0, setWidth, setHeight);
 
-                    var getReImgUrl = canvas.toDataURL("image/webp");
+    //                 var getReImgUrl = canvas.toDataURL("image/webp");
 
-                    const resultImage = dataURItoBlob(getReImgUrl);
+    //                 const resultImage = dataURItoBlob(getReImgUrl);
 
-                    let imgForm = new FormData();
+    //                 let imgForm = new FormData();
 
-                    const timestamp = new Date().getTime();
-                    const fileName = `${timestamp}${Math.random()
-                        .toString(36)
-                        .substring(2, 11)}.webp`;
+    //                 const timestamp = new Date().getTime();
+    //                 const fileName = `${timestamp}${Math.random()
+    //                     .toString(36)
+    //                     .substring(2, 11)}.webp`;
 
-                    imgForm.append("folder", "testfolder2");
-                    imgForm.append("onimg", resultImage, fileName);
+    //                 imgForm.append("folder", "testfolder2");
+    //                 imgForm.append("onimg", resultImage, fileName);
 
-                    try {
-                        const res = await axios.post(
-                            `${back_api}/img_upload_set`,
-                            imgForm,
-                            {
-                                headers: {
-                                    "Content-Type": "multipart/form-data",
-                                },
-                            },
-                        );
+    //                 try {
+    //                     const res = await axios.post(
+    //                         `${back_api}/img_upload_set`,
+    //                         imgForm,
+    //                         {
+    //                             headers: {
+    //                                 "Content-Type": "multipart/form-data",
+    //                             },
+    //                         },
+    //                     );
 
-                        if (imgActType == "ld_logo") {
-                            allData["ld_logo"] = res.data.baseUrl;
-                        } else if (imgActType == "ld_ph_img") {
-                            allData["ld_ph_img"] = res.data.baseUrl;
-                        } else if (imgActType == "ld_popup_img") {
-                            allData["ld_popup_img"] = res.data.baseUrl;
-                        } else if (imgActType == "ld_mobile_bt_phone_img") {
-                            allData["ld_mobile_bt_phone_img"] =
-                                res.data.baseUrl;
-                        } else if (imgActType == "ld_mobile_bt_event_img") {
-                            allData["ld_mobile_bt_event_img"] =
-                                res.data.baseUrl;
-                        } else if (imgActType == "ld_event_img") {
-                            allData["ld_event_img"] = res.data.baseUrl;
-                        }
-                    } catch (err) {
-                        const m = err.response.data.message;
-                        alert(m ? m : "이미지 업로드 실패! 다시 시도해주세요!");
-                        return;
-                    }
-                };
-            };
-        };
-    };
+    //                     if (imgActType == "ld_logo") {
+    //                         allData["ld_logo"] = res.data.baseUrl;
+    //                     } else if (imgActType == "ld_ph_img") {
+    //                         allData["ld_ph_img"] = res.data.baseUrl;
+    //                     } else if (imgActType == "ld_popup_img") {
+    //                         allData["ld_popup_img"] = res.data.baseUrl;
+    //                     } else if (imgActType == "ld_mobile_bt_phone_img") {
+    //                         allData["ld_mobile_bt_phone_img"] =
+    //                             res.data.baseUrl;
+    //                     } else if (imgActType == "ld_mobile_bt_event_img") {
+    //                         allData["ld_mobile_bt_event_img"] =
+    //                             res.data.baseUrl;
+    //                     } else if (imgActType == "ld_event_img") {
+    //                         allData["ld_event_img"] = res.data.baseUrl;
+    //                     }
+    //                 } catch (err) {
+    //                     const m = err.response.data.message;
+    //                     alert(m ? m : "이미지 업로드 실패! 다시 시도해주세요!");
+    //                     return;
+    //                 }
+    //             };
+    //         };
+    //     };
+    // };
 
     // 사이트 복사 기능!!
     let siteCopyAreaShow = false;
@@ -537,7 +550,12 @@
                     <div>
                         {#if allData["ld_logo"]}
                             <div class="mb-3 border p-1 rounded-md">
-                                <img src={allData["ld_logo"]} alt="" />
+                                <img
+                                    src={allData["ld_logo"].includes("http")
+                                        ? allData["ld_logo"]
+                                        : `${back_api_origin}${allData["ld_logo"]}`}
+                                    alt=""
+                                />
                             </div>
                         {:else}
                             <div class="mb-3">이미지를 추가해주세요</div>
@@ -572,7 +590,12 @@
                     <div>
                         {#if allData["ld_ph_img"]}
                             <div class="mb-3 border p-1 rounded-md">
-                                <img src={allData["ld_ph_img"]} alt="" />
+                                <img
+                                    src={allData["ld_ph_img"].includes("http")
+                                        ? allData["ld_ph_img"]
+                                        : `${back_api_origin}${allData["ld_ph_img"]}`}
+                                    alt=""
+                                />
                             </div>
                         {:else}
                             <div class="mb-3">이미지를 추가해주세요</div>
@@ -615,7 +638,11 @@
                         {#if allData["ld_mobile_bt_phone_img"]}
                             <div class="mb-3 border p-1 rounded-md">
                                 <img
-                                    src={allData["ld_mobile_bt_phone_img"]}
+                                    src={allData[
+                                        "ld_mobile_bt_phone_img"
+                                    ].includes("http")
+                                        ? allData["ld_mobile_bt_phone_img"]
+                                        : `${back_api_origin}${allData["ld_mobile_bt_phone_img"]}`}
                                     alt=""
                                 />
                             </div>
@@ -658,7 +685,11 @@
                         {#if allData["ld_mobile_bt_event_img"]}
                             <div class="mb-3 border p-1 rounded-md">
                                 <img
-                                    src={allData["ld_mobile_bt_event_img"]}
+                                    src={allData[
+                                        "ld_mobile_bt_event_img"
+                                    ].includes("http")
+                                        ? allData["ld_mobile_bt_event_img"]
+                                        : `${back_api_origin}${allData["ld_mobile_bt_event_img"]}`}
                                     alt=""
                                 />
                             </div>
@@ -704,7 +735,12 @@
         <div>
             {#if allData["ld_event_img"]}
                 <div class="mb-3 border p-1 rounded-md">
-                    <img src={allData["ld_event_img"]} alt="" />
+                    <img
+                        src={allData["ld_event_img"].includes("http")
+                            ? allData["ld_event_img"]
+                            : `${back_api_origin}${allData["ld_event_img"]}`}
+                        alt=""
+                    />
                 </div>
             {:else}
                 <div class="mb-3">이미지를 추가해주세요</div>
@@ -738,7 +774,12 @@
         <div class="text-sm font-semibold mb-3">※ 팝업 이미지</div>
         {#if allData["ld_popup_img"]}
             <div>
-                <img src={allData["ld_popup_img"]} alt="" />
+                <img
+                    src={allData["ld_popup_img"].includes("http")
+                        ? allData["ld_popup_img"]
+                        : `${back_api_origin}${allData["ld_popup_img"]}`}
+                    alt=""
+                />
             </div>
         {/if}
 
@@ -806,6 +847,7 @@
         <SortableImg
             on:updateImgeList={updateBannerImgList}
             modifyImageList={bannerImgs}
+            domainFolder={allData.ld_domain}
         />
     </div>
 
@@ -814,6 +856,7 @@
         <SortableImg
             on:updateImgeList={updateMainImgList}
             modifyImageList={mainImgs}
+            domainFolder={allData.ld_domain}
         />
     </div>
 
@@ -827,6 +870,7 @@
                         updateImgList(e);
                     }}
                     modifyImageList={allData[`ld_pg${idx}_img`]}
+                    domainFolder={allData.ld_domain}
                 />
             </div>
         {/if}

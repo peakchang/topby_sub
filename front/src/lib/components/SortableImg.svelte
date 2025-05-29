@@ -1,13 +1,13 @@
 <script>
     import axios from "axios";
-    import { dataURItoBlob } from "$src/lib/lib";
+    import uploadImageAct from "$src/lib/lib";
     import Sortable from "sortablejs";
     import { onMount, onDestroy } from "svelte";
     import _cloneDeep from "lodash/cloneDeep";
     import _remove from "lodash/remove";
     import _find from "lodash/find";
     import { createEventDispatcher } from "svelte";
-    import { back_api } from "$src/lib/const";
+    import { back_api, back_api_origin } from "$src/lib/const";
     import cryptoRandomString from "crypto-random-string";
     const dispatch = createEventDispatcher();
 
@@ -18,6 +18,7 @@
 
     export let modifyImageList = []; // 수정하고 싶은 사항이 있다면 상위 파일에서 src 를 array로 넘겨준다
     export let maxImgCount = 9999999; // 값이 정해져 있지 않다면 무한대로 이미지를 넣을수 있다.
+    export let domainFolder = "";
     let imgArr = [];
 
     onMount(() => {
@@ -47,9 +48,7 @@
         });
     });
 
-    onDestroy(() => {
-
-    });
+    onDestroy(() => {});
 
     function reorder(oldIndex, newIndex) {
         const clone = _cloneDeep(imgArr[oldIndex]);
@@ -89,104 +88,132 @@
         }
     }
 
-    // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
-    const onFileSelected = (e) => {
-        console.log('이렇게 들어오는게 맞긴 하는거지?!?!?! ');
-        
-        if (imgArr.length >= maxImgCount) {
-            alert(`최대 ${maxImgCount}개 이미지만 업로드 가능합니다.`);
-            return false;
-        }
+    function onFileSelected() {
+        uploadImageAct(
+            `${back_api}/img_upload_set`,
+            (err, data) => {
+                console.log(err);
+                console.log(data);
 
-        const input = document.createElement("input");
-        input.setAttribute("type", "file");
-        input.setAttribute("accept", ".png,.jpg,.jpeg,.webp");
-        input.click();
+                imgArr.push({
+                    src: data.saveUrl,
+                    id: crypto(),
+                });
+                imgArr = [...new Set(imgArr)];
+                dispatch("updateImgeList", {
+                    imgArr,
+                });
+            },
+            { folder: domainFolder },
+        );
+    }
 
-        // input change
-        input.onchange = async (e) => {
-            const maxWidth = 1200;
-            const img_file = e.target.files[0];
-            const options = {
-                maxSizeMB: 0.7,
-                // maxWidthOrHeight: 1920,
-                useWebWorker: true,
-            };
+    // // 이미지를 선택하면 사이즈 변경 (최대 1200px) 및 webp 변경 후 업로드
+    // const onFileSelected = (e) => {
+    //     console.log("이렇게 들어오는게 맞긴 하는거지?!?!?! ");
 
-            const reader = new FileReader();
-            reader.readAsDataURL(img_file);
-            reader.onload = function (r) {
-                let setWidth = 0;
-                let setHeight = 0;
-                const img = new Image();
-                img.src = r.target.result;
-                img.onload = async function (e) {
-                    if (img.width >= maxWidth) {
-                        var share = img.width / maxWidth;
-                        var setHeight = Math.floor(img.height / share);
-                        var setWidth = maxWidth;
-                    } else {
-                        setWidth = img.width;
-                        setHeight = img.height;
-                    }
+    //     if (imgArr.length >= maxImgCount) {
+    //         alert(`최대 ${maxImgCount}개 이미지만 업로드 가능합니다.`);
+    //         return false;
+    //     }
 
-                    var canvas = document.createElement("canvas");
-                    canvas.width = setWidth;
-                    canvas.height = setHeight;
-                    canvas.display = "inline-block";
-                    canvas
-                        .getContext("2d")
-                        .drawImage(img, 0, 0, setWidth, setHeight);
+    //     const input = document.createElement("input");
+    //     input.setAttribute("type", "file");
+    //     input.setAttribute("accept", ".png,.jpg,.jpeg,.webp");
+    //     input.click();
 
-                    var getReImgUrl = canvas.toDataURL("image/webp");
+    //     // input change
+    //     input.onchange = async (e) => {
+    //         const maxWidth = 1200;
+    //         const img_file = e.target.files[0];
+    //         const options = {
+    //             maxSizeMB: 0.7,
+    //             // maxWidthOrHeight: 1920,
+    //             useWebWorker: true,
+    //         };
 
-                    const resultImage = dataURItoBlob(getReImgUrl);
+    //         const reader = new FileReader();
+    //         reader.readAsDataURL(img_file);
+    //         reader.onload = function (r) {
+    //             let setWidth = 0;
+    //             let setHeight = 0;
+    //             const img = new Image();
+    //             img.src = r.target.result;
+    //             img.onload = async function (e) {
+    //                 if (img.width >= maxWidth) {
+    //                     var share = img.width / maxWidth;
+    //                     var setHeight = Math.floor(img.height / share);
+    //                     var setWidth = maxWidth;
+    //                 } else {
+    //                     setWidth = img.width;
+    //                     setHeight = img.height;
+    //                 }
 
-                    let imgForm = new FormData();
+    //                 var canvas = document.createElement("canvas");
+    //                 canvas.width = setWidth;
+    //                 canvas.height = setHeight;
+    //                 canvas.display = "inline-block";
+    //                 canvas
+    //                     .getContext("2d")
+    //                     .drawImage(img, 0, 0, setWidth, setHeight);
 
-                    const timestamp = new Date().getTime();
-                    const fileName = `${timestamp}${Math.random()
-                        .toString(36)
-                        .substring(2, 11)}.webp`;
-                    imgForm.append("onimg", resultImage, fileName);
+    //                 var getReImgUrl = canvas.toDataURL("image/webp");
 
-                    // FormData의 key 값과 value값 찾기
-                    // let keys = imgForm.keys();
-                    // for (const pair of keys) {
-                    //     console.log(`name : ${pair}`);
-                    // }
+    //                 const resultImage = dataURItoBlob(getReImgUrl);
 
-                    // let values = imgForm.values();
-                    // for (const pair of values) {
-                    //     console.log(`value : ${pair}`);
-                    // }
+    //                 let imgForm = new FormData();
 
-                    // console.log(getReImgUrl);
-                    // console.log(fileName);
+    //                 const timestamp = new Date().getTime();
+    //                 const fileName = `${timestamp}${Math.random()
+    //                     .toString(36)
+    //                     .substring(2, 11)}.webp`;
 
-                    axios
-                        .post(`${back_api}/img_upload`, imgForm, {
-                            headers: {
-                                "Content-Type": "multipart/form-data",
-                            },
-                        })
-                        .then((res) => {
-                            imgArr.push({
-                                src: res.data.baseUrl,
-                                id: crypto(),
-                            });
-                            imgArr = [...new Set(imgArr)];
-                            dispatch("updateImgeList", {
-                                imgArr,
-                            });
-                        })
-                        .catch((err) => {
-                            console.error(err.message);
-                        });
-                };
-            };
-        };
-    };
+    //                 imgForm.append("folder", domainFolder);
+    //                 imgForm.append("onimg", resultImage, fileName);
+
+    //                 // FormData의 key 값과 value값 찾기
+    //                 // let keys = imgForm.keys();
+    //                 // for (const pair of keys) {
+    //                 //     console.log(`name : ${pair}`);
+    //                 // }
+
+    //                 // let values = imgForm.values();
+    //                 // for (const pair of values) {
+    //                 //     console.log(`value : ${pair}`);
+    //                 // }
+
+    //                 // console.log(getReImgUrl);
+    //                 // console.log(fileName);
+
+    //                 try {
+    //                     const res = axios.post(
+    //                         `${back_api}/img_upload`,
+    //                         imgForm,
+    //                         {
+    //                             headers: {
+    //                                 "Content-Type": "multipart/form-data",
+    //                             },
+    //                         },
+    //                     );
+
+    //                     console.log(res.data.saveUrl);
+
+    //                 } catch (err) {}
+
+    //                 // axios
+    //                 //     .post(`${back_api}/img_upload`, imgForm, {
+    //                 //         headers: {
+    //                 //             "Content-Type": "multipart/form-data",
+    //                 //         },
+    //                 //     })
+    //                 //     .then((res) => {})
+    //                 //     .catch((err) => {
+    //                 //         console.error(err.message);
+    //                 //     });
+    //             };
+    //         };
+    //     };
+    // };
 </script>
 
 <div class="p-2">
@@ -209,7 +236,12 @@
                     ></i>
                 </span>
                 <div>
-                    <img src={img.src} alt="" />
+                    <img
+                        src={img.src.includes("http")
+                            ? img.src
+                            : `${back_api_origin}${img.src}`}
+                        alt=""
+                    />
                 </div>
             </div>
         {/each}
