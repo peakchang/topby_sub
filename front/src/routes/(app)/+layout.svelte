@@ -412,15 +412,17 @@
                         ? `${headerData.logo_width}%`
                         : '30%'}"
                 >
-                    <a href="/">
-                        <img
-                            src={headerData.logo_img.includes("http")
-                                ? headerData.logo_img
-                                : `${back_api_origin}${headerData.logo_img}`}
-                            alt=""
-                            style="width:100%"
-                        />
-                    </a>
+                    {#if headerData.logo_img}
+                        <a href="/">
+                            <img
+                                src={headerData.logo_img.includes("http")
+                                    ? headerData.logo_img
+                                    : `${back_api_origin}${headerData.logo_img}`}
+                                alt=""
+                                style="width:100%"
+                            />
+                        </a>
+                    {/if}
                 </div>
 
                 <div
@@ -428,18 +430,20 @@
                         ? `${headerData.top_phone_width}%`
                         : '30%'}"
                 >
-                    <a
-                        href="TEL:{siteData.ld_phone_num}"
-                        on:click={addCallCount}
-                    >
-                        <img
-                            src={headerData.phone_img.includes("http")
-                                ? headerData.phone_img
-                                : `${back_api_origin}${headerData.phone_img}`}
-                            alt=""
-                            style="width:100%"
-                        />
-                    </a>
+                    {#if siteData.ld_phone_num}
+                        <a
+                            href="TEL:{siteData.ld_phone_num}"
+                            on:click={addCallCount}
+                        >
+                            <img
+                                src={headerData.phone_img.includes("http")
+                                    ? headerData.phone_img
+                                    : `${back_api_origin}${headerData.phone_img}`}
+                                alt=""
+                                style="width:100%"
+                            />
+                        </a>
+                    {/if}
                 </div>
             </div>
 
@@ -530,7 +534,7 @@
                         alt=""
                     />
                 </a>
-            {:else}
+            {:else if siteData.ld_event_img}
                 <a
                     href="SMS:{siteData.ld_sms_num}?body={siteData.ld_name} 이벤트 참여!"
                     on:click={addSmsCount}
