@@ -105,35 +105,41 @@
 
     function setSectionHeight() {
         if (browser) {
-            const backgroundArea =
-                document.querySelectorAll(".background-area");
-            const contentArea = document.querySelectorAll(`.content-area`);
-            let ratioNum = -1;
-            let heightNum = -1;
-            for (let i = 0; i < mainContents.length; i++) {
-                const data = mainContents[i];
-                if (data.bgType == "ratio") {
-                    ratioNum++;
-                    const width = data.backgroundWidth;
-                    const height = data.backgroundHeight;
-                    const aspectRatio = height / width;
-                    const elementWidth = backgroundArea[ratioNum].offsetWidth;
-                    backgroundArea[ratioNum].style.height =
-                        `${elementWidth * aspectRatio}px`;
-                } else if (data.bgType == "height") {
-                    heightNum++;
-                    const element = contentArea[heightNum];
-                    const parent = element.parentElement;
-                    const height = element.offsetHeight;
+            try {
+                const backgroundArea =
+                    document.querySelectorAll(".background-area");
+                const contentArea = document.querySelectorAll(`.content-area`);
+                let ratioNum = -1;
+                let heightNum = -1;
+                for (let i = 0; i < mainContents.length; i++) {
+                    const data = mainContents[i];
+                    if (data.bgType == "ratio") {
+                        ratioNum++;
+                        const width = data.backgroundWidth;
+                        const height = data.backgroundHeight;
+                        const aspectRatio = height / width;
+                        const elementWidth =
+                            backgroundArea[ratioNum].offsetWidth;
+                        backgroundArea[ratioNum].style.height =
+                            `${elementWidth * aspectRatio}px`;
+                    } else if (data.bgType == "height") {
+                        heightNum++;
+                        const element = contentArea[heightNum];
+                        const parent = element.parentElement;
+                        const height = element.offsetHeight;
 
-                    try {
-                        parent.style.height = `${height + Number(data.paddingTopVal) + Number(data.paddingBottomVal)}px`;
-                        parent.style.paddingTop = `${Number(data.paddingTopVal)}px`;
-                        parent.style.paddingBottom = `${Number(data.paddingBottomVal)}px`;
-                    } catch (error) {
-                        console.error(error.message);
+                        try {
+                            parent.style.height = `${height + Number(data.paddingTopVal) + Number(data.paddingBottomVal)}px`;
+                            parent.style.paddingTop = `${Number(data.paddingTopVal)}px`;
+                            parent.style.paddingBottom = `${Number(data.paddingBottomVal)}px`;
+                        } catch (error) {
+                            console.error(error.message);
+                        }
                     }
                 }
+            } catch (error) {
+                console.log('여기서 에러 나는겨?');
+                
             }
         }
     }
