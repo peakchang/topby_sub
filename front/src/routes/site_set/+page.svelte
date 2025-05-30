@@ -625,6 +625,34 @@
 
         return `https://www.youtube.com/watch?v=${videoId}`;
     }
+
+
+
+    // 사이트 복사 기능!!
+    let siteCopyAreaShow = false;
+    let copyDomain = "";
+
+    async function copySite() {
+        if (!copyDomain) {
+            alert("복사할 도메인을 입력 해주세요");
+            return;
+        }
+
+        try {
+            const res = await axios.post(`${back_api}/copy_site`, {
+                oldDomain: getDomain,
+                copyDomain,
+            });
+
+            alert('복사 완료! 관리자 페이지에서 확인 해주세요!')
+        } catch (err) {
+            console.log("에러 들어와야징");
+
+            const m = err.response.data.message;
+            alert(m ? m : "사이트 카피 실패 다시 시도해주세요.");
+            return;
+        }
+    }
 </script>
 
 {#if visible}
@@ -654,13 +682,46 @@
 </div>
 
 <div class="container max-w-[900px] py-10 px-3 mx-auto pretendard">
-    <div class="w-full flex items-center gap-4">
+    <div>
         <table class=" w-[350px]">
             <tr>
-                <th class="border p-2.5 w-[100px]">도메인</th>
-                <td class="border p-2.5 pl-5">{getId} </td>
+                <th class="border p-2.5 w-[80px] text-sm">도메인</th>
+                <td class="border p-2.5 pl-5 text-sm">{getId} </td>
+                <td class="border p-2.5 pl-5">
+                    <button
+                        class=" bg-orange-600 px-3 py-1.5 rounded-md text-white text-xs active:bg-orange-700"
+                        on:click={() => {
+                            siteCopyAreaShow = !siteCopyAreaShow;
+                        }}
+                    >
+                        사이트 복사
+                    </button>
+                </td>
             </tr>
         </table>
+
+        {#if siteCopyAreaShow}
+            <div
+                class="w-[350px] border mt-3 flex justify-between items-center p-3"
+            >
+                <div>
+                    <input
+                        type="text"
+                        class="border w-[250px] px-2 py-1.5 text-xs focus:outline-none focus:border-blue-500 rounded-md"
+                        placeholder="도메인주소를 입력하세요 (영어 소문자/숫자만)"
+                        bind:value={copyDomain}
+                    />
+                </div>
+                <div class="w-[100px] text-center">
+                    <button
+                        class="text-sm bg-lime-700 text-white px-4 py-1.5 active:bg-lime-800 rounded-lg"
+                        on:click={copySite}
+                    >
+                        적용
+                    </button>
+                </div>
+            </div>
+        {/if}
     </div>
 
     <div class="mt-3">
@@ -1105,7 +1166,11 @@
 
                                         <div class="m-2 p-2 bg-gray-400">
                                             <img
-                                                src={content.imgPath}
+                                                src={content.imgPath.includes(
+                                                    "http",
+                                                )
+                                                    ? content.imgPath
+                                                    : `${back_api_origin}${content.imgPath}`}
                                                 alt=""
                                                 width="150"
                                                 height="150"

@@ -336,11 +336,16 @@
             return;
         }
 
-        allData["ld_domain"] = copyDomain;
-        console.log(allData);
         try {
-            const res = axios.post(`${back_api}/copy_site`, { allData });
+            const res = await axios.post(`${back_api}/copy_site`, {
+                oldDomain: allData["ld_domain"],
+                copyDomain,
+            });
+
+            alert('복사 완료! 관리자 페이지에서 확인 해주세요!')
         } catch (err) {
+            console.log("에러 들어와야징");
+
             const m = err.response.data.message;
             alert(m ? m : "사이트 카피 실패 다시 시도해주세요.");
             return;
@@ -390,6 +395,9 @@
             </div>
         {/if}
     </div>
+
+
+    
 
     <div class="mt-3">
         <span class="text-sm font-semibold">※ 사이트 설명</span>
