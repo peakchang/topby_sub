@@ -115,6 +115,9 @@
                     const data = mainContents[i];
                     if (data.bgType == "ratio") {
                         ratioNum++;
+
+                        console.log(backgroundArea[ratioNum]);
+                        
                         const width = data.backgroundWidth;
                         const height = data.backgroundHeight;
                         const aspectRatio = height / width;
@@ -138,8 +141,9 @@
                     }
                 }
             } catch (error) {
-                console.log('여기서 에러 나는겨?');
-                
+                console.error(error.message);
+
+                console.log("여기서 에러 나는겨?");
             }
         }
     }
