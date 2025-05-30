@@ -86,7 +86,13 @@
 
             if (browser) {
                 const element = document.querySelector(".logo-area");
+                console.log(element);
+                
                 callImgWidth = element.offsetHeight;
+                console.log('logo-area height');
+                console.log(callImgWidth);
+                
+                
                 if (callImgWidth > 35) {
                     callImgMarginBlank = (callImgWidth - 35) / 2;
                     callImgWidth = 35;
@@ -99,6 +105,8 @@
                 console.log(headerHeight);
                 console.log(menuHeight);
                 mainPageMarginTop = headerHeight + menuHeight;
+                console.log(mainPageMarginTop);
+                
             }
         }
     }
