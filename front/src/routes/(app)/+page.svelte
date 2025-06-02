@@ -113,6 +113,8 @@
                 let heightNum = -1;
                 for (let i = 0; i < mainContents.length; i++) {
                     const data = mainContents[i];
+                    console.log('메인 컨텐츠 데이터 부분!!!!');
+                    
                     console.log(data);
                     
                     if (data.bgType == "ratio") {
