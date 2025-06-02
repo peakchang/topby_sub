@@ -51,7 +51,11 @@
             // 신버전 코드
             try {
                 mainContents = JSON.parse(siteData.ld_json_main);
-
+                console.log('mainContents 리스트 부분!!!!');
+                console.log(mainContents);
+                setSectionHeight();
+                setYoutubeRatio();
+                                
                 // 받은 JSON 데이터 처리
             } catch (error) {
                 console.log("에러 들어옴?!");
