@@ -113,6 +113,8 @@
                 let heightNum = -1;
                 for (let i = 0; i < mainContents.length; i++) {
                     const data = mainContents[i];
+                    console.log(data);
+                    
                     if (data.bgType == "ratio") {
                         ratioNum++;
 
