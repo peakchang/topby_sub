@@ -50,12 +50,15 @@
         } else {
             // 신버전 코드
             try {
-                mainContents = JSON.parse(siteData.ld_json_main);
-                console.log('mainContents 리스트 부분!!!!');
-                console.log(mainContents);
+                if (siteData.ld_json_main) {
+                    mainContents = JSON.parse(siteData.ld_json_main);
+                    console.log("mainContents 리스트 부분!!!!");
+                    console.log(mainContents);
+                }
+
                 setSectionHeight();
                 setYoutubeRatio();
-                                
+
                 // 받은 JSON 데이터 처리
             } catch (error) {
                 console.log("에러 들어옴?!");
@@ -117,15 +120,15 @@
                 let heightNum = -1;
                 for (let i = 0; i < mainContents.length; i++) {
                     const data = mainContents[i];
-                    console.log('메인 컨텐츠 데이터 부분!!!!');
-                    
+                    console.log("메인 컨텐츠 데이터 부분!!!!");
+
                     console.log(data);
-                    
+
                     if (data.bgType == "ratio") {
                         ratioNum++;
 
                         console.log(backgroundArea[ratioNum]);
-                        
+
                         const width = data.backgroundWidth;
                         const height = data.backgroundHeight;
                         const aspectRatio = height / width;

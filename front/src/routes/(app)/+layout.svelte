@@ -72,14 +72,18 @@
         } else {
             // 신버전!!!
             try {
-                headerData = JSON.parse(siteData.ld_json_header);
-                console.log(headerData);
+                if (siteData.ld_json_header) {
+                    headerData = JSON.parse(siteData.ld_json_header);
+                    console.log(headerData);
+                }
             } catch (error) {
                 console.error("JSON 파싱 오류:", error);
             }
 
             try {
-                menuData = JSON.parse(siteData.ld_json_menus);
+                if (siteData.ld_json_menus) {
+                    menuData = JSON.parse(siteData.ld_json_menus);
+                }
             } catch (error) {
                 console.error("JSON 파싱 오류:", error);
             }
@@ -87,12 +91,11 @@
             if (browser) {
                 const element = document.querySelector(".logo-area");
                 console.log(element);
-                
+
                 callImgWidth = element.offsetHeight;
-                console.log('logo-area height');
+                console.log("logo-area height");
                 console.log(callImgWidth);
-                
-                
+
                 if (callImgWidth > 35) {
                     callImgMarginBlank = (callImgWidth - 35) / 2;
                     callImgWidth = 35;
@@ -106,7 +109,6 @@
                 console.log(menuHeight);
                 mainPageMarginTop = headerHeight + menuHeight;
                 console.log(mainPageMarginTop);
-                
             }
         }
     }
@@ -438,7 +440,7 @@
                         ? `${headerData.top_phone_width}%`
                         : '30%'}"
                 >
-                    {#if siteData.ld_phone_num}
+                    {#if siteData.ld_phone_num && headerData.phone_img}
                         <a
                             href="TEL:{siteData.ld_phone_num}"
                             on:click={addCallCount}
@@ -530,7 +532,7 @@
 >
     {#if siteData.ld_event_img}
         <div class="md:w-1/2">
-            {#if siteData.ld_sms_content}
+            {#if siteData.ld_sms_content && siteData["ld_event_img"]}
                 <a
                     href="SMS:{siteData.ld_sms_num}?body={siteData.ld_name} {siteData.ld_sms_content}"
                     on:click={addSmsCount}
@@ -661,10 +663,13 @@
                     </div>
                 </div>
 
-                <div>
-                    <button
-                        class="w-full bg-[#ff5f11] text-white p-3 text-lg rounded-lg"
-                        on:click={() => {
+                <div class="w-full">
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
+                    <!-- svelte-ignore a11y-missing-attribute -->
+                    <a
+                        href="book:"
+                        on:click|preventDefault={() => {
                             const siteName = siteData.ld_site;
 
                             if (!customerName) {
@@ -705,8 +710,12 @@
                             }
                         }}
                     >
-                        예약 확인
-                    </button>
+                        <button
+                            class="w-full bg-[#ff5f11] text-white p-3 text-lg rounded-lg cursor-pointer"
+                        >
+                            예약 확인
+                        </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -715,7 +724,7 @@
 
 <div class="fixed bottom-0 left-0 w-full z-[999] block md:hidden">
     <div class="flex">
-        {#if siteData.ld_phone_num}
+        {#if siteData.ld_phone_num && siteData["ld_mobile_bt_phone_img"]}
             <a href="TEL:{siteData.ld_phone_num}" on:click={addCallCount}>
                 {#if siteData.ld_mobile_bt_phone_img}
                     <div>
