@@ -4,7 +4,7 @@
     import SeoMeta from "$lib/components/SeoMeta.svelte";
     import { onMount } from "svelte";
     import ModalCustom from "$lib/components/ModalCustom.svelte";
-    import { customerSubmit, validatePhoneNumber } from "$lib/lib";
+    import { validatePhoneNumber } from "$lib/lib";
     import Cookies from "js-cookie";
     import axios from "axios";
     import { back_api, back_api_origin } from "$src/lib/const";
@@ -193,6 +193,26 @@
         isMenuVisible = currentScrollY < lastScrollY; // 위로 스크롤이면 보임
         lastScrollY = currentScrollY;
     };
+    // customerName,
+    //                                 customerPhone,
+    //                                 siteName,
+    async function customerSubmit(name, phone, siteName) {
+        try {
+            const res = await axios.post(`${back_api}/update_customer`, {
+                name,
+                phone,
+                siteName,
+            });
+
+
+            window.location.href = '/thankyou?return=true';
+
+        } catch (error) {
+            console.error(error.message);
+
+            alert("에러가 발생했습니다. 관리자에게 문의해주세요");
+        }
+    }
 </script>
 
 <svelte:head>
@@ -703,7 +723,6 @@
                             );
 
                             if (resSend) {
-                                chk_modal.showModal();
                                 customerName = "";
                                 customerPhone = "";
                                 inviteChk = false;
