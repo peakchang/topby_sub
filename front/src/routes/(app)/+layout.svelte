@@ -187,14 +187,22 @@
             });
         } catch (error) {}
 
-        let smsHref = "";
+        // let smsHref = "";
+
+        let smsBody = ""
         if (siteData.ld_sms_content && siteData["ld_event_img"]) {
-            smsHref = `sms:${siteData.ld_sms_num}?body=${siteData.ld_name} ${siteData.ld_sms_content}`;
+            // smsHref = `sms:${siteData.ld_sms_num}?body=${siteData.ld_name} ${siteData.ld_sms_content}`;
+
+            smsBody = `${siteData.ld_name} ${siteData.ld_sms_content}`
         } else if (siteData.ld_event_img) {
-            smsHref = `sms:${siteData.ld_sms_num}?body=${siteData.ld_name} 이벤트 참여!`;
+            // smsHref = `sms:${siteData.ld_sms_num}?body=${siteData.ld_name} 이벤트 참여!`;
+
+            smsBody = `${siteData.ld_name} 이벤트 참여!`
         }
 
-        window.location.href = smsHref
+        // window.location.href = smsHref
+
+        window.location.href = `/sms?smsnum=${siteData.ld_sms_num}&body=${smsBody}`;
     }
 
     const handleScroll = () => {
