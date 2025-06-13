@@ -186,6 +186,15 @@
                 smsCount: siteData["ld_sms_clickcount"],
             });
         } catch (error) {}
+
+        let smsHref = "";
+        if (siteData.ld_sms_content && siteData["ld_event_img"]) {
+            smsHref = `sms:${siteData.ld_sms_num}?body=${siteData.ld_name} ${siteData.ld_sms_content}`;
+        } else if (siteData.ld_event_img) {
+            smsHref = `sms:${siteData.ld_sms_num}?body=${siteData.ld_name} 이벤트 참여!`;
+        }
+
+        window.location.href = smsHref
     }
 
     const handleScroll = () => {
@@ -204,9 +213,7 @@
                 siteName,
             });
 
-
-            window.location.href = '/thankyou?return=true';
-
+            window.location.href = "/thankyou?return=true";
         } catch (error) {
             console.error(error.message);
 
@@ -552,31 +559,14 @@
 >
     {#if siteData.ld_event_img}
         <div class="md:w-1/2">
-            {#if siteData.ld_sms_content && siteData["ld_event_img"]}
-                <a
-                    href="SMS:{siteData.ld_sms_num}?body={siteData.ld_name} {siteData.ld_sms_content}"
-                    on:click={addSmsCount}
-                >
-                    <img
-                        src={siteData["ld_event_img"].includes("http")
-                            ? siteData["ld_event_img"]
-                            : `${back_api_origin}${siteData["ld_event_img"]}`}
-                        alt=""
-                    />
-                </a>
-            {:else if siteData.ld_event_img}
-                <a
-                    href="SMS:{siteData.ld_sms_num}?body={siteData.ld_name} 이벤트 참여!"
-                    on:click={addSmsCount}
-                >
-                    <img
-                        src={siteData["ld_event_img"].includes("http")
-                            ? siteData["ld_event_img"]
-                            : `${back_api_origin}${siteData["ld_event_img"]}`}
-                        alt=""
-                    />
-                </a>
-            {/if}
+            <a href="sms:" on:click|preventDefault={addSmsCount}>
+                <img
+                    src={siteData["ld_event_img"].includes("http")
+                        ? siteData["ld_event_img"]
+                        : `${back_api_origin}${siteData["ld_event_img"]}`}
+                    alt=""
+                />
+            </a>
         </div>
     {/if}
 
