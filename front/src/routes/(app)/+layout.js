@@ -10,7 +10,7 @@ export const load = async ({ fetch, url }) => {
     const subDomainName = url.hostname.split('.')[0]
 
     console.log(url);
-    
+
 
     let returnSubDomainName = ""
     let subView = {}
@@ -62,22 +62,34 @@ export const load = async ({ fetch, url }) => {
 
     if (subView.ld_view_type == 'new') {
         const mainJson = JSON.parse(subView.ld_json_main)
+        const urlHost = url.host.split('.').slice(1).join('.');
+        const ogImage = subView.ld_card_image ? subView.ld_card_image : mainJson[0]['backgroundImg'].split(',')[0]
+        const seoMainImg = mainJson ? mainJson[0]['backgroundImg'].split(',')[0] : subView.ld_card_image
 
-        console.log(mainJson);
-        
-        
+
         if (mainJson.length > 0) {
-            seoValue["og_image"] = `${url.protocol}//${url.host.split('.')[1]}${subView.ld_card_image ? subView.ld_card_image : mainJson[0]['backgroundImg'].split(',')[0]}`;
-            seoValue["image"] = `${url.protocol}//${url.host.split('.')[1]}${mainJson ? mainJson[0]['backgroundImg'].split(',')[0] : subView.ld_card_image}`;
+            if (ogImage.includes('http')) {
+                seoValue["og_image"] = ogImage;
+            } else {
+                seoValue["og_image"] = `${url.protocol}//${urlHost}${ogImage}`;
+            }
+
+            if (seoMainImg.includes('http')) {
+                seoValue["image"] = seoMainImg;
+            } else {
+                seoValue["image"] = `${url.protocol}//${urlHost}${seoMainImg}`;
+            }
         }
 
     } else {
         seoValue["image"] = `${url.protocol}//${url.host.split('.')[1]}${subView['ld_main_img'] ? subView['ld_main_img'].split(',')[0] : ""}`;
     }
 
-    console.log(seoValue);
-    
+    // console.log(seoValue);
 
+
+    // ${url.protocol}//${url.host.split('.')[1]}
+    // ${url.protocol}//${url.host.split('.')[1]}
     // ${url.protocol}//${url.host.split('.')[1]}
 
     return { subView, seoValue }
