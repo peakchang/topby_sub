@@ -28,4 +28,4 @@ export const load = (async ({ url }) => {
 
     }
     return { getId, allData, ld_json_header, ld_json_main, ld_json_menus };
-}) 
+})

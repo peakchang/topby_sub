@@ -9,6 +9,9 @@ export const load = async ({ fetch, url }) => {
 
     const subDomainName = url.hostname.split('.')[0]
 
+    console.log(url);
+    
+
     let returnSubDomainName = ""
     let subView = {}
     let seoValue = {
@@ -66,7 +69,7 @@ export const load = async ({ fetch, url }) => {
         }
 
     } else {
-        seoValue["image"] = subView['ld_main_img'] ? subView['ld_main_img'].split(',')[0] : "";
+        seoValue["image"] = `${url.protocol}//${host.split('.')[1]}${subView['ld_main_img'] ? subView['ld_main_img'].split(',')[0] : ""}`;
     }
 
     return { subView, seoValue }
