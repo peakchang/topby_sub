@@ -50,7 +50,6 @@
         // 공통 부분!!
         seoValue = data.seoValue;
         siteData = data.subView;
-        console.log(siteData);
 
         const popupShow = Cookies.get("popup_close");
         if (popupShow == "ok") {
@@ -74,7 +73,6 @@
             try {
                 if (siteData.ld_json_header) {
                     headerData = JSON.parse(siteData.ld_json_header);
-                    console.log(headerData);
                 }
             } catch (error) {
                 console.error("JSON 파싱 오류:", error);
@@ -90,11 +88,8 @@
 
             if (browser) {
                 const element = document.querySelector(".logo-area");
-                console.log(element);
 
                 callImgWidth = element.offsetHeight;
-                console.log("logo-area height");
-                console.log(callImgWidth);
 
                 if (callImgWidth > 35) {
                     callImgMarginBlank = (callImgWidth - 35) / 2;
@@ -105,10 +100,7 @@
                 const menuArea = document.querySelector(".menu-area");
                 const headerHeight = headerArea.offsetHeight;
                 const menuHeight = menuArea.offsetHeight;
-                console.log(headerHeight);
-                console.log(menuHeight);
                 mainPageMarginTop = headerHeight + menuHeight;
-                console.log(mainPageMarginTop);
             }
         }
     }
@@ -382,8 +374,6 @@
                     eventEle.getBoundingClientRect().top +
                     window.pageYOffset -
                     135;
-
-                console.log(y);
 
                 window.scrollTo({ top: y, behavior: "smooth" });
             }
@@ -792,8 +782,6 @@
                         window.pageYOffset -
                         135;
 
-                    console.log(y);
-
                     window.scrollTo({ top: y, behavior: "smooth" });
                 }
             }}
@@ -856,11 +844,7 @@
     </div>
 </dialog>
 
-<button
-    on:click={() => {
-        console.log(siteData);
-    }}>....</button
->
+
 
 <style>
     @media (prefers-color-scheme: dark) {

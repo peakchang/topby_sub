@@ -52,8 +52,6 @@
             try {
                 if (siteData.ld_json_main) {
                     mainContents = JSON.parse(siteData.ld_json_main);
-                    console.log("mainContents 리스트 부분!!!!");
-                    console.log(mainContents);
                 }
 
                 setSectionHeight();
@@ -61,7 +59,6 @@
 
                 // 받은 JSON 데이터 처리
             } catch (error) {
-                console.log("에러 들어옴?!");
                 console.error("JSON 파싱 오류:", error);
             }
         }
@@ -120,14 +117,9 @@
                 let heightNum = -1;
                 for (let i = 0; i < mainContents.length; i++) {
                     const data = mainContents[i];
-                    console.log("메인 컨텐츠 데이터 부분!!!!");
-
-                    console.log(data);
 
                     if (data.bgType == "ratio") {
-                        ratioNum++;
-
-                        console.log(backgroundArea[ratioNum]);
+                        ratioNum++;;
 
                         const width = data.backgroundWidth;
                         const height = data.backgroundHeight;
@@ -153,8 +145,6 @@
                 }
             } catch (error) {
                 console.error(error.message);
-
-                console.log("여기서 에러 나는겨?");
             }
         }
     }
