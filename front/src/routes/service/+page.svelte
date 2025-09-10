@@ -1,5 +1,9 @@
 <div>
-    <button>
+    <button
+        on:click={() => {
+            window.history.back();
+        }}
+    >
         <i class="fa fa-chevron-left" aria-hidden="true"></i> 뒤로가기
     </button>
 </div>
