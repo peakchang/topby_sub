@@ -223,10 +223,11 @@
 </script>
 
 <svelte:head>
+    <SeoMeta bind:seoValue />
     {#if siteData.ld_add_scripts}
         {@html siteData.ld_add_scripts}
     {/if}
-    <SeoMeta bind:seoValue />
+    
     <!-- SUIT 폰트 CSS -->
     <link
         href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css"
