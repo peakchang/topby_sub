@@ -8,6 +8,8 @@
     import { fade } from "svelte/transition";
     import { browser } from "$app/environment";
 
+    console.log("몬데?!?!?!?!?");
+
     export let data;
 
     $: data, setData();
@@ -67,6 +69,14 @@
             phoneBottomImg = data.allData.ld_mobile_bt_phone_img;
         if (data.allData.ld_mobile_bt_event_img)
             eventBottomImg = data.allData.ld_mobile_bt_event_img;
+
+        if (data.allData.ld_invite_bool)
+            inviteBool = data.allData.ld_invite_bool;
+
+        if (data.allData.ld_reserve_msg_bool)
+            reserveMsgBool = data.allData.ld_reserve_msg_bool;
+
+        if (data.allData.ld_btn_message) btnMsg = data.allData.btnMsg;
     }
 
     // 섹션 창이 보여지게 하는 변수
@@ -151,6 +161,10 @@
     let addScript = "";
 
     let inviteMessage = "모델하우스는 초대장이 있으신분만 방문 가능합니다.";
+
+    let inviteBool = "on";
+    let reserveMsgBool = "on";
+    let btnMsg = "예약 확인";
 
     // ***********************************************
 
@@ -541,11 +555,16 @@
             ld_add_scripts: addScript,
             ld_invite_message: inviteMessage,
             ld_invite_image: inviteImg,
+            ld_invite_bool: inviteBool,
+            ld_reserve_msg_bool: reserveMsgBool,
+            ld_btn_message: btnMsg,
         };
 
         console.log(uploadDataObj);
 
         try {
+            console.log(`${back_api}/update_site_set`);
+
             const res = await axios.post(`${back_api}/update_site_set`, {
                 get_id: getId,
                 uploadDataObj,
@@ -626,8 +645,6 @@
         return `https://www.youtube.com/watch?v=${videoId}`;
     }
 
-
-
     // 사이트 복사 기능!!
     let siteCopyAreaShow = false;
     let copyDomain = "";
@@ -644,7 +661,7 @@
                 copyDomain,
             });
 
-            alert('복사 완료! 관리자 페이지에서 확인 해주세요!')
+            alert("복사 완료! 관리자 페이지에서 확인 해주세요!");
         } catch (err) {
             console.log("에러 들어와야징");
 
@@ -1989,7 +2006,7 @@
                                 <input
                                     type="radio"
                                     value="on"
-                                    class="radio radio-info"
+                                    class="radio radio-info radio-sm"
                                     bind:group={personalInfoView}
                                 />
                                 있음
@@ -1999,7 +2016,7 @@
                                 <input
                                     type="radio"
                                     value="off"
-                                    class="radio radio-info"
+                                    class="radio radio-info radio-sm"
                                     bind:group={personalInfoView}
                                 />
                                 없음
@@ -2012,13 +2029,79 @@
                         초대문구
                     </th>
                     <td class="border p-2 text-sm" colspan="3">
+                        <div class="flex items-center">
+                            <div class="w-3/4">
+                                <input
+                                    type="text"
+                                    class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
+                                    bind:value={inviteMessage}
+                                />
+                            </div>
+
+                            <div class="text-center w-1/4">
+                                <label class="mr-3">
+                                    <input
+                                        type="radio"
+                                        value="on"
+                                        class="radio radio-info radio-sm"
+                                        bind:group={inviteBool}
+                                    />
+                                    있음
+                                </label>
+
+                                <label>
+                                    <input
+                                        type="radio"
+                                        value="off"
+                                        class="radio radio-info radio-sm"
+                                        bind:group={inviteBool}
+                                    />
+                                    없음
+                                </label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th class="border p-2 text-sm" style="width:15%">
+                        초대 아래 유무
+                    </th>
+                    <td class="border p-2 text-sm">
+                        <div class="text-center">
+                            <label class="mr-3">
+                                <input
+                                    type="radio"
+                                    value="on"
+                                    class="radio radio-info radio-sm"
+                                    bind:group={reserveMsgBool}
+                                />
+                                있음
+                            </label>
+
+                            <label>
+                                <input
+                                    type="radio"
+                                    value="off"
+                                    class="radio radio-info radio-sm"
+                                    bind:group={reserveMsgBool}
+                                />
+                                없음
+                            </label>
+                        </div>
+                    </td>
+                    <th class="border p-2 text-sm" style="width:15%">
+                        버튼 문구
+                    </th>
+                    <td class="border p-2 text-sm">
                         <input
                             type="text"
                             class="p-2 border border-gray-400 w-full rounded-md focus:outline-none focus:border-blue-500"
-                            bind:value={inviteMessage}
+                            bind:value={btnMsg}
                         />
                     </td>
                 </tr>
+
                 <tr>
                     <th class="border p-1 text-xs md:text-sm">
                         <span class="font-normal"> 모바일 하단 </span>

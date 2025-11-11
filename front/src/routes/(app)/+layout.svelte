@@ -50,6 +50,7 @@
         // 공통 부분!!
         seoValue = data.seoValue;
         siteData = data.subView;
+        console.log(siteData);
 
         const popupShow = Cookies.get("popup_close");
         if (popupShow == "ok") {
@@ -227,7 +228,7 @@
     {#if siteData.ld_add_scripts}
         {@html siteData.ld_add_scripts}
     {/if}
-    
+
     <!-- SUIT 폰트 CSS -->
     <link
         href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css"
@@ -636,40 +637,44 @@
                         </div>
                     {/if}
 
-                    <div class="flex items-center gap-3 mb-2 text-sm">
-                        <div>
-                            <img
-                                src="/megaphone.png"
-                                alt=""
-                                width="20"
-                                height="20"
-                            />
+                    {#if siteData.ld_invite_bool != "off"}
+                        <div class="flex items-center gap-3 mb-2 text-sm">
+                            <div>
+                                <img
+                                    src="/megaphone.png"
+                                    alt=""
+                                    width="20"
+                                    height="20"
+                                />
+                            </div>
+                            <div style="color:black !important;">
+                                {#if siteData.ld_invite_message}
+                                    {siteData.ld_invite_message}
+                                {:else}
+                                    <span>
+                                        모델하우스는 초대장이 있으신분만 방문
+                                        가능합니다.
+                                    </span>
+                                {/if}
+                            </div>
                         </div>
-                        <div style="color:black !important;">
-                            {#if siteData.ld_invite_message}
-                                {siteData.ld_invite_message}
-                            {:else}
-                                <span>
-                                    모델하우스는 초대장이 있으신분만 방문
-                                    가능합니다.
-                                </span>
-                            {/if}
-                        </div>
-                    </div>
+                    {/if}
 
-                    <div class="flex items-center gap-3 text-sm">
-                        <div>
-                            <img
-                                src="/megaphone.png"
-                                alt=""
-                                width="20"
-                                height="20"
-                            />
+                    {#if siteData.ld_reserve_msg_bool != "off"}
+                        <div class="flex items-center gap-3 text-sm">
+                            <div>
+                                <img
+                                    src="/megaphone.png"
+                                    alt=""
+                                    width="20"
+                                    height="20"
+                                />
+                            </div>
+                            <div style="color:red !important;">
+                                미 예약시 관람을 제한하는 점 양해 부탁드립니다.
+                            </div>
                         </div>
-                        <div style="color:red !important;">
-                            미 예약시 관람을 제한하는 점 양해 부탁드립니다.
-                        </div>
-                    </div>
+                    {/if}
                 </div>
 
                 <div class="w-full">
@@ -721,7 +726,11 @@
                         <button
                             class="w-full bg-[#ff5f11] text-white p-3 text-lg rounded-lg cursor-pointer"
                         >
-                            예약 확인
+                            {#if siteData.ld_btn_message}
+                                {siteData.ld_btn_message}
+                            {:else}
+                                예약 확인
+                            {/if}
                         </button>
                     </a>
                 </div>
