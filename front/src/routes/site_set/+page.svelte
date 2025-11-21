@@ -168,6 +168,38 @@
 
     // ***********************************************
 
+    function sortContentList() {
+        console.log(this.value);
+        console.log(this.dataset.type);
+        console.log(mainContents);
+
+        const tempArr = [...mainContents];
+        let getIdx = Number(this.value);
+        if (this.dataset.type == "up") {
+            if (getIdx == 0) {
+                showToast("더이상 이동 할수 없습니다.");
+                return;
+            }
+            [tempArr[getIdx - 1], tempArr[getIdx]] = [
+                tempArr[getIdx],
+                tempArr[getIdx - 1],
+            ];
+        } else {
+            console.log(getIdx);
+            console.log(tempArr.length);
+            
+            if (getIdx + 1 == tempArr.length) {
+                showToast("더이상 이동 할수 없습니다.");
+                return;
+            }
+            [tempArr[Number(getIdx) + 1], tempArr[getIdx]] = [
+                tempArr[getIdx],
+                tempArr[getIdx + 1],
+            ];
+        }
+        mainContents = tempArr;
+    }
+
     function showToast(message) {
         toastText = message;
         visible = true;
@@ -990,8 +1022,10 @@
 
         {#if mainContents.length != 0}
             {#each mainContents as content, idx}
-                <div class="border p-2 mb-1">
-                    {idx + 1} 번째 섹션
+                <div class="border p-2 mb-1 flex items-center">
+                    <span class="mr-5">
+                        {idx + 1} 번째 섹션
+                    </span>
 
                     {#if sectionModifyStatus == false}
                         <button
@@ -1009,6 +1043,32 @@
                         >
                             섹션 삭제
                         </button>
+
+                        <div class="ml-3 flex items-center gap-2">
+                            <button
+                                class="text-blue-400 text-xl"
+                                value={idx}
+                                data-type="up"
+                                on:click={sortContentList}
+                            >
+                                <i
+                                    class="fa fa-chevron-circle-up"
+                                    aria-hidden="true"
+                                ></i>
+                            </button>
+
+                            <button
+                                class="text-blue-400 text-xl"
+                                value={idx}
+                                data-type="down"
+                                on:click={sortContentList}
+                            >
+                                <i
+                                    class="fa fa-chevron-circle-down"
+                                    aria-hidden="true"
+                                ></i>
+                            </button>
+                        </div>
                     {:else if sectionIdx == idx}
                         <button
                             class="btn btn-soft btn-accent btn-sm"
